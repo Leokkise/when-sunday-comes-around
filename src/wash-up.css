@@ -372,6 +372,7 @@
 .wash-shampoo-cursor { top: 0; left: 0; }
 .wash-loading { display: grid; place-content: center; justify-items: center; gap: 16px; text-align: center; color: #564736; }
 .wash-loading-message { font-size: clamp(20px, 3vw, 28px); }
+.wash-loading-message .ink-wiggle { font-size: clamp(24px, 3.4vw, 32px); }
 .wash-loading-progress { width: min(280px, 76vw); height: 16px; margin: 14px auto 0; overflow: hidden; border: 1px solid #a69d86; border-radius: 999px; background: #e7dfcb; }
 .wash-loading-progress span { display: block; height: 100%; border-radius: inherit; transform-origin: left; background: repeating-linear-gradient(118deg, transparent 0 5px, #fff6df19 5px 6px), #547b68; }
 @media (prefers-reduced-motion: no-preference) {

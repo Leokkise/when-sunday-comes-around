@@ -794,4 +794,51 @@ function WashUp() {
   )
 }
 
-createRoot(document.getElementById('root')!).render(<WashUp />)
+const bathArtwork = ['/bathroom.webp', '/bath-sprite.webp', '/bath-dirt.webp', '/bath-fixtures.webp', '/bath-supplies.webp']
+
+function BathEntry() {
+  const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
+  const [attempt, setAttempt] = useState(0)
+  const [loaded, setLoaded] = useState(0)
+  const [showLoading, setShowLoading] = useState(() => performance.now() >= 500)
+
+  useEffect(() => {
+    let active = true
+    const showTimer = window.setTimeout(() => setShowLoading(true), attempt ? 500 : Math.max(0, 500 - performance.now()))
+    Promise.all(bathArtwork.map(source => {
+      const image = new Image()
+      image.src = source
+      return image.decode().then(() => {
+        if (active) setLoaded(previous => previous + 1)
+      })
+    })).then(
+      () => { if (active) setState('ready') },
+      () => { if (active) setState('error') },
+    )
+    return () => {
+      active = false
+      window.clearTimeout(showTimer)
+    }
+  }, [attempt])
+
+  if (state === 'ready') return <WashUp />
+  if (state === 'loading' && !showLoading) return null
+
+  return <main className="wash-page wash-loading">
+    <div className="wash-loading-message">
+      <p role="status">{state === 'error' ? 'The bath couldn’t load.' : 'Getting the bath ready…'}</p>
+      {state === 'loading' && <div className="wash-step-progress wash-loading-progress">
+        <progress aria-label="Bath images loaded" max={bathArtwork.length} value={loaded} />
+      </div>}
+      {state === 'error' && <button className="cta" type="button" onClick={() => {
+        setLoaded(0)
+        setShowLoading(false)
+        setState('loading')
+        setAttempt(previous => previous + 1)
+      }}>Retry</button>}
+    </div>
+    <a className="wash-loading-back" href="/">Back to home</a>
+  </main>
+}
+
+createRoot(document.getElementById('root')!).render(<BathEntry />)

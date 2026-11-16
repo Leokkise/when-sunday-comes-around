@@ -370,3 +370,8 @@
 .wash-page .wash-stage:has(.wash-spray) button { cursor: inherit; }
 .wash-reset:hover, .wash-reset:focus-visible { background: #f2e6d2; border-color: #94785e; }
 .wash-shampoo-cursor { top: 0; left: 0; }
+.wash-loading { display: grid; place-content: center; justify-items: center; gap: 16px; text-align: center; color: #564736; }
+.wash-loading-message { font-size: clamp(20px, 3vw, 28px); }
+.wash-loading-progress { width: min(240px, 70vw); margin: 12px auto 0; }
+.wash-loading-message .cta { margin-top: 12px; }
+.wash-loading-back { font-size: 17px; text-decoration: underline; text-underline-offset: 4px; }

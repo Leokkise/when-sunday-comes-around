@@ -804,7 +804,9 @@ function BathEntry() {
 
   useEffect(() => {
     let active = true
-    const showTimer = window.setTimeout(() => setShowLoading(true), attempt ? 500 : Math.max(0, 500 - performance.now()))
+    const showAt = attempt ? performance.now() + 500 : 500
+    const showTimer = window.setTimeout(() => setShowLoading(true), Math.max(0, showAt - performance.now()))
+    let finishTimer: number | undefined
     Promise.all(bathArtwork.map(source => {
       const image = new Image()
       image.src = source
@@ -812,12 +814,20 @@ function BathEntry() {
         if (active) setLoaded(previous => previous + 1)
       })
     })).then(
-      () => { if (active) setState('ready') },
+      () => {
+        if (!active) return
+        if (performance.now() >= showAt && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          finishTimer = window.setTimeout(() => setState('ready'), 400)
+        } else {
+          setState('ready')
+        }
+      },
       () => { if (active) setState('error') },
     )
     return () => {
       active = false
       window.clearTimeout(showTimer)
+      window.clearTimeout(finishTimer)
     }
   }, [attempt])
 
@@ -825,10 +835,12 @@ function BathEntry() {
   if (state === 'loading' && !showLoading) return null
 
   return <main className="wash-page wash-loading">
+    <InkFilters />
     <div className="wash-loading-message">
-      <p role="status">{state === 'error' ? 'The bath couldn’t load.' : 'Getting the bath ready…'}</p>
-      {state === 'loading' && <div className="wash-step-progress wash-loading-progress">
-        <progress aria-label="Bath images loaded" max={bathArtwork.length} value={loaded} />
+      <p className={state === 'loading' ? 'ink-wiggle' : undefined} role="status">{state === 'error' ? 'The bath couldn’t load.' : 'Getting the bath ready…'}</p>
+      {state === 'loading' && <div className="wash-loading-progress" role="progressbar"
+        aria-label="Bath images loaded" aria-valuemin={0} aria-valuemax={bathArtwork.length} aria-valuenow={loaded}>
+        <span style={{ transform: `scaleX(${loaded / bathArtwork.length})` }} />
       </div>}
       {state === 'error' && <button className="cta" type="button" onClick={() => {
         setLoaded(0)

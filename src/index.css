@@ -2,6 +2,7 @@
 @import "tailwindcss";
 
 :root {
+  cursor: url('/bath-pointer.svg') 4 3, default;
   font-family: Schoolbell, 'Comic Sans MS', cursive;
   --ink: #4a4947;
   --paper: #faf7f0;
@@ -14,6 +15,8 @@
 }
 
 ::selection { background: var(--shade); }
+:is(button, a) { cursor: inherit; }
+:is(button:enabled, a[href]):hover:not(.wash-stage *) { cursor: url('/bath-pointer-hover.svg') 14 3, pointer; }
 :focus-visible { outline: 3px solid var(--ink); outline-offset: 5px; }
 
 .page { width: min(976px, 100% - 64px); margin: auto; }
@@ -65,7 +68,6 @@ h1 span { color: var(--ink); white-space: nowrap; }
   box-shadow: 0 5px 18px #4a49470c;
   background: var(--card);
   font-size: clamp(22px, 3vw, 30px);
-  cursor: pointer;
   transition: transform .2s;
 }
 .chapters button:hover { transform: translateY(-4px); }

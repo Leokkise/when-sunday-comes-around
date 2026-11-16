@@ -261,7 +261,7 @@
 .wash-shampoo-cursor[data-soap="true"]::after { translate: -30% -34%; }
 .wash-shampoo-cursor[data-sponge="true"] { width: clamp(54px, 9cqi, 82px); }
 .wash-shampoo-cursor[data-sponge="true"] .wash-supply-art { translate: -50% -50%; }
-.wash-shampoo-cursor[data-sponge="true"]::after { content: none; }
+.wash-shampoo-cursor[data-sponge="true"]::after { translate: -30% -34%; }
 .wash-shampoo-cursor[data-towel="true"] { width: 20cqi; }
 .wash-shampoo-cursor[data-towel="true"] .wash-supply-art { translate: -50% -50%; }
 .wash-shampoo-cursor[data-bandage="true"] { width: 11cqi; }
@@ -360,10 +360,8 @@
     100% { opacity: 0; transform: translate(var(--drop-drift, 0px), var(--fall-distance)); }
   }
 }
-.wash-page { cursor: url('/bath-pointer.svg') 4 3, default; }
 .wash-stage { cursor: url('/hand-grab.svg') 17 16, grab; }
-.wash-page button, .wash-page a, .wash-reset-dialog::backdrop { cursor: inherit; }
-.wash-page :is(button:enabled, a[href]):hover:not(.wash-stage *) { cursor: url('/bath-pointer-hover.svg') 14 3, pointer; }
+.wash-reset-dialog::backdrop { cursor: inherit; }
 .wash-stage[data-grabbing="true"], .wash-stage:has(.wash-spray), .wash-stage button:active {
   cursor: url('/hand-grabbing.svg') 17 16, grabbing;
 }

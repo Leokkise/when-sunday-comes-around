@@ -1,3 +1,3 @@
 import { defineConfig } from 'vite'
 import tailwind from '@tailwindcss/vite'
-export default defineConfig({ plugins: [tailwind()] })
+export default defineConfig({ plugins: [tailwind()], build: { rollupOptions: { input: ["index.html", "wash-up/index.html"] } } })

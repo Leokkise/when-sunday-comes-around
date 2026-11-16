@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Schoolbell&display=swap');
+@import "tailwindcss";
+
+:root {
+  font-family: Schoolbell, 'Comic Sans MS', cursive;
+  --ink: #4a4947;
+  --paper: #faf7f0;
+  --card: #fffdfa;
+  --shade: #d8d2c2;
+  --accent: #b17457;
+  color: var(--ink);
+  background: var(--paper);
+  font-synthesis: none;
+}
+
+::selection { background: var(--shade); }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 5px; }
+
+.page { width: min(976px, 100% - 64px); margin: auto; }
+.masthead { display: flex; align-items: center; gap: 10px; min-height: 88px; font-size: 23px; }
+.masthead svg { width: 37px; color: var(--accent); }
+
+.hero { padding: clamp(20px, 4vw, 56px) 0 64px; }
+
+h1 { font-size: clamp(42px, 6.4vw, 72px); line-height: 1.12; letter-spacing: -.035em; }
+h1 span { color: var(--ink); white-space: nowrap; }
+.ink-filters { position: absolute; pointer-events: none; }
+.ink-wiggle { filter: url("#title-ink-2"); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .ink-wiggle { animation: ink-wiggle .5s step-end infinite; }
+}
+
+@keyframes ink-wiggle {
+  0%, 100% { filter: url("#title-ink-2"); }
+  33% { filter: url("#title-ink-5"); }
+  66% { filter: url("#title-ink-8"); }
+}
+.intro p { margin: 25px 0 29px; max-width: 53ch; font-size: clamp(19px, 2vw, 22px); line-height: 1.35; }
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+  border: 2px solid var(--ink);
+  border-radius: 5px 3px 6px 4px;
+  padding: 8px 16px;
+  background: var(--ink);
+  color: var(--card);
+  font-size: 23px;
+  transition: background-color .2s;
+}
+.cta:hover { background: var(--shade); color: var(--ink); }
+.cta [aria-hidden] { font-family: sans-serif; }
+
+.day { margin-top: 36px; }
+.day h2 { font-size: 26px; margin-bottom: 12px; }
+.chapters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.chapters button {
+  display: grid;
+  justify-items: start;
+  text-align: left;
+  gap: 9px;
+  border-radius: 16px 13px 15px 12px;
+  padding: 20px 24px;
+  box-shadow: 0 5px 18px #4a49470c;
+  background: var(--card);
+  font-size: clamp(22px, 3vw, 30px);
+  cursor: pointer;
+  transition: transform .2s;
+}
+.chapters button:hover { transform: translateY(-4px); }
+.chapters button[aria-pressed="true"] { background: var(--shade); text-decoration: underline; text-underline-offset: 4px; }
+.chapters svg { width: 43px; color: var(--accent); }
+.masthead svg path, .chapters svg path, .wash-back svg path { stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.chapters path { animation: draw 1.2s ease-out both; }
+.chapters button:nth-child(2) path { animation-delay: .18s; }
+.chapters button:nth-child(3) path { animation-delay: .36s; }
+@keyframes draw { from { stroke-dasharray: 1; stroke-dashoffset: 1; } to { stroke-dasharray: 1; stroke-dashoffset: 0; } }
+.note { margin: 19px 0 0; font-size: 20px; line-height: 1.3; }
+
+@media (max-width: 560px) {
+  .chapters { grid-template-columns: 1fr; gap: 10px; }
+  .chapters button { grid-template-columns: auto 1fr; align-items: center; padding: 12px 16px; }
+}
+
+.wash-game-link { display: inline-block; margin-top: 12px; padding-block: 8px; font-size: 20px; text-decoration: underline; text-underline-offset: 4px; }

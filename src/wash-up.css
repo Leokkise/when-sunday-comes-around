@@ -27,7 +27,7 @@
   place-items: end center;
   overflow: hidden;
   border-radius: 24px;
-  background: #e2e8dc url('/bathroom.png') center / cover no-repeat;
+  background: #e2e8dc url('/bathroom.webp') center / cover no-repeat;
   aspect-ratio: 1;
   container-type: inline-size;
   touch-action: none;
@@ -88,7 +88,6 @@
 .wash-stage-controls { position: absolute; z-index: 3; inset: auto 12px 12px; display: flex; align-items: center; pointer-events: none; }
 .wash-held { margin-inline-start: auto; display: flex; align-items: center; gap: 6px; border-radius: 10px; background: var(--card); border: 1px solid var(--shade); padding: 6px 10px; }
 .wash-held[data-wrong="true"] { border-color: #a64836; }
-.wash-foam { position: absolute; left: 34%; top: 3%; width: 33%; height: 12%; pointer-events: none; background: radial-gradient(circle at 20% 70%, #fcfcf3 0 20%, transparent 22%), radial-gradient(circle at 55% 45%, #fcfcf3 0 32%, transparent 34%), radial-gradient(circle at 83% 65%, #fcfcf3 0 20%, transparent 22%); }
 
 @media (max-width: 760px) {
   .wash-layout { height: var(--stage-height); grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); gap: 8px; }
@@ -128,7 +127,7 @@
 }
 .wash-prop:hover span, .wash-prop:focus-visible span, .wash-prop[aria-pressed="true"] span { opacity: 1; }
 
-.dirt { aspect-ratio: 1; background: url('/bath-dirt.png') 0 0 / 300% 200% no-repeat; filter: url("#bath-paper-key"); pointer-events: none; }
+.dirt { aspect-ratio: 1; background: url('/bath-dirt.webp') 0 0 / 300% 200% no-repeat; filter: url("#bath-paper-key"); pointer-events: none; }
 .dirt { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: 8cqi; }
 .dirt-leaf, .dirt-leaf-small { width: 13cqi; rotate: 8deg; }
 .dirt-leaf-small { rotate: 76deg; scale: .8; }
@@ -180,9 +179,8 @@
 .wash-step-progress progress::-webkit-progress-bar { background: #e7dfcb; }
 .wash-step-progress progress::-webkit-progress-value { background: #547b68; }
 .wash-step-progress progress::-moz-progress-bar { background: #547b68; }
-.wash-body-foam { left: 43%; top: 32%; width: 14%; height: 11%; }
 
-.wash-supply-art { display: block; width: min(100%, 64px); aspect-ratio: 1; background: url('/bath-supplies.png') 0 0 / 200% 200% no-repeat; pointer-events: none; }
+.wash-supply-art { display: block; width: min(100%, 64px); aspect-ratio: 1; background: url('/bath-supplies.webp') 0 0 / 200% 200% no-repeat; pointer-events: none; }
 .wash-supply-soap { background-position: 100% 0; }
 .wash-held .wash-supply-art { width: 34px; }
 .wash-body-water { position: absolute; width: 10.8%; height: 8.1%; translate: -50% -50%; pointer-events: none; }
@@ -196,7 +194,7 @@
 .wash-supply-bandage { background-position: 0 100%; }
 .wash-decoration .wash-supply-bandage { width: 8.5cqi; filter: saturate(1.22) brightness(.94); }
 
-.wash-supply-shower, .wash-supply-shampoo, .wash-supply-towel { background-image: url('/bath-fixtures.png'); }
+.wash-supply-shower, .wash-supply-shampoo, .wash-supply-towel { background-image: url('/bath-fixtures.webp'); }
 .wash-supply-shampoo { background-position: 100% 0; }
 .wash-supply-towel { background-position: 0 100%; }
 .wash-prop .wash-supply-art { position: absolute; width: 9cqi; }
@@ -220,9 +218,9 @@
   width: 16%;
   border: 0;
   background:
-    url('/shampoo-bubble-white.png') left center / 58% no-repeat,
-    url('/shampoo-bubble-white.png') right top / 66% no-repeat,
-    url('/shampoo-bubble-white.png') right bottom / 50% no-repeat;
+    url('/shampoo-bubble-white.webp') left center / 58% no-repeat,
+    url('/shampoo-bubble-white.webp') right top / 66% no-repeat,
+    url('/shampoo-bubble-white.webp') right bottom / 50% no-repeat;
 }
 .wash-scalp-foam i:nth-child(4n + 3)::after {
   content: '';
@@ -230,7 +228,7 @@
   inset: auto auto 0 14%;
   width: 34%;
   aspect-ratio: 1;
-  background: url('/shampoo-bubble-white.png') center / contain no-repeat;
+  background: url('/shampoo-bubble-white.webp') center / contain no-repeat;
 }
 .wash-scalp-foam i:nth-child(even) { background: radial-gradient(circle at 32% 27%, #fffdf7 0 10%, transparent 18%), radial-gradient(circle at 45% 38%, #e5f3f440 24%, #c5e3edd9 80%); }
 .wash-body-lather i:nth-child(n) { width: 5%; }
@@ -371,3 +369,4 @@
 }
 .wash-page .wash-stage:has(.wash-spray) button { cursor: inherit; }
 .wash-reset:hover, .wash-reset:focus-visible { background: #f2e6d2; border-color: #94785e; }
+.wash-shampoo-cursor { top: 0; left: 0; }

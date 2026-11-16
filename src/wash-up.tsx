@@ -251,6 +251,7 @@ function WashUp() {
   const [shampooApplied, setShampooApplied] = useState(checkpoint?.shampooApplied ?? false)
   const [pouring, setPouring] = useState(false)
   const [shampooCursor, setShampooCursor] = useState<{ x: number; y: number; pointerType: string }>()
+  const heldToolCursor = useRef<HTMLSpanElement>(null)
   const [bubblePositions, setBubblePositions] = useState<{ x: number; y: number }[]>([])
   const [wettingPasses, setWettingPasses] = useState(checkpoint?.wettingPasses ?? 0)
   const [spray, setSpray] = useState<{ x: number; y: number; time: number; drift: number } | null>(null)
@@ -329,7 +330,13 @@ function WashUp() {
     const pickingTool = pickingTowel || pickingBandage
     if ((holdingShampoo || holdingSoap || holdingSponge || holdingTowel || holdingBandage || pickingTool) && (!starting || pickingTool)) {
       const bounds = stage.getBoundingClientRect()
-      setShampooCursor({ x: event.clientX - bounds.left, y: event.clientY - bounds.top, pointerType: event.pointerType })
+      const x = event.clientX - bounds.left
+      const y = event.clientY - bounds.top
+      if (heldToolCursor.current && shampooCursor?.pointerType === event.pointerType) {
+        heldToolCursor.current.style.transform = `translate(${x}px, ${y}px)`
+      } else {
+        setShampooCursor({ x, y, pointerType: event.pointerType })
+      }
     }
     if (usingShower && (
       (!starting && showerPointer.current === event.pointerId) ||
@@ -593,7 +600,7 @@ function WashUp() {
             {done && !finishedBath && <button className="cta wash-retry" type="button" onClick={() => goTo(phase)}>Try again</button>}
           </div>
         </div>
-        <div className="wash-stage" data-wetting-hair={wettingHair} data-leaves={phase === 0} data-grabbing={grabbing} data-holding-shampoo={holdingShampoo} onPointerLeave={() => setShampooCursor(undefined)} onLostPointerCapture={event => {
+        <div className="wash-stage" data-wetting-hair={wettingHair} data-grabbing={grabbing} onPointerLeave={() => setShampooCursor(undefined)} onLostPointerCapture={event => {
           soapStart.current = null
           towelStrokeStart.current = null
           setGrabbing(false)
@@ -614,7 +621,6 @@ function WashUp() {
           <div className="wash-props" role="group" aria-label="Bath supplies">
             {tools.map(item => (
               <button className="wash-prop" key={item.name} type="button" aria-label={item.name} aria-pressed={selected === item.name}
-                data-drag-shower={usingShower && item.name === 'Shower' && !done}
                 disabled={!step || done} onClick={() => setSelected(item.name)}
                 style={{ left: item.x + '%', top: item.y + '%', width: item.width + '%', height: item.height + '%' }}>
                 <ToolArt tool={item} />
@@ -623,12 +629,12 @@ function WashUp() {
               </button>
             ))}
           </div>
-          {(holdingShampoo || holdingSoap || holdingSponge || holdingTowel || holdingBandage) && shampooCursor && <span className="wash-shampoo-cursor" data-soap={holdingSoap} data-sponge={holdingSponge} data-towel={holdingTowel} data-bandage={holdingBandage} data-pointer-type={shampooCursor.pointerType} style={{ left: shampooCursor.x, top: shampooCursor.y }} aria-hidden="true"><i className={'wash-supply-art wash-supply-' + (holdingBandage ? 'bandage' : holdingTowel ? 'towel' : holdingSponge ? 'sponge' : holdingSoap ? 'soap' : 'shampoo')} /></span>}
+          {(holdingShampoo || holdingSoap || holdingSponge || holdingTowel || holdingBandage) && shampooCursor && <span ref={heldToolCursor} className="wash-shampoo-cursor" data-soap={holdingSoap} data-sponge={holdingSponge} data-towel={holdingTowel} data-bandage={holdingBandage} data-pointer-type={shampooCursor.pointerType} style={{ transform: `translate(${shampooCursor.x}px, ${shampooCursor.y}px)` }} aria-hidden="true"><i className={'wash-supply-art wash-supply-' + (holdingBandage ? 'bandage' : holdingTowel ? 'towel' : holdingSponge ? 'sponge' : holdingSoap ? 'soap' : 'shampoo')} /></span>}
           <div className="wash-stage-controls">
             {tool && phase !== 0 && <div className="wash-held" data-wrong={wrong}><ToolArt tool={tool} />{tool.name}</div>}
           </div>
           {spray && <div ref={sprayElement} className="wash-spray" style={{ '--spray-x': spray.x + 'px', '--spray-y': spray.y + 'px', '--shower-reach': showerReach } as CSSProperties} aria-hidden="true">
-            <svg className="wash-spray-head" viewBox="0 0 1 1"><image href="/handheld-shower.png" width="2" height="2" /></svg>
+            <svg className="wash-spray-head" viewBox="0 0 1 1"><image href="/handheld-shower.webp" width="2" height="2" /></svg>
             {Array.from({ length: 16 }, (_, index) => (
               <img key={index} className="wash-spray-drop" src="/shower-droplet.svg" alt=""
                 onAnimationIteration={event => {
@@ -648,7 +654,7 @@ function WashUp() {
             ))}
           </div>}
           <div className="wash-character">
-            <img src="/bath-sprite.png" alt="Pencil-drawn character in striped boxer shorts" width="1024" height="1536" draggable={false} />
+            <img src="/bath-sprite.webp" alt="Pencil-drawn character in striped boxer shorts" width="1024" height="1536" draggable={false} />
             {(wettingHair || shampooing || phase === rinseHairPhase || hairStillWet) && <span className="wash-wet-hair" aria-hidden="true">
               <svg className="wash-hair-detail" viewBox="0 0 100 45" fill="none" strokeLinecap="round"
                 style={{ opacity: wettingHair ? wettingPasses / wettingDirections.length : 1 }}>

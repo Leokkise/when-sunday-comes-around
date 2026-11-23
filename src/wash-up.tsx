@@ -1,8 +1,11 @@
+import { ui } from './ui-classes'
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
-import './wash-up.css'
 import { InkFilters } from './ink-filters'
+import { ActivityLoading } from './activity-loading'
+import { HairShine, BodyShine } from './character-shine'
+import { bathScrapes as scrapes, bathSprite, bathTools as tools, BathSupplies, CleanBathScene, ToolArt } from './bath-scene'
+import { advanceHairSweep } from './hair-wetting'
 
 const dirtSpots = [
   { name: 'leaf in the hair', x: 41, y: 9, kind: 'leaf' },
@@ -37,22 +40,6 @@ const dirtSpots = [
   { name: 'dried mud on the left hand', x: 35.5, y: 56, kind: 'scuff' },
   { name: 'mud flecks on the right lower leg', x: 56, y: 91, kind: 'speckles' },
 ]
-
-const scrapes = [
-  { name: 'right knee', x: 56, y: 74, angle: -30 },
-  { name: 'left forearm', x: 36.5, y: 51, angle: -38 },
-  { name: 'left shin', x: 44, y: 77, angle: -29 },
-  { name: 'right shoulder', x: 59.5, y: 32, angle: -36 },
-]
-
-const tools = [
-  { name: 'Shampoo', x: 75.3, y: 22.2, width: 8, height: 12 },
-  { name: 'Sponge', x: 87.9, y: 25, width: 8, height: 6 },
-  { name: 'Soap', x: 81.7, y: 25.7, width: 6, height: 5 },
-  { name: 'Shower', x: 16, y: 30.5, width: 24, height: 50 },
-  { name: 'Bandage', x: 19, y: 66.8, width: 12, height: 7 },
-  { name: 'Towel', x: 85, y: 44.5, width: 16, height: 17 },
-] as const
 
 type Tool = typeof tools[number]['name']
 const hair = [{ name: 'hair', x: 50, y: 11, kind: 'target' }]
@@ -92,7 +79,7 @@ const rinseHairPhase = 3
 const dryPhase = 7
 const dryingOrder = [['hair'], ['left arm', 'right arm'], ['body'], ['left knee', 'right knee'], ['left foot', 'right foot']]
 const scrubArrow = 'M23 6l.5 6M23.5 17l.5 6M24 28l-.5 6M23.5 38v4M18 37l5.5 5.5 5.5-6'
-const showerReach = 2.05
+const showerReach = 2.65
 const bodyWaterAccents = [
   { name: 'left arm', x: 39, y: 33 },
   { name: 'right arm', x: 61, y: 34 },
@@ -104,18 +91,22 @@ const bodyWaterAccents = [
 ]
 const scrapeSpots = scrapes.map(scrape => ({ ...scrape, kind: 'scrape' }))
 const shampooMoves = 30
-// Original bath icons drawn in the hand-drawn style of Oreo Doodle Icons.
-const washStepIcons = [
-  'M5 27Q10 18 25 7M8 23C4 15 12 7 25 7C26 20 18 27 8 23Z',
-  'M5 16V10C5 4 14 4 15 10M10 14Q14 7 21 11L26 15Q19 19 10 14ZM13 20l-1 4m6-4v5m5-5 1 4',
-  'M13 4h8m-4 0v6m-4 0h7v4m-9 0h10q4 1 4 5v8q0 2-2 2H9q-2 0-2-2v-8q0-4 4-5Zm2 7h6',
-  'M5 17V10Q5 4 13 5L16 10M11 13Q17 7 23 13L26 16Q20 20 11 13Zm4 8-1 4m6-4v6m5-7 2 5M6 26h5',
-  'M5 16q0-4 6-5l13 1q5 1 5 5v4q-1 4-6 4H10q-5-1-5-5Zm0 2q5 5 24 1M9 6h.1M22 6h.1',
-  'M5 14q0-4 5-5l14-1q5 1 5 5l-1 9q0 3-4 4l-15-1q-4 0-4-4Zm5 1h.1m6-2h.1m7 2h.1m-11 6h.1m9-1h.1',
-  'M16 4C13 10 7 15 7 21a9 9 0 0 0 18 0c0-6-6-11-9-17Zm-4 17q0 4 4 5M26 6v6m-3-3h6',
-  'M4 8h25M8 8v16l15 3V8M8 20l15 2M26 8v13l-3 2',
-  'M6 21 21 6q3-3 6 0t0 6L12 27q-3 3-6 0t0-6Zm5-5 6 6m-1-11 6 6M8 24h.1M24 9h.1',
-]
+const washStepArtwork = {
+  Leaf: { href: '/bath-dirt.webp', width: 750, height: 500, crop: '80 57 115 145' },
+  Shower: { href: '/handheld-shower.webp', width: 384, height: 384, crop: '21 22 151 145' },
+  Shampoo: { href: '/bath-fixtures.webp', width: 768, height: 768, crop: '505 78 145 251' },
+  Soap: { href: '/bath-supplies.webp', width: 640, height: 640, crop: '366 119 207 132' },
+  Sponge: { href: '/bath-supplies.webp', width: 640, height: 640, crop: '48 87 275 196' },
+  Towel: { href: '/bath-fixtures.webp', width: 768, height: 768, crop: '51 427 282 317' },
+  Bandage: { href: '/bath-supplies.webp', width: 640, height: 640, crop: '45 402 269 114' },
+}
+
+function WashStepArtwork({ tool }: { tool?: Tool }) {
+  const { crop, ...image } = washStepArtwork[tool ?? 'Leaf']
+  return <svg viewBox={crop} aria-hidden="true">
+    <image {...image} preserveAspectRatio="none" />
+  </svg>
+}
 
 const wettingDirections = ['right', 'left', 'right', 'left', 'right'] as const
 
@@ -130,81 +121,6 @@ const steps: { title: string; hint: string; tool?: Tool; spots: typeof dirtSpots
   { title: 'Dry off', hint: 'Pick up the towel.', tool: 'Towel', spots: [...hair, ...bodyWetSpots] },
   { title: 'Put on bandages', hint: 'Pick up a bandage from the shelf.', tool: 'Bandage', spots: scrapeSpots },
 ]
-
-function ToolArt({ tool }: { tool: typeof tools[number] }) {
-  return <i className={'wash-supply-art wash-supply-' + tool.name.toLowerCase()} aria-hidden="true" />
-}
-
-const shinePaths = ['M37 6Q37 10 38 15M33.5 10L42 11', 'M20 31L20.5 39M16 35L24 34.5', 'M78.5 25.5L79 31.5M76 28.5H82']
-const shineAnchors = [[37.5, 10.5], [20, 35], [79, 28.5]]
-
-function HairShine() {
-  const [offsets, setOffsets] = useState(['0 0', '0 0', '0 0'])
-
-  return <span className="wash-wet-hair" aria-hidden="true">
-    <svg className="wash-wet-shine wash-hair-shine" viewBox="0 0 100 45" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"
-      onAnimationIteration={event => {
-        const index = Array.from(event.currentTarget.children).indexOf(event.target as Element)
-        const anchor = shineAnchors[index]
-        if (!anchor) return
-        const angle = Math.random() * Math.PI * 2
-        const radius = Math.sqrt(Math.random())
-        const x = 50 + Math.cos(angle) * radius * 43
-        const y = 24 + Math.sin(angle) * radius * 19
-        const offset = `${x - anchor[0]} ${y - anchor[1]}`
-        setOffsets(previous => previous.map((position, i) => i === index ? offset : position))
-      }}>
-      {shinePaths.map((path, index) => (
-        <path key={path} d={path} transform={`translate(${offsets[index]})`} />
-      ))}
-    </svg>
-  </span>
-}
-
-function BodyShine({ rinsed }: { rinsed: string[] }) {
-  const [placements, setPlacements] = useState<{ name: string; x: number; y: number; size: number }[]>([])
-  const spots = [
-    { name: 'left arm', x: 39, top: 29, bottom: 36 },
-    { name: 'right arm', x: 61, top: 29, bottom: 36 },
-    { name: 'body', x: 50, top: 34, bottom: 46 },
-    { name: 'left knee', x: 44, top: 66, bottom: 80 },
-    { name: 'right knee', x: 56, top: 66, bottom: 80 },
-    { name: 'left foot', x: 43, top: 83, bottom: 97 },
-    { name: 'right foot', x: 57, top: 83, bottom: 97 },
-  ].filter(spot => rinsed.includes(spot.name))
-  const selected = placements.filter(placement => rinsed.includes(placement.name))
-  for (const spot of spots) {
-    if (selected.length === shinePaths.length) break
-    if (!selected.some(placement => placement.name === spot.name)) {
-      selected.push({ name: spot.name, x: spot.x - 2, y: (spot.top + spot.bottom) / 2, size: .3 + selected.length * .3 })
-    }
-  }
-
-  return <svg className="wash-wet-shine wash-body-shine" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-    <g>
-      {selected.map((spot, index) => (
-        <svg key={index}
-          x={spot.x - 1 + (6.5 + spot.size * 2.6 - 4.368) / 2}
-          y={spot.y - .6 + (4.4 + spot.size * 1.8 - 2.912) / 2}
-          width="4.368" height="2.912"
-          onAnimationIteration={() => {
-            const elsewhere = spots.filter(candidate => !selected.some(placement => placement.name === candidate.name))
-            const choices = elsewhere.length ? elsewhere : spots.filter(candidate => candidate.name === spot.name)
-            const next = choices[Math.floor(Math.random() * choices.length)]
-            if (!next) return
-            const placement = {
-              name: next.name, x: next.x - 4 + Math.random() * 4,
-              y: next.top + Math.random() * (next.bottom - next.top), size: Math.random(),
-            }
-            setPlacements(selected.map((current, slot) => slot === index ? placement : current))
-          }}
-          viewBox={`${shineAnchors[index][0] - 7.5} ${shineAnchors[index][1] - 7.5} 15 15`} overflow="visible">
-          <path d={shinePaths[index]} fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      ))}
-    </g>
-  </svg>
-}
 
 const checkpointKey = 'when-sunday-comes-around.wash-up.v1'
 
@@ -259,7 +175,7 @@ function WashUp() {
   const sprayElement = useRef<HTMLDivElement>(null)
   const showerPointer = useRef<number | null>(null)
   const resetDialog = useRef<HTMLDialogElement>(null)
-  const wettingSweepStarted = useRef(false)
+  const wettingSweepStart = useRef<number | null>(null)
   const massageStart = useRef<{ x: number; y: number } | null>(null)
   const step = steps[phase]
   const shampooing = step?.tool === 'Shampoo'
@@ -373,13 +289,17 @@ function WashUp() {
         if (!wettingDirection) return
         const scalp = stage.querySelector('.wash-target')?.getBoundingClientRect()
         if (!scalp || sprayTop > scalp.bottom || sprayBottom < scalp.top) {
-          wettingSweepStarted.current = false
+          wettingSweepStart.current = null
           return
         }
-        const across = (x - scalp.left) / scalp.width
-        const sweepProgress = wettingDirection === 'right' ? across : 1 - across
-        if (sweepProgress <= .25) wettingSweepStarted.current = true
-        if (wettingSweepStarted.current && sweepProgress >= .75) {
+        const halfSpray = sprayWidth * .32
+        if (sprayCenter + halfSpray < scalp.left || sprayCenter - halfSpray > scalp.right) {
+          wettingSweepStart.current = null
+          return
+        }
+        const sweep = advanceHairSweep(wettingSweepStart.current, x, scalp.width, wettingDirection)
+        wettingSweepStart.current = sweep.complete ? null : sweep.anchor
+        if (sweep.complete) {
           setWettingPasses(wettingPasses + 1)
         }
         return
@@ -536,7 +456,7 @@ function WashUp() {
     soapStart.current = null
     setSoapDownSpots([])
     showerPointer.current = null
-    wettingSweepStarted.current = false
+    wettingSweepStart.current = null
     setWettingPasses(0)
     setSpray(null)
     sprayPosition.current = null
@@ -553,22 +473,22 @@ function WashUp() {
   }
 
   return (
-    <main className="wash-page">
+    <main className={ui("wash-page")}>
       <InkFilters />
-      <svg className="ink-filters" width="0" height="0" aria-hidden="true">
+      <svg className={ui("ink-filters")} width="0" height="0" aria-hidden="true">
         <filter id="bath-paper-key" colorInterpolationFilters="sRGB">
           <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -1 -3 -1 0 4.8" />
           <feComposite in="SourceGraphic" operator="in" />
         </filter>
       </svg>
-      <a className="wash-back" href="/" aria-label="Back to When Sunday Comes Around"><svg className="ink-wiggle" viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M29 18c-5 1-14 0-22 0m0 0 8-8m-8 8 8 8" /></svg></a>
-      <section className="wash-layout" aria-labelledby="wash-title">
-        <div className="wash-panel" data-wetting-hair={wettingHair}>
-          {!finishedBath && step && <div className="wash-step-number">
-            <svg className="ink-wiggle" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d={washStepIcons[phase]} /></svg>
+      <a className={ui("wash-back")} href="/" aria-label="Back to When Sunday Comes Around"><svg className={ui("ink-wiggle")} viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M29 18c-5 1-14 0-22 0m0 0 8-8m-8 8 8 8" /></svg></a>
+      <section className={ui("wash-layout")} aria-labelledby="wash-title">
+        <div className={ui("wash-panel")} data-wetting-hair={wettingHair}>
+          {!finishedBath && step && <div className={ui("wash-step-number")}>
+            <WashStepArtwork tool={step.tool} />
             <span>Step <strong>{phase + 1}</strong> of {steps.length}</span>
           </div>}
-          <h1 id="wash-title" className="ink-wiggle">{finishedBath ? 'Bath done!' : step?.title}</h1>
+          <h1 id="wash-title" className={ui("ink-wiggle")}>{finishedBath ? 'Bath done!' : step?.title}</h1>
           <p>{finishedBath ? 'All clean and dry. Nice work!' : shampooing && ready
             ? done ? 'Nice work! Now wash off the bubbles.'
               : pouring ? 'Adding shampoo…'
@@ -584,29 +504,30 @@ function WashUp() {
                   ? ['Touch the circle on the hair with the towel.', 'Wipe down, then up on both shoulders.', 'Wipe down, then up on the chest.', 'Wipe down, then up on both thighs.', 'Wipe down, then up on both feet.'][dryGroup]
                 : holdingBandage ? 'Drag the bandage onto a cut.'
                   : step?.hint}</p>
-          {!finishedBath && step && <div className="wash-step-progress">
-            <div className="wash-progress-row" aria-live="polite">
+          {!finishedBath && step && <div className={ui("wash-step-progress")}>
+            <div className={ui("wash-progress-row")} aria-live="polite">
               <strong>{phase === 0 ? `${progress} of ${progressMax} leaves removed` : wettingHair ? `${progress} of ${progressMax} moves` : `${progress} / ${progressMax} ${shampooing ? 'rubs' : step.tool === 'Sponge' ? 'spots cleaned' : step.tool === 'Bandage' ? 'cuts covered' : 'done'}`}</strong>
-              {wettingHair && wettingDirection && <span className="wash-next-sweep">Move {wettingDirection} <span aria-hidden="true">{wettingDirection === 'right' ? '→' : '←'}</span></span>}
+              {wettingHair && wettingDirection && <span className={ui("wash-next-sweep")}>Move {wettingDirection} <span aria-hidden="true">{wettingDirection === 'right' ? '→' : '←'}</span></span>}
             </div>
             <progress aria-label={step.title} value={progress} max={progressMax} />
           </div>}
-          {!finishedBath && step && <div className="wash-feedback-slot" data-done={done}>
-            <p className="wash-feedback" data-wrong={wrong} role="status">{shampooing && !wrong ? '' : done ? 'Nice work!' : wrong ? (rubbingShampoo ? 'Use your hands to rub the hair.' : requiredTool ? `Find the ${requiredTool.toLowerCase()}.` : 'Use your hands to pick up the leaves.') : !ready && requiredTool && !step.hint.startsWith('Pick ') ? `Pick up the ${requiredTool.toLowerCase()}.` : !wettingHair && step.spots.length === 1 && selected ? `Use the ${selected.toLowerCase()} on the marked spot.` : ''}</p>
+          {!finishedBath && step && <div className={ui("wash-feedback-slot")} data-done={done}>
+            <p className={ui("wash-feedback activity-feedback")} data-wrong={wrong} role="status">{shampooing && !wrong ? '' : done ? 'Nice work!' : wrong ? (rubbingShampoo ? 'Use your hands to rub the hair.' : requiredTool ? `Find the ${requiredTool.toLowerCase()}.` : 'Use your hands to pick up the leaves.') : !ready && requiredTool && !step.hint.startsWith('Pick ') ? `Pick up the ${requiredTool.toLowerCase()}.` : !wettingHair && step.spots.length === 1 && selected ? `Use the ${selected.toLowerCase()} on the marked spot.` : ''}</p>
           </div>}
 
-          <div className="wash-actions">
-            {done && <button className="cta" type="button" onClick={() => goTo(finishedBath ? 0 : phase + 1)}>{finishedBath ? <span className="ink-wiggle">Play again</span> : 'Next step'}</button>}
-            {done && !finishedBath && <button className="cta wash-retry" type="button" onClick={() => goTo(phase)}>Try again</button>}
+          <div className={ui("wash-actions")}>
+            {finishedBath && <a className={ui("cta cta-brush")} href="/brush-teeth/?start=1">Let’s brush our teeth</a>}
+            {done && <button className={ui("cta")} type="button" onClick={() => goTo(finishedBath ? 0 : phase + 1)}>{finishedBath ? 'Play again' : 'Next step'}</button>}
+            {done && !finishedBath && <button className={ui("cta wash-retry")} type="button" onClick={() => goTo(phase)}>Try again</button>}
           </div>
         </div>
-        <div className="wash-stage" data-wetting-hair={wettingHair} data-grabbing={grabbing} onPointerLeave={() => setShampooCursor(undefined)} onLostPointerCapture={event => {
+        {finishedBath ? <CleanBathScene /> : <div className={ui("wash-stage")} data-wetting-hair={wettingHair} data-grabbing={grabbing} onPointerLeave={() => setShampooCursor(undefined)} onLostPointerCapture={event => {
           soapStart.current = null
           towelStrokeStart.current = null
           setGrabbing(false)
           if (showerPointer.current === event.pointerId) {
             showerPointer.current = null
-            wettingSweepStarted.current = false
+            wettingSweepStart.current = null
             setSpray(null)
             sprayPosition.current = null
           }
@@ -618,25 +539,15 @@ function WashUp() {
           })
           if (scrape?.dataset.bandageTarget) useOn([scrape.dataset.bandageTarget])
         }}>
-          <div className="wash-props" role="group" aria-label="Bath supplies">
-            {tools.map(item => (
-              <button className="wash-prop" key={item.name} type="button" aria-label={item.name} aria-pressed={selected === item.name}
-                disabled={!step || done} onClick={() => setSelected(item.name)}
-                style={{ left: item.x + '%', top: item.y + '%', width: item.width + '%', height: item.height + '%' }}>
-                <ToolArt tool={item} />
-                <span>{item.name}</span>
-                {wrong && selected === item.name && <b className="wash-tool-x" aria-hidden="true">×</b>}
-              </button>
-            ))}
+          <BathSupplies selected={selected} wrong={wrong} disabled={!step || done} onSelect={setSelected} />
+          {(holdingShampoo || holdingSoap || holdingSponge || holdingTowel || holdingBandage) && shampooCursor && <span ref={heldToolCursor} className={ui("wash-shampoo-cursor")} data-soap={holdingSoap} data-sponge={holdingSponge} data-towel={holdingTowel} data-bandage={holdingBandage} data-pointer-type={shampooCursor.pointerType} style={{ transform: `translate(${shampooCursor.x}px, ${shampooCursor.y}px)` }} aria-hidden="true"><i className={ui('wash-supply-art wash-supply-' + (holdingBandage ? 'bandage' : holdingTowel ? 'towel' : holdingSponge ? 'sponge' : holdingSoap ? 'soap' : 'shampoo'))} /></span>}
+          <div className={ui("wash-stage-controls")}>
+            {tool && phase !== 0 && <div className={ui("wash-held")} data-wrong={wrong}><ToolArt tool={tool} />{tool.name}</div>}
           </div>
-          {(holdingShampoo || holdingSoap || holdingSponge || holdingTowel || holdingBandage) && shampooCursor && <span ref={heldToolCursor} className="wash-shampoo-cursor" data-soap={holdingSoap} data-sponge={holdingSponge} data-towel={holdingTowel} data-bandage={holdingBandage} data-pointer-type={shampooCursor.pointerType} style={{ transform: `translate(${shampooCursor.x}px, ${shampooCursor.y}px)` }} aria-hidden="true"><i className={'wash-supply-art wash-supply-' + (holdingBandage ? 'bandage' : holdingTowel ? 'towel' : holdingSponge ? 'sponge' : holdingSoap ? 'soap' : 'shampoo')} /></span>}
-          <div className="wash-stage-controls">
-            {tool && phase !== 0 && <div className="wash-held" data-wrong={wrong}><ToolArt tool={tool} />{tool.name}</div>}
-          </div>
-          {spray && <div ref={sprayElement} className="wash-spray" style={{ '--spray-x': spray.x + 'px', '--spray-y': spray.y + 'px', '--shower-reach': showerReach } as CSSProperties} aria-hidden="true">
-            <svg className="wash-spray-head" viewBox="0 0 1 1"><image href="/handheld-shower.webp" width="2" height="2" /></svg>
-            {Array.from({ length: 16 }, (_, index) => (
-              <img key={index} className="wash-spray-drop" src="/shower-droplet.svg" alt=""
+          {spray && <div ref={sprayElement} className={ui("wash-spray")} style={{ '--spray-x': spray.x + 'px', '--spray-y': spray.y + 'px', '--shower-reach': showerReach } as CSSProperties} aria-hidden="true">
+            <svg className={ui("wash-spray-head")} viewBox="0 0 1 1"><image href="/handheld-shower.webp" width="2" height="2" /></svg>
+            {Array.from({ length: 36 }, (_, index) => (
+              <img key={index} className={ui("wash-spray-drop")} src="/shower-droplet.svg" alt=""
                 onAnimationIteration={event => {
                   const position = sprayPosition.current
                   if (!position) return
@@ -650,13 +561,19 @@ function WashUp() {
                     element.style.setProperty('--drop-y', spray.y + 'px')
                   }
                 }}
-                style={{ left: `calc(var(--drop-x, var(--spray-x)) + ${21 + (index % 4) * 17 + Math.floor(index / 4) * 3}%)`, animationDelay: '-' + (index * 45) + 'ms' }} />
+                style={{
+                  left: `calc(var(--drop-x, var(--spray-x)) + ${18 + index * 37.7 % 66}%)`,
+                  '--drop-rest-y': `${12 + index * 97 % 220}%`,
+                  '--drop-duration': `${680 + index * 73 % 310}ms`,
+                  scale: .8 + (index * 17 % 40) / 100,
+                  animationDelay: `-${index * 223 % 1300}ms`,
+                } as CSSProperties} />
             ))}
           </div>}
-          <div className="wash-character">
-            <img src="/bath-sprite.webp" alt="Pencil-drawn character in striped boxer shorts" width="1024" height="1536" draggable={false} />
-            {(wettingHair || shampooing || phase === rinseHairPhase || hairStillWet) && <span className="wash-wet-hair" aria-hidden="true">
-              <svg className="wash-hair-detail" viewBox="0 0 100 45" fill="none" strokeLinecap="round"
+          <div className={ui("wash-character")}>
+            <img src={bathSprite} alt="Pencil-drawn character in striped boxer shorts" width="1024" height="1536" draggable={false} />
+            {(wettingHair || shampooing || phase === rinseHairPhase || hairStillWet) && <span className={ui("wash-wet-hair")} aria-hidden="true">
+              <svg className={ui("wash-hair-detail")} viewBox="0 0 100 45" fill="none" strokeLinecap="round"
                 style={{ opacity: wettingHair ? wettingPasses / wettingDirections.length : 1 }}>
                 <defs>
                   <linearGradient id="wash-hair-film" x2="0" y2="1">
@@ -677,9 +594,9 @@ function WashUp() {
                   stroke="#e2eaeb" strokeWidth=".6" opacity=".68" />
               </svg>
             </span>}
-            {shampooing && shampooApplied && massages === 0 && <span className="wash-shampoo-dab" aria-hidden="true" />}
-            {pouring && <span className="wash-shampoo-pour" aria-hidden="true" onAnimationEnd={() => setPouring(false)}><i className="wash-supply-art wash-supply-shampoo" /></span>}
-            {foamCount > 0 && <span className="wash-scalp-foam" data-rinsed={hairRinsed} aria-hidden="true">
+            {shampooing && shampooApplied && massages === 0 && <span className={ui("wash-shampoo-dab")} aria-hidden="true" />}
+            {pouring && <span className={ui("wash-shampoo-pour")} aria-hidden="true" onAnimationEnd={() => setPouring(false)}><i className={ui("wash-supply-art wash-supply-shampoo")} /></span>}
+            {foamCount > 0 && <span className={ui("wash-scalp-foam")} data-rinsed={hairRinsed} aria-hidden="true">
               {Array.from({ length: foamCount }, (_, index) => {
               const radius = .43 * Math.sqrt((index + .5) / shampooMoves)
               const angle = index * 2.4
@@ -692,48 +609,52 @@ function WashUp() {
               return <i key={index} style={{ left: Math.max(8, Math.min(92, position.x * 100)) + '%', top: top + '%', '--rinse-delay': index * 35 + 'ms' } as CSSProperties} />
             })}</span>}
             {(hairRinsed || phase > rinseHairPhase) && <HairShine />}
-            {(phase > 6 || (phase === 6 && cleaned.length > 0)) && <BodyShine rinsed={phase === 6 ? cleaned : bodyWetSpots.map(spot => spot.name)} />}
+            {(phase > 6 || (phase === 6 && cleaned.length > 0)) && <BodyShine rinsed={phase === 6 ? cleaned : undefined} />}
             {phase >= rinseHairPhase && phase <= dryPhase && [...bodyWetSpots, ...bodyWaterAccents].map((spot, index) => (
-              <svg key={index} className="wash-body-water" data-accent={index >= bodyWetSpots.length} viewBox="0 0 30 40" aria-hidden="true"
+              <svg key={index} className={ui("wash-body-water")} data-accent={index >= bodyWetSpots.length} viewBox="0 0 30 40" aria-hidden="true"
                 style={{ left: spot.x + '%', top: spot.y + '%', opacity: drying ? Number(!cleaned.includes(spot.name)) : Number(phase > rinseHairPhase || cleaned.includes(spot.name)) }}>
                 <path d={bodyWaterMarks[spot.name][0]} fill="#92c0d4" fillOpacity=".8" />
                 <path d={bodyWaterMarks[spot.name][1]} fill="none" stroke="#d7e8eb" strokeWidth="1.2" strokeLinecap="round" />
               </svg>
             ))}
             {(soaping || (phase === 5 && !done)) && soapSpots.map(spot => (
-              <svg key={spot.name} className="wash-body-water wash-soap-mark" viewBox="0 0 30 40" aria-hidden="true"
+              <svg key={spot.name} className={ui("wash-body-water wash-soap-mark")} viewBox="0 0 30 40" aria-hidden="true"
                 style={{ left: spot.x + '%', top: spot.y + '%', opacity: !soaping || cleaned.includes(spot.name) || soapDownSpots.includes(spot.name) ? 1 : 0 }}>
                 <path d={(bodyWaterMarks[spot.name] ?? bodyWaterMarks.body)[0]} fill="#f6ead1" fillOpacity=".9" stroke="#b9a485" strokeWidth=".65" />
                 <path d={(bodyWaterMarks[spot.name] ?? bodyWaterMarks.body)[1]} fill="none" stroke="#fffaf0" strokeWidth="1.2" strokeLinecap="round" />
               </svg>
             ))}
-            {(phase === 5 || phase === 6) && <span className="wash-scalp-foam wash-body-lather" aria-hidden="true">
+            {(phase === 5 || phase === 6) && <span className={ui("wash-scalp-foam wash-body-lather")} aria-hidden="true">
               {[...dirtSpots.filter(spot => !spot.kind.startsWith('leaf')),
                 { name: 'mud flecks by the collarbone', x: 55, y: 28 },
               ].flatMap(spot => {
                 const offsets = spot.x >= 41 && spot.x < 50 && spot.y < 60 ? [-1, 0, 1, -2, 2, 3, -3, -4] : [-1, 0, 1, -2, 2, 3]
-                return offsets.map((offset, index) => (
-                  <i key={`${spot.name}-${spot.x}-${offset}`} data-washed={phase === 6 && cleaned.includes(bodyRinseTarget(spot))} hidden={phase === 5 && !cleaned.includes(spot.name) && (!soapDownSpots.includes(spot.name) || index >= 3)}
-                    style={{ left: spot.x + offset * 1.4 + '%', top: spot.y + offset * 1.45 + '%' }} />
+                const bubbles = offsets.map(offset => [offset * 1.4, offset * 1.45])
+                bubbles.push([-3, 1.5], [2.8, -2.4], [-1.6, 3.4], [3.6, .4])
+                const visibleCount = phase === 6 || cleaned.includes(spot.name) ? bubbles.length
+                  : soapDownSpots.includes(spot.name) ? 5 : 0
+                return bubbles.map(([dx, dy], index) => (
+                  <i key={`${spot.name}-${spot.x}-${index}`} data-washed={phase === 6 && cleaned.includes(bodyRinseTarget(spot))} hidden={index >= visibleCount}
+                    style={{ left: spot.x + dx + '%', top: spot.y + dy + '%', '--lather-delay': `${index % 5 * 34}ms`, '--rinse-delay': index * 25 + 'ms' } as CSSProperties} />
                 ))
               })}
             </span>}
-            {shampooing && ready && !done && <div className="wash-scalp-target" data-scalp aria-hidden="true" />}
-            {holdingShampoo && <span className="wash-spot wash-target wash-sponge-guide" data-shower-target="true" data-spot="hair"
+            {shampooing && ready && !done && <div className={ui("wash-scalp-target")} data-scalp aria-hidden="true" />}
+            {holdingShampoo && <span className={ui("wash-spot wash-target wash-sponge-guide")} data-shower-target="true" data-spot="hair"
               style={{ left: hair[0].x + '%', top: hair[0].y + '%' }} aria-hidden="true" />}
             {scrapes.map(scrape => {
               const style = { left: scrape.x + '%', top: scrape.y + '%' }
               const finished = cleaned.includes(scrape.name)
               const covered = !step || (bandaging && finished)
               if (bandaging && !finished) {
-                return <button key={scrape.name} className="wash-spot" type="button" style={style} data-bandage-target={scrape.name}
+                return <button key={scrape.name} className={ui("wash-spot")} type="button" style={style} data-bandage-target={scrape.name}
                   disabled={!ready} aria-label={'Cover the cut on the ' + scrape.name} onClick={() => useOn([scrape.name])}>
-                  <i className="dirt dirt-scrape" aria-hidden="true" />
+                  <i className={ui("dirt dirt-scrape")} aria-hidden="true" />
                 </button>
               }
-              return <span key={scrape.name} className="wash-spot wash-decoration" style={style} role="img"
+              return <span key={scrape.name} className={ui("wash-spot wash-decoration")} style={style} role="img"
                 aria-label={(covered ? 'Bandage' : 'Small cut') + ' on the ' + scrape.name}>
-                <i className={covered ? 'wash-supply-art wash-supply-bandage' : 'dirt dirt-scrape'} style={covered ? { rotate: scrape.angle + 'deg' } : undefined} />
+                <i className={ui(covered ? 'wash-supply-art wash-supply-bandage' : 'dirt dirt-scrape')} style={covered ? { rotate: scrape.angle + 'deg' } : undefined} />
               </span>
             })}
             {dirtSpots.map(spot => {
@@ -743,48 +664,48 @@ function WashUp() {
               const cleared = cleaned.includes(spot.name)
               if (!visible) return null
               const style = { left: spot.x + '%', top: spot.y + '%' }
-              const art = <span className={'dirt dirt-' + spot.kind} aria-hidden="true" />
+              const art = <span className={ui('dirt dirt-' + spot.kind)} aria-hidden="true" />
               return active && (isLeaf || !cleared)
-                ? <button className="wash-spot" type="button" key={spot.name} style={style} data-spot={spot.name} data-falling={isLeaf && cleared} disabled={!ready || cleared} aria-label={'Clean ' + spot.name} onClick={isLeaf ? () => { setSelected(undefined); useOn([spot.name]) } : undefined}>{art}</button>
-                : <span className="wash-spot wash-decoration wash-rinse-layer" data-washed={phase === 6 && cleaned.includes(bodyRinseTarget(spot))} key={spot.name} style={style}>{art}</span>
+                ? <button className={ui("wash-spot")} type="button" key={spot.name} style={style} data-spot={spot.name} data-falling={isLeaf && cleared} disabled={!ready || cleared} aria-label={'Clean ' + spot.name} onClick={isLeaf ? () => { setSelected(undefined); useOn([spot.name]) } : undefined}>{art}</button>
+                : <span className={ui("wash-spot wash-decoration wash-rinse-layer")} data-washed={phase === 6 && cleaned.includes(bodyRinseTarget(spot))} key={spot.name} style={style}>{art}</span>
             })}
             {sponging && ready && !done && spongeGuides.map(spot => {
               const up = spongeRemaining.some(dirt => spongeSection(dirt) === spongeLane
                 && (spot.name === 'body' || (dirt.x < 50) === (spot.x < 50))
                 && soapDownSpots.includes(dirt.name))
               return (
-              <span key={spot.name} className="wash-spot wash-target wash-sponge-guide" data-spot={spot.name} data-soap-guide={spongeLane === 0 ? 'arms' : spongeLane === 4 ? 'legs' : 'body'} style={{ left: spot.x + '%', top: spot.y + '%' }} aria-hidden="true">
-                <svg key={String(up)} data-up={up} className="ink-wiggle" viewBox="0 0 48 48" fill="none"><path d={scrubArrow} /></svg>
+              <span key={spot.name} className={ui("wash-spot wash-target wash-sponge-guide")} data-spot={spot.name} data-soap-guide={spongeLane === 0 ? 'arms' : spongeLane === 4 ? 'legs' : 'body'} style={{ left: spot.x + '%', top: spot.y + '%' }} aria-hidden="true">
+                <svg key={String(up)} data-up={up} className={ui("ink-wiggle")} viewBox="0 0 48 48" fill="none"><path d={scrubArrow} /></svg>
               </span>
               )
             })}
             {holdingTowel && dryGuides.map(spot => {
               const up = soapDownSpots.includes(spot.name)
-              return <span key={spot.name} className="wash-spot wash-target wash-sponge-guide" data-shower-target={dryGroup === 0} data-soap-guide={dryGroup === 0 ? undefined : ['arms', 'body', 'dry-thigh', 'dry-foot'][dryGroup - 1]} data-spot={spot.name}
+              return <span key={spot.name} className={ui("wash-spot wash-target wash-sponge-guide")} data-shower-target={dryGroup === 0} data-soap-guide={dryGroup === 0 ? undefined : ['arms', 'body', 'dry-thigh', 'dry-foot'][dryGroup - 1]} data-spot={spot.name}
                 style={{ left: spot.x + '%', top: (dryGroup === 1 ? 39 : dryGroup === 3 ? 72 : dryGroup === 4 ? 90 : spot.y) + '%' }} aria-hidden="true">
-                {dryGroup !== 0 && <svg key={String(up)} className="ink-wiggle" data-up={up} viewBox="0 0 48 48" fill="none"><path d={scrubArrow} /></svg>}
+                {dryGroup !== 0 && <svg key={String(up)} className={ui("ink-wiggle")} data-up={up} viewBox="0 0 48 48" fill="none"><path d={scrubArrow} /></svg>}
               </span>
             })}
             {!shampooing && !drying && step?.spots.filter(spot => spot.kind === 'target' && (!cleaned.includes(spot.name)
               || (soaping && soapArea === 'legs' && !cleaned.includes(spot.name.replace(/knee|foot/, part => part === 'knee' ? 'foot' : 'knee'))))
               && (!soaping || (soapArea === 'arms' ? spot.name.endsWith('arm') : soapArea === 'body' ? spot.name === soapChest?.name : spot.y >= 74))).map(spot => (
-              <button key={spot.name} className="wash-spot wash-target" data-shower-target={phase === rinseHairPhase || phase === 6} data-soap-guide={soaping ? soapArea : undefined} type="button" style={{ left: spot.x + '%', top: spot.y + '%' }}
+              <button key={spot.name} className={ui("wash-spot wash-target")} data-shower-target={phase === rinseHairPhase || phase === 6} data-soap-guide={soaping ? soapArea : undefined} type="button" style={{ left: spot.x + '%', top: spot.y + '%' }}
                 data-spot={spot.name} disabled={!ready || (phase === rinseHairPhase && !hairRinsed && spot.name !== 'hair')} aria-label={soaping ? 'Rub soap on the ' + spot.name : step.title} onClick={wettingHair || soaping ? undefined : () => useOn([spot.name])}>
-                {holdingSoap && !((soapArea === 'legs') && spot.name.endsWith('foot')) && <svg className="ink-wiggle" key={String(soapDownSpots.includes(spot.name))} data-up={soapDownSpots.includes(spot.name)} viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                {holdingSoap && !((soapArea === 'legs') && spot.name.endsWith('foot')) && <svg className={ui("ink-wiggle")} key={String(soapDownSpots.includes(spot.name))} data-up={soapDownSpots.includes(spot.name)} viewBox="0 0 48 48" fill="none" aria-hidden="true">
                   <path d={scrubArrow} />
                 </svg>}
               </button>
             ))}
           </div>
-        </div>
-        {!finishedBath && (phase > 0 || cleaned.length > 0 || selected) && <button className="wash-reset" type="button" onClick={() => resetDialog.current?.showModal()}>Start over</button>}
+        </div>}
+        {!finishedBath && (phase > 0 || cleaned.length > 0 || selected) && <button className={ui("wash-reset")} type="button" onClick={() => resetDialog.current?.showModal()}>Start over</button>}
       </section>
-      <dialog ref={resetDialog} className="wash-reset-dialog" aria-labelledby="wash-reset-title" aria-describedby="wash-reset-description">
-        <h2 id="wash-reset-title" className="wash-motion-text ink-wiggle">Start over?</h2>
+      <dialog ref={resetDialog} className={ui("wash-reset-dialog")} aria-labelledby="wash-reset-title" aria-describedby="wash-reset-description">
+        <h2 id="wash-reset-title" className={ui("ink-wiggle")}>Start over?</h2>
         <p id="wash-reset-description">You’ll go back to the first step. Your game will start fresh.</p>
-        <div className="wash-actions">
-          <button className="cta" type="button" autoFocus onClick={() => resetDialog.current?.close()}>Keep playing</button>
-          <button className="cta wash-retry" type="button" onClick={() => {
+        <div className={ui("wash-actions")}>
+          <button className={ui("cta")} type="button" autoFocus onClick={() => resetDialog.current?.close()}>Keep playing</button>
+          <button className={ui("cta wash-retry")} type="button" onClick={() => {
             resetDialog.current?.close()
             goTo(0)
           }}>Start over</button>
@@ -794,19 +715,15 @@ function WashUp() {
   )
 }
 
-const bathArtwork = ['/bathroom.webp', '/bath-sprite.webp', '/bath-dirt.webp', '/bath-fixtures.webp', '/bath-supplies.webp']
+const bathArtwork = ['/bathroom.webp', bathSprite, ...new Set(Object.values(washStepArtwork).map(art => art.href))]
 
 function BathEntry() {
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
   const [attempt, setAttempt] = useState(0)
   const [loaded, setLoaded] = useState(0)
-  const [showLoading, setShowLoading] = useState(() => performance.now() >= 500)
 
   useEffect(() => {
     let active = true
-    const showAt = attempt ? performance.now() + 500 : 500
-    const showTimer = window.setTimeout(() => setShowLoading(true), Math.max(0, showAt - performance.now()))
-    let finishTimer: number | undefined
     Promise.all(bathArtwork.map(source => {
       const image = new Image()
       image.src = source
@@ -816,41 +733,22 @@ function BathEntry() {
     })).then(
       () => {
         if (!active) return
-        if (performance.now() >= showAt && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          finishTimer = window.setTimeout(() => setState('ready'), 400)
-        } else {
-          setState('ready')
-        }
+        setState('ready')
       },
       () => { if (active) setState('error') },
     )
     return () => {
       active = false
-      window.clearTimeout(showTimer)
-      window.clearTimeout(finishTimer)
     }
   }, [attempt])
 
   if (state === 'ready') return <WashUp />
-  if (state === 'loading' && !showLoading) return null
-
-  return <main className="wash-page wash-loading">
-    <InkFilters />
-    <div className="wash-loading-message">
-      <p className={state === 'loading' ? 'ink-wiggle' : undefined} role="status">{state === 'error' ? 'The bath couldn’t load.' : 'Getting the bath ready…'}</p>
-      {state === 'loading' && <div className="wash-loading-progress" role="progressbar"
-        aria-label="Bath images loaded" aria-valuemin={0} aria-valuemax={bathArtwork.length} aria-valuenow={loaded}>
-        <span style={{ transform: `scaleX(${loaded / bathArtwork.length})` }} />
-      </div>}
-      {state === 'error' && <button className="cta" type="button" onClick={() => {
-        setLoaded(0)
-        setShowLoading(false)
-        setState('loading')
-        setAttempt(previous => previous + 1)
-      }}>Retry</button>}
-    </div>
-    <a className="wash-loading-back" href="/">Back to home</a>
-  </main>
+  return <ActivityLoading label="Getting the bath ready…" loaded={loaded} total={bathArtwork.length}
+    error={state === 'error' ? 'The bath couldn’t load. Please try again.' : undefined} onRetry={() => {
+      setLoaded(0)
+      setState('loading')
+      setAttempt(previous => previous + 1)
+    }} />
 }
 
 createRoot(document.getElementById('root')!).render(<BathEntry />)

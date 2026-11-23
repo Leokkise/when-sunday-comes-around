@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en" class="[cursor:url('/bath-pointer.svg')_4_3,_default] [font-family:Schoolbell,_'Comic_Sans_MS',_cursive] [--ink:#4a4947] [--paper:#faf7f0] [--card:#fffdfa] [--shade:#d8d2c2] [--accent:#b17457] [color:var(--ink)] [background:var(--paper)] [font-synthesis:none] [&::selection]:[background:var(--shade)] [:where(&)_:is(button,_a)]:[cursor:inherit] [:where(&)_:is(button:enabled,_a[href]):hover:not(.wash-stage_*)]:[cursor:url('/bath-pointer-hover.svg')_14_3,_pointer] [:where(&)_:focus-visible]:[outline:3px_solid_var(--ink)] [:where(&)_:focus-visible]:[outline-offset:5px] [:where(&)_h1]:[font-size:clamp(42px,_6.4vw,_72px)] [:where(&)_h1]:[line-height:1.12] [:where(&)_h1]:[letter-spacing:-.035em] [:where(&)_h1_span]:[color:var(--ink)] [:where(&)_h1_span]:whitespace-nowrap [&:has(.brush-page)]:h-full [&:has(.brush-page)]:overflow-hidden [:where(&)_body:has(.brush-page)]:h-full [:where(&)_body:has(.brush-page)]:overflow-hidden [:where(&)_#root:has(.brush-page)]:h-full [:where(&)_#root:has(.brush-page)]:overflow-hidden">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/src/index.css">
+    <title>Brush Your Teeth | When Sunday Comes Around</title>
+    <link rel="preload" href="/schoolbell.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/bath-sprite.webp" as="image" type="image/webp">
+  </head>
+  <body>
+    <div id="root">
+      <main class="activity-loading fixed [inset:0] grid place-content-center justify-items-center [gap:20px] box-border [padding:24px] overflow-hidden [background:#faf7f0] [color:#564736] [font-family:Schoolbell,_'Comic_Sans_MS',_cursive] text-center [&_:focus-visible]:[outline:3px_solid_#4a4947] [&_:focus-visible]:[outline-offset:5px]">
+        <p class="activity-loading-title [margin:0] [font-size:clamp(28px,_3.8vw,_38px)] font-normal [line-height:1.25] motion-safe:[&[data-loading]]:[animation:loading-lettering_.5s_step-end_infinite]" role="status" data-loading>Getting your toothbrush ready…</p>
+        <div class="activity-loading-track [width:min(330px,_78vw)] [height:19px] box-border overflow-hidden [border:1px_solid_#a69d86] [border-radius:16px_14px_17px_15px] [background:#e7dfcb]" role="progressbar" aria-label="Getting your toothbrush ready…">
+          <span class="activity-loading-fill block w-full h-full [border-radius:inherit] [transform-origin:left] [background:#547b68] [&[data-indeterminate]]:[width:35%] motion-safe:[transition:transform_.35s_ease-out] motion-safe:[&[data-indeterminate]]:[animation:loading-wait_1.3s_ease-in-out_infinite_alternate]" data-indeterminate></span>
+        </div>
+        <a class="activity-loading-back [color:inherit] [font-size:20px] [line-height:1.4] [text-decoration:underline] [text-underline-offset:4px] [&:hover]:[color:#795438] [&:hover]:[text-decoration-thickness:2px]" href="/">Back to home</a>
+      </main>
+    </div>
+    <script type="module" src="/src/brush-teeth.tsx"></script>
+  </body>
+</html>

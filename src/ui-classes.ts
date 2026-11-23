@@ -204,7 +204,7 @@ const utilities: Record<string, string> = {
     `[&:has(.brush-held:not([hidden]))_*]:[cursor:none]!`,
     `[&:has(.brush-held-paste:not([hidden]))_.brush-counter-paste_>_img]:invisible`,
     `[&[data-applying-paste='true']_:is(.brush-counter-paste,_.brush-counter-brush)_>_img]:invisible`,
-    `motion-safe:[&[data-spitting='true']_.brush-foam]:[animation:brush-mouth-foam-fall_1.5s_ease-in_.75s_both]`,
+    `motion-safe:[&[data-spitting='true']_.brush-foam]:[animation:brush-mouth-foam-fall_1.3s_ease-in_.3s_both]`,
     `[&:has(.brush-held-water:not([hidden]))_.brush-counter-water_>_img]:invisible`,
     `[&[data-spitting='true']_.brush-counter-water_>_img]:invisible`,
     `[&:has(.brush-held-brush:not([hidden]))_.brush-counter-brush_>_:is(img,_.brush-bristle-tip)]:invisible`,
@@ -235,8 +235,9 @@ const utilities: Record<string, string> = {
   ].join(" "),
   "brush-spit-animation": [
     `absolute [inset:0] w-full h-full pointer-events-none [z-index:3]`,
-    `[&_.brush-spit-pour]:[animation:brush-spit-pour_1.8s_ease-in-out_both] [&_.brush-mouth-water]:[animation:brush-mouth-water_1.2s_linear_.5s_both] [&_.brush-water-glint]:[stroke-dasharray:.22_.18] [&_.brush-water-glint]:[animation:brush-water-glint_.36s_linear_infinite] [&_.brush-spit-drop]:[animation:brush-spit-drop_1.05s_cubic-bezier(.55,0,1,.65)_both]`,
-    `[&_.brush-rinse-runoff]:[animation:brush-rinse-runoff_1.6s_linear_.8s_both] [&_.brush-rinse-splash]:[animation:brush-rinse-splash_.38s_linear_3_both] [&_.brush-rinse-ripple]:[transform-box:fill-box] [&_.brush-rinse-ripple]:[transform-origin:center] [&_.brush-rinse-ripple]:[animation:brush-rinse-ripple_.85s_ease-out_1.65s_both]`,
+    `[&_.brush-spit-pour]:[animation:brush-spit-pour_1.68s_ease-out_both] [&_.brush-mouth-water]:[animation:brush-mouth-water_1.2s_linear_.23s_both] [&_.brush-water-glint]:[stroke-dasharray:.22_.18] [&_.brush-water-glint]:[animation:brush-water-glint_.36s_linear_infinite]`,
+    `[&_:is(.brush-spit-drop,.brush-rinse-ripple)]:[transform-box:fill-box] [&_:is(.brush-spit-drop,.brush-rinse-ripple)]:[transform-origin:center] [&_.brush-spit-drop]:[animation:brush-spit-drop_.92s_cubic-bezier(.48,.1,.8,.52)_both]`,
+    `[&_.brush-rinse-runoff]:[animation:brush-rinse-runoff_1.65s_linear_.3s_both] [&_.brush-rinse-splash]:[animation:brush-rinse-splash_.38s_linear_3_both] [&_.brush-rinse-ripple]:[animation:brush-rinse-ripple_.65s_ease-out_.63s_2_both]`,
     `[--pour-pose:translate(63px,16px)_rotate(-66deg)] motion-reduce:[&_*]:[animation:none]! motion-reduce:[&_.brush-spit-pour]:[transform:var(--pour-pose)] motion-reduce:[&_.brush-spit-drop]:opacity-0 motion-reduce:[&_.brush-rinse-ripple]:opacity-0`,
   ].join(" "),
   "brush-rinse-mouth": [

@@ -47,7 +47,7 @@ const toothRoundTime = 9000
 const tongueRoundTime = 2500
 const expandedSpotIndexes = [0, 0, 1, 2, 3, 3]
 const pasteSqueezeTime = 1450
-const spitTime = 2700
+const spitTime = 2000
 const introCoverTime = 1900
 const introRevealTime = 700
 
@@ -98,7 +98,7 @@ function SpitAnimation({ start }: { start: Point | null }) {
       <ellipse cx="50" cy="22.9" rx="2.4" ry=".65" fill="#e4f3ef" fillOpacity=".7" />
       {[[-2.8, -1.5], [-1.4, -2.2], [1.7, -1.7], [3, -.8]].map(([x, y], index) =>
         <path key={x} className="brush-rinse-splash" d={`M${50 + x * .4} 22.8q${x * .5} ${y * 1.5} ${x} ${y}`}
-          fill="none" stroke="#eaf7f4" strokeWidth=".3" strokeLinecap="round" style={{ animationDelay: `${650 + index * 70}ms` }} />)}
+          fill="none" stroke="#eaf7f4" strokeWidth=".3" strokeLinecap="round" style={{ animationDelay: `${280 + index * 55}ms` }} />)}
     </g>
     <g className="brush-rinse-runoff">
       <path d="M48.8 23.1Q50 23.8 51.6 23.1C53.2 27 51.3 29 52.4 32C52 38 50.1 39 50.7 45S49.1 53.1 50.3 58.5L48.8 58.5C48.1 52 49.7 49 48.6 44S49.5 36 48.1 31.5Q49.5 27 48.8 23.1Z" fill="url(#brush-runoff-water)" />
@@ -109,9 +109,9 @@ function SpitAnimation({ start }: { start: Point | null }) {
       <image href={toolArt.water} x="-8" y="-9.1" width="16" height="18.2" />
     </g>
     {[[-5.2, .3, .54], [-3, 1.5, .78], [-1, .9, .55], [1.4, 1.6, .83], [3.2, .1, .48], [5.1, 1, .44], [-2, 1, .36], [2, .8, .5], [-.5, .2, .32], [3.6, .5, .35], [-3.8, .3, .4], [.6, 1, .6]].map(([x, y, radius], index) =>
-      <ellipse key={x} className="brush-spit-drop" cx={50 + x} cy={29 + y} rx={radius} ry={radius * 1.2}
+      <ellipse key={x} className="brush-spit-drop" cx={50 + x} cy={25 + y} rx={radius} ry={radius * 1.2}
         fill="#fffdf4" stroke="#e0ebe2" strokeWidth=".12"
-        style={{ '--spit-drift': `${-x * .65}px`, animationDelay: `${800 + index * 65}ms` } as CSSProperties} />)}
+        style={{ '--spit-drift': `${-x * .65}px`, animationDelay: `${310 + index * 55}ms` } as CSSProperties} />)}
     <g className="brush-rinse-ripple" fill="none" stroke="#a4c6c4" strokeWidth=".16">
       <ellipse cx="49.5" cy="59" rx="3.7" ry=".8" />
       <ellipse cx="49.5" cy="59" rx="2.3" ry=".45" stroke="#fffef8" strokeWidth=".26" />

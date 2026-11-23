@@ -97,7 +97,7 @@
 
 @keyframes brush-spit-pour {
     0% { opacity: 1; transform: translate(var(--pour-start-x), var(--pour-start-y)) rotate(0deg); }
-    32%, 82% { opacity: 1; transform: var(--pour-pose); }
+    15%, 81% { opacity: 1; transform: var(--pour-pose); }
     100% { opacity: 0; transform: translate(69px, 28px) rotate(-10deg); }
   }
 
@@ -108,7 +108,7 @@
 
 @keyframes brush-mouth-water {
     0%, 100% { opacity: 0; }
-    12%, 82% { opacity: .96; }
+    7%, 88% { opacity: .96; }
   }
 
 @keyframes brush-water-glint {
@@ -125,14 +125,13 @@
 @keyframes brush-spit-drop {
     0% { opacity: 0; transform: translateY(0); }
     10%, 80% { opacity: .9; }
-    100% { opacity: 0; transform: translate(var(--spit-drift), 28px) scale(.65, 1.35); }
+    100% { opacity: 0; transform: translate(var(--spit-drift), 32px) scale(.65, 1.25); }
   }
 
 @keyframes brush-rinse-runoff {
-    0% { opacity: 0; clip-path: inset(0 0 100%); }
-    28% { opacity: .85; clip-path: inset(0); }
-    72% { opacity: .7; clip-path: inset(0); }
-    100% { opacity: 0; clip-path: inset(100% 0 0); }
+    0% { opacity: .8; clip-path: inset(0 0 100%) fill-box; animation-timing-function: cubic-bezier(.48, .1, .8, .52); }
+    20%, 77% { opacity: .9; clip-path: inset(0) fill-box; }
+    100% { opacity: 0; clip-path: inset(100% 0 0) fill-box; }
   }
 
 @keyframes brush-rinse-splash {

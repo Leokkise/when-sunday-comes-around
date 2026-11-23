@@ -2,37 +2,31 @@ import { ui } from './ui-classes'
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { createRoot } from 'react-dom/client'
 import { InkFilters } from './ink-filters'
-import { ActivityLoading } from './activity-loading'
+import { ActivityEntry } from './activity-loading'
 import { bathSprite, brushFinishMouth, CleanBathScene } from './bath-scene'
 import { ToothCoating, ToothpasteFoam, ToothRowShine, frontArt } from './tooth-coating'
 import { TongueMouth } from './tongue-mouth'
+import { restoreToothProgress, sectionForTooth, teethPerRow, toothAt, toothCenters, toothSectionBounds } from './brush-sections'
 
 type Point = { x: number; y: number }
 type Tool = 'brush' | 'paste' | 'water'
 const toolArt: Record<Tool, string> = { brush: '/brush-toothbrush-v2.webp', paste: '/brush-toothpaste-v2.webp', water: '/brush-water.webp' }
-type BrushSpot = Point & { label: string; radius?: number; radiusY?: number }
+type BrushSpot = Point & { label: string; radius: number; radiusY: number }
 type Round = { title: string; hint: string; view: 'mouth' | 'tongue'; spots: BrushSpot[] }
-const backTeeth = 'Back teeth'
-const frontTeeth = 'Front teeth'
-const outsideHint = 'Follow the circle. Brush the outside of your teeth with little back-and-forth moves.'
+const outsideHint = 'Gently brush back and forth over the outside of every tooth in the guide.'
+const sectionLabels = ['Left side', 'Front teeth', 'Right side']
+function toothSpots(upper: boolean): BrushSpot[] {
+  const edges = upper ? toothSectionBounds.upper : toothSectionBounds.lower
+  return edges.slice(0, -1).map((edge, index) => {
+    const left = Math.max(3, edge)
+    const right = Math.min(97, edges[index + 1])
+    return { x: (left + right) / 2, y: upper ? 42 : 66, radius: (right - left) / 200, radiusY: .14, label: sectionLabels[index] }
+  })
+}
 const stepOrder = [0, 1, 2, 7, 8]
 const rounds: Record<number, Round | undefined> = {
-  1: { title: 'Brush your top teeth', hint: outsideHint, view: 'mouth', spots: [
-    { x: 9, y: 43, radius: .08, label: backTeeth },
-    { x: 22, y: 43, radius: .08, label: 'Side teeth' },
-    { x: 39, y: 41, radius: .112, label: frontTeeth },
-    { x: 61, y: 41, radius: .112, label: frontTeeth },
-    { x: 78, y: 43, radius: .08, label: 'Side teeth' },
-    { x: 91, y: 43, radius: .08, label: backTeeth },
-  ] },
-  2: { title: 'Brush your bottom teeth', hint: outsideHint, view: 'mouth', spots: [
-    { x: 11, y: 61, radius: .09, label: backTeeth },
-    { x: 25, y: 65, radius: .078, label: 'Side teeth' },
-    { x: 40.5, y: 66, radius: .1, label: frontTeeth },
-    { x: 59.5, y: 66, radius: .1, label: frontTeeth },
-    { x: 75, y: 65, radius: .078, label: 'Side teeth' },
-    { x: 89, y: 61, radius: .09, label: backTeeth },
-  ] },
+  1: { title: 'Brush your top teeth', hint: outsideHint, view: 'mouth', spots: toothSpots(true) },
+  2: { title: 'Brush your bottom teeth', hint: outsideHint, view: 'mouth', spots: toothSpots(false) },
   7: { title: 'Brush your tongue', hint: 'Gently move the brush from the back of your tongue toward the front.', view: 'tongue', spots: [
     { x: 53, y: 61.5, radius: .20, radiusY: .115, label: 'Tongue' },
   ] },
@@ -42,10 +36,8 @@ const images = ['/bathroom.webp', bathSprite, brushFinishMouth, '/bath-fixtures.
 const saveKey = 'when-sunday.brush-teeth.v2'
 // Saved spots use the same progress scale even when a round has more spots.
 const spotUnits = 5000
-const spotRadius = .08
-const toothRoundTime = 9000
-const tongueRoundTime = 2500
-const expandedSpotIndexes = [0, 0, 1, 2, 3, 3]
+const timePerTooth = 650
+const tongueRoundTime = 2100
 const pasteSqueezeTime = 1450
 const spitTime = 2000
 const introCoverTime = 1900
@@ -138,8 +130,10 @@ function readSave(): BrushCheckpoint {
         const value = savedAmounts[index]
         return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.min(spotUnits, value)) : 0
       }
-      return { step, started: data.started === true || step > 0, amounts: Array.from({ length }, (_, i) =>
-        amountAt(length === 6 && savedAmounts.length === 4 ? expandedSpotIndexes[i] : i)) }
+      const amounts = step === 1 || step === 2
+        ? restoreToothProgress(Array.from(savedAmounts.slice(0, teethPerRow), (_, i) => amountAt(i)))
+        : Array.from({ length }, (_, i) => amountAt(i))
+      return { step, started: data.started === true || step > 0, amounts }
     }
   } catch { /* A new game also works with browser storage turned off. */ }
   return { step: 0, amounts: [0, 0, 0, 0], started: false }
@@ -160,10 +154,6 @@ function BrushTeeth() {
   const picked = held === 'brush'
   const heldRef = useRef<Tool | null>(held)
   heldRef.current = held
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [retry, setRetry] = useState(0)
-  const [loaded, setLoaded] = useState(0)
   const cursor = useRef<HTMLDivElement>(null)
   const mousePosition = useRef<Point | null>(null)
   const scene = useRef<HTMLDivElement>(null)
@@ -186,7 +176,9 @@ function BrushTeeth() {
   const front = !round || round.view === 'mouth'
   const stepNumber = stepOrder.indexOf(step) + 1
   const requiredTool: Tool | null = step === 0 ? 'paste' : round ? 'brush' : step === 8 ? 'water' : null
-  const spotIndex = amounts.findIndex(amount => amount < spotUnits)
+  const toothRound = step === 1 || step === 2
+  const nextUnbrushed = amounts.findIndex(amount => amount < spotUnits)
+  const spotIndex = toothRound && nextUnbrushed >= 0 ? sectionForTooth(nextUnbrushed) : nextUnbrushed
   const spot = round?.spots[spotIndex]
   const complete = Boolean(round && !spot)
   const stepDone = complete || spitDone
@@ -194,11 +186,12 @@ function BrushTeeth() {
   const finished = step === 9
   const total = amounts.reduce((sum, amount) => sum + amount, 0)
   const isLoadedBrush = step === 1 && total === 0
-  const progressMax = round?.view === 'tongue' ? tongueRoundTime : toothRoundTime
-  const roundUnits = (round?.spots.length ?? 1) * spotUnits
+  const timePerTarget = toothRound ? timePerTooth : tongueRoundTime
+  const roundUnits = (toothRound ? teethPerRow : 1) * spotUnits
+  const areaAmounts = toothRound ? amounts.filter((_, tooth) => sectionForTooth(tooth) === spotIndex) : []
   const brushedPercent = total / roundUnits * 100
   const foamSpots = step >= 1 && step <= 8 && !spitDone
-    ? [1, 2].flatMap(row => step < row ? [] : rounds[row]!.spots.map(({ x }, index) => {
+    ? ([1, 2] as const).flatMap(row => step < row ? [] : (row === 1 ? toothCenters.upper : toothCenters.lower).map((x, tooth) => {
       const lower = row === 2
       const fromCenter = Math.abs(x - 50) / 50
       const gumline = lower ? 78 - fromCenter * 11 : 28 + fromCenter * 9
@@ -211,27 +204,16 @@ function BrushTeeth() {
         lower,
         // The tongue overlaps the middle of the lower row in the open mouth.
         pileY: jawY(pileY) + (step === 7 && lower ? Math.max(0, 8 - fromCenter * 12.5) : 0) + (behindTongue ? 4 : 0),
-        level: behindTongue ? .36 : step > row ? 1 : (amounts[index] ?? 0) / spotUnits,
+        widthScale: .44,
+        level: behindTongue ? .36 : step > row ? 1 : (amounts[tooth] ?? 0) / spotUnits,
       }
     }))
     : []
   if (step === 7) {
     for (const x of [43, 53, 63]) {
-      foamSpots.push({ x, y: 59, lower: false, pileY: 62, level: total / roundUnits * (x === 53 ? .35 : .65) })
+      foamSpots.push({ x, y: 59, lower: false, pileY: 62, widthScale: 1, level: total / roundUnits * (x === 53 ? .35 : .65) })
     }
   }
-  useEffect(() => {
-    let active = true
-    setLoaded(0)
-    setError('')
-    Promise.all(images.map(src => {
-      const image = new Image()
-      image.src = src
-      return image.decode().then(() => { if (active) setLoaded(count => count + 1) })
-    })).then(() => { if (active) setLoading(false) }, () => { if (active) setError('The pictures couldn’t load. Try again.') })
-    return () => { active = false }
-  }, [retry])
-
   useEffect(() => {
     if (!startFresh) return
     saveCheckpoint(checkpoint.current)
@@ -286,7 +268,7 @@ function BrushTeeth() {
   }, [intro, step, stepDone])
 
   function go(next: number) {
-    const freshAmounts = Array<number>(rounds[next]?.spots.length ?? 4).fill(0)
+    const freshAmounts = Array<number>(next === 1 || next === 2 ? teethPerRow : rounds[next]?.spots.length ?? 4).fill(0)
     stroke.current = null
     skipPointerClick.current = false
     if (cursor.current) cursor.current.hidden = true
@@ -296,7 +278,6 @@ function BrushTeeth() {
     setToolFeedback(null)
     setApplyingPaste(false)
     setSpitState('ready')
-    setError('')
     if (next === 0) {
       setIntro('face')
       checkpoint.current = { step: 0, amounts: freshAmounts, started: false }
@@ -306,13 +287,15 @@ function BrushTeeth() {
 
   function addTime(index: number, elapsed: number) {
     setAmounts(previous => {
-      if (previous.findIndex(amount => amount < spotUnits) !== index) return previous
-      return previous.map((amount, i) => i === index ? Math.min(spotUnits, amount + elapsed * roundUnits / progressMax) : amount)
+      const firstUnbrushed = previous.findIndex(amount => amount < spotUnits)
+      if (firstUnbrushed < 0 || (toothRound ? sectionForTooth(firstUnbrushed) !== sectionForTooth(index) : firstUnbrushed !== index)) return previous
+      if (previous[index] >= spotUnits) return previous
+      return previous.map((amount, i) => i === index ? Math.min(spotUnits, amount + elapsed * spotUnits / timePerTarget) : amount)
     })
   }
 
   function move(event: PointerEvent<HTMLElement>) {
-    if (!scene.current || !spot || !picked || loading) return
+    if (!scene.current || !spot || !picked) return
     const rect = scene.current.getBoundingClientRect()
     if (!event.currentTarget.hasPointerCapture(event.pointerId)) return
     keyboardAdvance.current = false
@@ -323,11 +306,15 @@ function BrushTeeth() {
     stroke.current = { x, y, time }
     if (!last || Math.hypot(x - last.x, y - last.y) < 1) return
     if (step === 7 && y <= last.y) return
-    const radiusX = rect.width * (spot.radius ?? spotRadius)
-    const radiusY = spot.radiusY === undefined ? radiusX : rect.height * spot.radiusY
+    const radiusX = rect.width * spot.radius
+    const radiusY = rect.height * spot.radiusY
     const dx = (spot.x * rect.width / 100 - x) / radiusX
     const dy = (spot.y * rect.height / 100 - y) / radiusY
-    if (Math.hypot(dx, dy) <= 1) addTime(spotIndex, Math.min(80, time - last.time))
+    const inside = round?.view === 'tongue' ? Math.hypot(dx, dy) <= 1
+      : Math.hypot(Math.max(0, Math.abs(dx) - .82) / .18, Math.max(0, Math.abs(dy) - .64) / .36) <= 1
+    if (!inside) return
+    const target = toothRound ? toothAt(x / rect.width * 100, step === 1) : spotIndex
+    if (target >= 0) addTime(target, Math.min(80, time - last.time))
   }
 
   function showToolFeedback(tool: Tool | null) {
@@ -440,9 +427,6 @@ function BrushTeeth() {
     : requiredTool === 'brush' ? 'Pick up the toothbrush to keep brushing.'
       : 'Pick up the glass of water.'
 
-  if (loading) return <ActivityLoading label="Getting your toothbrush ready…" loaded={loaded} total={images.length}
-    error={error} onRetry={() => setRetry(value => value + 1)} />
-
   const introWipe = (intro === 'cover' || intro === 'reveal') && <ToothpasteTransition revealing={intro === 'reveal'} />
 
   if (intro === 'face' || intro === 'cover' || finished) return <main className={ui("wash-page")} inert={intro === 'cover'}>
@@ -498,17 +482,23 @@ function BrushTeeth() {
             {spot && <button ref={spotButton} type="button" className={ui("brush-zone")} style={{
               left: spot.x + '%',
               top: spot.y + '%',
-              width: `${200 * (spot.radius ?? spotRadius)}%`,
-              height: spot.radiusY === undefined ? undefined : `${200 * spot.radiusY}%`,
+              width: `${200 * spot.radius}%`,
+              height: `${200 * spot.radiusY}%`,
             }}
-              aria-label={`Brush spot ${spotIndex + 1}: ${spot.label.toLowerCase()}`} aria-describedby="brush-keyboard-hint brush-technique" disabled={!picked}
+              aria-label={`Brush area ${spotIndex + 1}: ${spot.label.toLowerCase()}`} aria-describedby="brush-keyboard-hint brush-technique" disabled={!picked}
               onKeyDown={event => {
                 if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) return
                 event.preventDefault()
                 if (step === 7 && event.key !== 'ArrowDown') return
                 keyboardAdvance.current = true
-                addTime(spotIndex, 80)
-              }} />}
+                addTime(nextUnbrushed, 80)
+              }}>
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                {round?.view === 'tongue'
+                  ? <ellipse cx="50" cy="50" rx="49" ry="49" pathLength="1" vectorEffect="non-scaling-stroke" />
+                  : <rect x="1" y="1" width="98" height="98" rx="9" ry="18" pathLength="1" vectorEffect="non-scaling-stroke" />}
+              </svg>
+            </button>}
           </div>
           {spitting && <SpitAnimation start={rinseStart.current} />}
           <div className={ui("brush-counter-tools")} role="group" aria-label="Grab a brushing tool">
@@ -537,7 +527,7 @@ function BrushTeeth() {
         <h1 id="brush-title" ref={stepTitle} tabIndex={-1} className={ui("ink-wiggle")}>{title}</h1>
         <p id="brush-technique" className={ui("brush-hint")} aria-live={step === 0 || step === 8 ? 'polite' : undefined}>{hint}</p>
         {round && <div className={ui("brush-progress")}>
-          {spot && round.spots.length > 1 && <span className={ui("brush-current-spot")} role="status">Spot {spotIndex + 1} of {round.spots.length} · {spot.label}</span>}
+          {spot && toothRound && <span className={ui("brush-current-spot")} role="status">Area {spotIndex + 1} of {round.spots.length} · {spot.label} · {areaAmounts.filter(amount => amount >= spotUnits).length} of {areaAmounts.length} teeth brushed</span>}
           <strong>{Math.floor(brushedPercent)}% brushed</strong>
           <progress aria-label={title} value={brushedPercent} max={100} />
         </div>}
@@ -583,4 +573,8 @@ function BrushTeeth() {
   </main>
 }
 
-createRoot(document.getElementById('root')!).render(<BrushTeeth />)
+createRoot(document.getElementById('root')!).render(
+  <ActivityEntry assets={images} label="Getting your toothbrush ready…" errorMessage="The pictures couldn’t load. Please try again.">
+    <BrushTeeth />
+  </ActivityEntry>,
+)

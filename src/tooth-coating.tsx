@@ -1,5 +1,6 @@
 import { ui } from './ui-classes'
 import { StaggeredGlints } from './character-shine'
+import { sectionForTooth, toothAt, toothBounds, toothCenters } from './brush-sections'
 
 export const frontArt = '/brush-pencil-slim-laterals.webp'
 export const brushedEnamelOpacity = .32
@@ -18,13 +19,8 @@ export function EnamelMask({ id, width, height }: { id: string; width: number; h
   </>
 }
 
-const frontUpperColumns = [0, 16, 28, 50, 72, 84, 100]
-const frontLowerColumns = [0, 19, 31, 50, 69, 81, 100]
-const upperToothCenters = [7, 13, 19, 25, 31, 37, 45, 55, 63, 69, 75, 81, 87, 93]
-const lowerToothCenters = [8, 15, 22, 28, 34, 40, 47, 53, 60, 66, 72, 78, 85, 92]
-
 export function ToothRowShine({ upper }: { upper: boolean }) {
-  const centers = upper ? upperToothCenters : lowerToothCenters
+  const centers = upper ? toothCenters.upper : toothCenters.lower
   const spots = centers.map((x, tooth) => {
     const y = upper ? 42 : tooth === 0 || tooth === centers.length - 1 ? 61 : 64
     return { x, y, spread: [1.6, 4] as [number, number] }
@@ -38,7 +34,7 @@ const foamPores = [[.4, .6, .15], [1.1, 1.4, .34], [2, .65, .25], [2.9, 1, .13],
   [.5, 2.2, .38], [1.7, 2.6, .17], [2.5, 2, .43], [3.35, 2.35, .19], [4.2, 2.1, .3], [5.3, 2.5, .42], [5.75, 1.55, .12]]
 
 export function ToothpasteFoam({ spots }: {
-  spots: { x: number; y: number; level: number; lower: boolean; pileY?: number }[]
+  spots: { x: number; y: number; level: number; lower: boolean; widthScale: number; pileY: number }[]
 }) {
   return <svg className={ui("brush-foam")} viewBox="0 0 100 50" preserveAspectRatio="none" aria-hidden="true">
     <defs>
@@ -64,9 +60,9 @@ export function ToothpasteFoam({ spots }: {
       </pattern>
     </defs>
     <g>
-      {spots.map(({ x, y, level, lower }, index) => (
+      {spots.map(({ x, y, level, lower, widthScale }, index) => (
         <g key={`${x}-${y}`} opacity={Math.min(.75, level * 1.15)}
-          transform={`translate(${x} ${y / 2}) scale(${(x < 14 || x > 86 ? .56 : 1) * (index % 2 ? -1 : 1)} ${lower ? -1 : 1})`}>
+          transform={`translate(${x} ${y / 2}) scale(${widthScale * (index % 2 ? -1 : 1)} ${lower ? -1 : 1})`}>
           <use href="#brush-lather-edge" fill="url(#brush-lather-color)" />
           <use href="#brush-lather-edge" fill="url(#brush-lather-pores)" />
           <g fill="#fffdf5" stroke="#cfcec0" strokeWidth=".13">
@@ -76,9 +72,9 @@ export function ToothpasteFoam({ spots }: {
           </g>
         </g>
       ))}
-      {spots.map(({ x, y, level, pileY }, index) => pileY !== undefined && (
-        <g key={`pile-${x}-${y}`} opacity={Math.min(1, Math.max(0, level * 1.65 - .4))}
-          transform={`translate(${x} ${pileY / 2}) scale(${(x < 14 || x > 86 ? .55 : 1) * (index % 2 ? -1 : 1)} ${.73 + index % 3 * .12})`}>
+      {spots.map(({ x, level, pileY, widthScale }, index) => (
+        <g key={`pile-${x}-${pileY}`} opacity={Math.min(1, Math.max(0, level * 1.65 - .4))}
+          transform={`translate(${x} ${pileY / 2}) scale(${widthScale * (index % 2 ? -1 : 1)} ${.73 + index % 3 * .12})`}>
           <use href="#brush-lather-pile" fill="#fffdf5" opacity=".6" filter="url(#brush-lather-soft-edge)" />
           <use href="#brush-lather-pile" fill="url(#brush-lather-body)" />
           <use href="#brush-lather-pile" fill="url(#brush-lather-pores)" opacity=".7" />
@@ -89,9 +85,9 @@ export function ToothpasteFoam({ spots }: {
 }
 
 const frontRegions = [true, false].flatMap(upper => {
-  const columns = upper ? frontUpperColumns : frontLowerColumns
+  const columns = upper ? toothBounds.upper : toothBounds.lower
   return columns.slice(0, -1).map((x, index) => {
-    const split = index === 2 || index === 3 ? 54.5 : 53
+    const split = sectionForTooth(index) === 1 ? 54.5 : 53
     return { x, y: upper ? 26 : split, width: columns[index + 1] - x, height: upper ? split - 26 : 79 - split, upper, index }
   })
 })
@@ -117,10 +113,9 @@ export function ToothCoating({ step, progress, rinsed }: { step: number; progres
         </g>
       })}
       {frontCrumbs.map((crumb, index) => {
-        const columns = crumb.upper ? frontUpperColumns : frontLowerColumns
-        const area = columns.findIndex((x, i) => crumb.x >= x && crumb.x < columns[i + 1])
+        const tooth = toothAt(crumb.x, crumb.upper)
         return <g key={index} className={ui("brush-food-piece")} data-food={['meat', 'leaf', 'seed', 'snack'][index % 4]}
-          transform={`translate(${crumb.x * 17.52} ${crumb.y * 9.12}) rotate(${index % 2 ? -22 : 18}) scale(1.45)`} opacity={remaining(crumb.upper, area)}>
+          transform={`translate(${crumb.x * 17.52} ${crumb.y * 9.12}) rotate(${index % 2 ? -22 : 18}) scale(1.45)`} opacity={remaining(crumb.upper, tooth)}>
           {index % 4 === 0 && <g fill="none" strokeLinecap="round"><path d="M-7-11Q1-4-4 12M-1-12Q7-3 2 11M5-9Q11 0 7 9" stroke="#a76e52" strokeWidth="3" /><path d="M-4-9Q3 0-1 9" stroke="#d3a17d" strokeWidth="1.5" /></g>}
           {index % 4 === 1 && <g><path d="M-10 5Q-14-8 1-12Q14-5 9 7L1 12Z" fill="#71864e" stroke="#52683c" strokeWidth="1.5" /><path d="M-4 8 5-7M0 2-6-2M2-2 8-1" fill="none" stroke="#a4ae73" strokeWidth="1.4" /></g>}
           {index % 4 === 2 && <g><ellipse rx="5" ry="9" fill="#9c7847" stroke="#705836" strokeWidth="1.5" /><path d="M-1-5Q2 0-1 5" fill="none" stroke="#d8bd87" strokeWidth="1.5" /></g>}

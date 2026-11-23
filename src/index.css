@@ -95,6 +95,10 @@
     59%, 100% { transform: scale(1); }
   }
 
+@keyframes brush-guide-dashes {
+  to { stroke-dashoffset: -.0625; }
+}
+
 @keyframes brush-spit-pour {
     0% { opacity: 1; transform: translate(var(--pour-start-x), var(--pour-start-y)) rotate(0deg); }
     15%, 81% { opacity: 1; transform: var(--pour-pose); }

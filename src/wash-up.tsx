@@ -2,7 +2,7 @@ import { ui } from './ui-classes'
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { createRoot } from 'react-dom/client'
 import { InkFilters } from './ink-filters'
-import { ActivityLoading } from './activity-loading'
+import { ActivityEntry } from './activity-loading'
 import { HairShine, BodyShine } from './character-shine'
 import { bathScrapes as scrapes, bathSprite, bathTools as tools, BathSupplies, ToolArt } from './bath-scene'
 import { advanceHairSweep } from './hair-wetting'
@@ -715,40 +715,13 @@ function WashUp() {
   )
 }
 
-const bathArtwork = ['/bathroom.webp', bathSprite, ...new Set(Object.values(washStepArtwork).map(art => art.href))]
+const bathArtwork = [
+  '/bathroom.webp', bathSprite, '/shampoo-bubble-white.webp', '/shower-droplet.svg',
+  ...new Set(Object.values(washStepArtwork).map(art => art.href)),
+]
 
-function BathEntry() {
-  const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
-  const [attempt, setAttempt] = useState(0)
-  const [loaded, setLoaded] = useState(0)
-
-  useEffect(() => {
-    let active = true
-    Promise.all(bathArtwork.map(source => {
-      const image = new Image()
-      image.src = source
-      return image.decode().then(() => {
-        if (active) setLoaded(previous => previous + 1)
-      })
-    })).then(
-      () => {
-        if (!active) return
-        setState('ready')
-      },
-      () => { if (active) setState('error') },
-    )
-    return () => {
-      active = false
-    }
-  }, [attempt])
-
-  if (state === 'ready') return <WashUp />
-  return <ActivityLoading label="Getting the bath ready…" loaded={loaded} total={bathArtwork.length}
-    error={state === 'error' ? 'The bath couldn’t load. Please try again.' : undefined} onRetry={() => {
-      setLoaded(0)
-      setState('loading')
-      setAttempt(previous => previous + 1)
-    }} />
-}
-
-createRoot(document.getElementById('root')!).render(<BathEntry />)
+createRoot(document.getElementById('root')!).render(
+  <ActivityEntry assets={bathArtwork} label="Getting the bath ready…" errorMessage="The bath couldn’t load. Please try again.">
+    <WashUp />
+  </ActivityEntry>,
+)

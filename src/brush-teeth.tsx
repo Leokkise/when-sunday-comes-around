@@ -33,7 +33,7 @@ const rounds: Record<number, Round | undefined> = {
     { x: 75, y: 65, radius: .078, label: 'Side teeth' },
     { x: 89, y: 61, radius: .09, label: backTeeth },
   ] },
-  7: { title: 'Brush your tongue', hint: 'Sweep gently from the back of your tongue to the tip.', view: 'tongue', spots: [
+  7: { title: 'Brush your tongue', hint: 'Gently move the brush from the back of your tongue toward the front.', view: 'tongue', spots: [
     { x: 53, y: 61.5, radius: .20, radiusY: .115, label: 'Tongue' },
   ] },
 }
@@ -91,18 +91,18 @@ function SpitAnimation({ start }: { start: Point | null }) {
       </linearGradient>
     </defs>
     <g className="brush-mouth-water">
-      <path d="M59.4 21.8C55.2 21.9 51.4 24.1 49.8 28.6Q51.6 30.1 53.3 28.8C54.1 25.8 56.4 24.1 59.8 23.7Z" fill="url(#brush-pour-water)" stroke="#9bc8ca" strokeOpacity=".35" strokeWidth=".12" />
-      <path className="brush-water-glint" d="M59.2 22.4C55.8 22.6 52.7 24.6 51.4 28.5" pathLength="1"
+      <path d="M56.4 14.8C52.9 15 49.1 18.4 48.4 22.6Q49.8 24 51.8 22.8C52.5 19.7 54 17.7 56.8 16.7Z" fill="url(#brush-pour-water)" stroke="#9bc8ca" strokeOpacity=".35" strokeWidth=".12" />
+      <path className="brush-water-glint" d="M56.2 15.4C53.1 15.9 50.5 19 49.8 22.5" pathLength="1"
         fill="none" stroke="#fffef8" strokeOpacity=".9" strokeWidth=".4" strokeLinecap="round" />
-      <path d="M58.7 23.3Q54.8 24.1 52.6 28.6" fill="none" stroke="#b0d8dc" strokeWidth=".32" />
-      <ellipse cx="51.6" cy="29" rx="2.4" ry=".65" fill="#e4f3ef" fillOpacity=".7" />
+      <path d="M56.1 16.3Q52.4 17.8 51 22.6" fill="none" stroke="#b0d8dc" strokeWidth=".32" />
+      <ellipse cx="50" cy="22.9" rx="2.4" ry=".65" fill="#e4f3ef" fillOpacity=".7" />
       {[[-2.8, -1.5], [-1.4, -2.2], [1.7, -1.7], [3, -.8]].map(([x, y], index) =>
-        <path key={x} className="brush-rinse-splash" d={`M${51.6 + x * .4} 28.8q${x * .5} ${y * 1.5} ${x} ${y}`}
+        <path key={x} className="brush-rinse-splash" d={`M${50 + x * .4} 22.8q${x * .5} ${y * 1.5} ${x} ${y}`}
           fill="none" stroke="#eaf7f4" strokeWidth=".3" strokeLinecap="round" style={{ animationDelay: `${650 + index * 70}ms` }} />)}
     </g>
     <g className="brush-rinse-runoff">
-      <path d="M48.1 31.5Q50 32.6 53.1 31.5C52 38 50.1 39 50.7 45S49.1 53.1 50.3 58.5L48.8 58.5C48.1 52 49.7 49 48.6 44S49.5 36 48.1 31.5Z" fill="url(#brush-runoff-water)" />
-      <path className="brush-water-glint" d="M50.6 33Q51.3 37 50 42T49.7 51L49.5 57.8" pathLength="1" fill="none" stroke="#fffef8" strokeOpacity=".8" strokeWidth=".25" strokeLinecap="round" />
+      <path d="M48.8 23.1Q50 23.8 51.6 23.1C53.2 27 51.3 29 52.4 32C52 38 50.1 39 50.7 45S49.1 53.1 50.3 58.5L48.8 58.5C48.1 52 49.7 49 48.6 44S49.5 36 48.1 31.5Q49.5 27 48.8 23.1Z" fill="url(#brush-runoff-water)" />
+      <path className="brush-water-glint" d="M50.4 24Q51.8 27 50.6 32Q51.3 37 50 42T49.7 51L49.5 57.8" pathLength="1" fill="none" stroke="#fffef8" strokeOpacity=".8" strokeWidth=".25" strokeLinecap="round" />
       <path d="M45.8 31.4Q47.4 34.5 46.7 39.4M55 31.5Q53.4 35 54 38.1" fill="none" stroke="url(#brush-runoff-water)" strokeWidth=".6" strokeLinecap="round" />
     </g>
     <g className="brush-spit-pour">
@@ -448,7 +448,7 @@ function BrushTeeth() {
   if (intro === 'face' || intro === 'cover' || finished) return <main className={ui("wash-page")} inert={intro === 'cover'}>
     <InkFilters />
     <a href="/" className={ui("wash-back")} aria-label="Back to home"><svg className={ui("ink-wiggle")} viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M29 18c-5 1-14 0-22 0m0 0 8-8m-8 8 8 8" /></svg></a>
-    <div className={ui("brush-welcome-scene")}>
+    <div className={ui(finished ? "brush-welcome-scene activity-finish" : "brush-welcome-scene")}>
       <CleanBathScene smile={finished ? 'after-brushing' : 'before-brushing'} />
       <div className={ui("message-box")}>
         <h1 ref={stepTitle} tabIndex={-1} className={ui("ink-wiggle")}>{finished ? <>All clean!<br />Ready to smile!</> : <>Bath done!<br />Brush time!</>}</h1>

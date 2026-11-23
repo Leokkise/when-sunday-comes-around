@@ -1,6 +1,6 @@
 # Project editing reminders
 
 - Build game views and interactions with React and TypeScript in `.tsx`. Style them with Tailwind utilities. Put reusable utility strings and state selectors in `src/ui-classes.ts` and keep full utility names as literals so Tailwind can detect them.
-- Reuse existing artwork and components before generating replacements. Both games use `src/bath-scene.tsx` for the clean bathroom scene, including the original character, supplies, bandages, and hair and body sparkles. The Brush Teeth intro and finish overlay `public/brush-finish-mouth.png`, cropped from the approved mouth reference, on that original sprite.
+- Reuse existing artwork and components before generating replacements. Both games share bathroom artwork, supplies, and bandage placement from `src/bath-scene.tsx`. The Brush Teeth intro and finish overlay `public/brush-finish-mouth.webp`, a lossless crop of the approved mouth reference, on the original character sprite.
 - When replacing an asset, update its consumers in the same change and remove the superseded file and any notes or code that exist only for that file. Search the whole source tree for the filename and stem. Check HTML preloads, CSS and SVG URLs, image-loading lists, dynamic paths, and other routes before deleting. Keep shared assets, assets used in other states, and licenses for retained assets.
 - Run `npm run build` after cleanup. Check affected routes and states at desktop and narrow widths when making visual changes. See `PROJECT_GUIDE.md` for the routes and saved progress conventions.

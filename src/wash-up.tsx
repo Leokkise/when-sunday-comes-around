@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client'
 import { InkFilters } from './ink-filters'
 import { ActivityLoading } from './activity-loading'
 import { HairShine, BodyShine } from './character-shine'
-import { bathScrapes as scrapes, bathSprite, bathTools as tools, BathSupplies, CleanBathScene, ToolArt } from './bath-scene'
+import { bathScrapes as scrapes, bathSprite, bathTools as tools, BathSupplies, ToolArt } from './bath-scene'
 import { advanceHairSweep } from './hair-wetting'
 
 const dirtSpots = [
@@ -483,7 +483,7 @@ function WashUp() {
       </svg>
       <a className={ui("wash-back")} href="/" aria-label="Back to When Sunday Comes Around"><svg className={ui("ink-wiggle")} viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M29 18c-5 1-14 0-22 0m0 0 8-8m-8 8 8 8" /></svg></a>
       <section className={ui("wash-layout")} aria-labelledby="wash-title">
-        <div className={ui("wash-panel")} data-wetting-hair={wettingHair}>
+        <div className={ui(finishedBath ? "wash-panel activity-finish" : "wash-panel")} data-wetting-hair={wettingHair}>
           {!finishedBath && step && <div className={ui("wash-step-number")}>
             <WashStepArtwork tool={step.tool} />
             <span>Step <strong>{phase + 1}</strong> of {steps.length}</span>
@@ -521,7 +521,7 @@ function WashUp() {
             {done && !finishedBath && <button className={ui("cta wash-retry")} type="button" onClick={() => goTo(phase)}>Try again</button>}
           </div>
         </div>
-        {finishedBath ? <CleanBathScene /> : <div className={ui("wash-stage")} data-wetting-hair={wettingHair} data-grabbing={grabbing} onPointerLeave={() => setShampooCursor(undefined)} onLostPointerCapture={event => {
+        <div className={ui("wash-stage")} data-wetting-hair={wettingHair} data-grabbing={grabbing && !finishedBath} onPointerLeave={() => setShampooCursor(undefined)} onLostPointerCapture={event => {
           soapStart.current = null
           towelStrokeStart.current = null
           setGrabbing(false)
@@ -539,10 +539,10 @@ function WashUp() {
           })
           if (scrape?.dataset.bandageTarget) useOn([scrape.dataset.bandageTarget])
         }}>
-          <BathSupplies selected={selected} wrong={wrong} disabled={!step || done} onSelect={setSelected} />
+          <BathSupplies selected={selected} wrong={wrong} disabled={!step || done} onSelect={finishedBath ? undefined : setSelected} />
           {(holdingShampoo || holdingSoap || holdingSponge || holdingTowel || holdingBandage) && shampooCursor && <span ref={heldToolCursor} className={ui("wash-shampoo-cursor")} data-soap={holdingSoap} data-sponge={holdingSponge} data-towel={holdingTowel} data-bandage={holdingBandage} data-pointer-type={shampooCursor.pointerType} style={{ transform: `translate(${shampooCursor.x}px, ${shampooCursor.y}px)` }} aria-hidden="true"><i className={ui('wash-supply-art wash-supply-' + (holdingBandage ? 'bandage' : holdingTowel ? 'towel' : holdingSponge ? 'sponge' : holdingSoap ? 'soap' : 'shampoo'))} /></span>}
           <div className={ui("wash-stage-controls")}>
-            {tool && phase !== 0 && <div className={ui("wash-held")} data-wrong={wrong}><ToolArt tool={tool} />{tool.name}</div>}
+            {tool && phase !== 0 && !finishedBath && <div className={ui("wash-held")} data-wrong={wrong}><ToolArt tool={tool} />{tool.name}</div>}
           </div>
           {spray && <div ref={sprayElement} className={ui("wash-spray")} style={{ '--spray-x': spray.x + 'px', '--spray-y': spray.y + 'px', '--shower-reach': showerReach } as CSSProperties} aria-hidden="true">
             <svg className={ui("wash-spray-head")} viewBox="0 0 1 1"><image href="/handheld-shower.webp" width="2" height="2" /></svg>
@@ -697,7 +697,7 @@ function WashUp() {
               </button>
             ))}
           </div>
-        </div>}
+        </div>
         {!finishedBath && (phase > 0 || cleaned.length > 0 || selected) && <button className={ui("wash-reset")} type="button" onClick={() => resetDialog.current?.showModal()}>Start over</button>}
       </section>
       <dialog ref={resetDialog} className={ui("wash-reset-dialog")} aria-labelledby="wash-reset-title" aria-describedby="wash-reset-description">

@@ -97,9 +97,14 @@
 
 @keyframes brush-spit-pour {
     0% { opacity: 1; transform: translate(var(--pour-start-x), var(--pour-start-y)) rotate(0deg); }
-    32%, 82% { opacity: 1; transform: translate(66px, 23px) rotate(-66deg); }
+    32%, 82% { opacity: 1; transform: var(--pour-pose); }
     100% { opacity: 0; transform: translate(69px, 28px) rotate(-10deg); }
   }
+
+@keyframes activity-finish {
+  from { opacity: .45; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 @keyframes brush-mouth-water {
     0%, 100% { opacity: 0; }

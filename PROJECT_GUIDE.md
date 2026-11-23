@@ -26,6 +26,8 @@ The approved Brush Up front view uses `public/brush-pencil-slim-laterals.webp`. 
 
 Both games use `src/activity-loading.tsx` after React loads. The initial loading screens use Tailwind classes in their HTML entry points and link the same Tailwind entry in the document head. Shared sparkle illustrations live in `src/character-shine.tsx`.
 
+Wash Up keeps the bathroom and character mounted when the last bandage is placed so the sparkles continue without restarting. Both games ease in their completion view when motion is enabled. In Brush Up, the raised glass pours onto the center front teeth, and the runoff follows the foam into the sink. The regular and reduced-motion pour share a pose in `src/ui-classes.ts`.
+
 ## Guidelines for the next editor
 
 - Read the relevant route and check the current artwork in the game before editing. Keep approved artwork and flows in scope when applying a targeted change.

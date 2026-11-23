@@ -2,6 +2,7 @@
 const bathDesktopLayout = `[@media(min-width:761px)]:[grid-template-columns:minmax(0,_min(68%,_var(--stage-height)))_minmax(0,_430px)] [@media(min-width:761px)]:justify-center`
 
 const utilities: Record<string, string> = {
+  "activity-finish": `motion-safe:[animation:activity-finish_.32s_ease-out_both]`,
   "activity-feedback": [
     `[&[data-wrong='true']]:[width:fit-content] [&[data-wrong='true']]:[color:#873326] [&[data-wrong='true']]:[background:#fae9df] [&[data-wrong='true']]:[border:1px_solid_#c88572] [&[data-wrong='true']]:[border-radius:12px] [&[data-wrong='true']]:[padding:10px_14px]`,
   ].join(" "),
@@ -236,7 +237,7 @@ const utilities: Record<string, string> = {
     `absolute [inset:0] w-full h-full pointer-events-none [z-index:3]`,
     `[&_.brush-spit-pour]:[animation:brush-spit-pour_1.8s_ease-in-out_both] [&_.brush-mouth-water]:[animation:brush-mouth-water_1.2s_linear_.5s_both] [&_.brush-water-glint]:[stroke-dasharray:.22_.18] [&_.brush-water-glint]:[animation:brush-water-glint_.36s_linear_infinite] [&_.brush-spit-drop]:[animation:brush-spit-drop_1.05s_cubic-bezier(.55,0,1,.65)_both]`,
     `[&_.brush-rinse-runoff]:[animation:brush-rinse-runoff_1.6s_linear_.8s_both] [&_.brush-rinse-splash]:[animation:brush-rinse-splash_.38s_linear_3_both] [&_.brush-rinse-ripple]:[transform-box:fill-box] [&_.brush-rinse-ripple]:[transform-origin:center] [&_.brush-rinse-ripple]:[animation:brush-rinse-ripple_.85s_ease-out_1.65s_both]`,
-    `motion-reduce:[&_*]:[animation:none]! motion-reduce:[&_.brush-spit-pour]:[transform:translate(66px,23px)_rotate(-66deg)] motion-reduce:[&_.brush-spit-drop]:opacity-0 motion-reduce:[&_.brush-rinse-ripple]:opacity-0`,
+    `[--pour-pose:translate(63px,16px)_rotate(-66deg)] motion-reduce:[&_*]:[animation:none]! motion-reduce:[&_.brush-spit-pour]:[transform:var(--pour-pose)] motion-reduce:[&_.brush-spit-drop]:opacity-0 motion-reduce:[&_.brush-rinse-ripple]:opacity-0`,
   ].join(" "),
   "brush-rinse-mouth": [
     `absolute [inset:24%_3%_13%] [border-radius:28%] touch-none`,

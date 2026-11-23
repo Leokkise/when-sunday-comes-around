@@ -46,15 +46,29 @@ export function BathSupplies({ selected, wrong, disabled, onSelect }: {
   </div>
 }
 
+export function SmilingCharacterArt({ bodyMask }: { bodyMask?: string } = {}) {
+  return <>
+    <img src={bathSprite} alt="" width="1024" height="1536" draggable={false} style={{ maskImage: bodyMask }} />
+    <img src={brushFinishMouth} alt="" width="112" height="64" draggable={false}
+      className="absolute [left:49.8%] [top:23.02%] w-[4.2%]! -translate-x-1/2 -translate-y-1/2" />
+  </>
+}
+
+export function BathBandages({ hidden = [] }: { hidden?: readonly string[] } = {}) {
+  return bathScrapes.filter(({ name }) => !hidden.includes(name)).map(({ name, x, y, angle }) => (
+    <span key={name} className={ui('wash-spot wash-decoration')} style={{ left: x + '%', top: y + '%' }}>
+      <i className={ui('wash-supply-art wash-supply-bandage')} style={{ rotate: angle + 'deg' }} />
+    </span>
+  ))
+}
+
 export function CleanBathScene({ smile }: { smile: 'before-brushing' | 'after-brushing' }) {
   return <div className={ui('wash-stage')} role="img"
     aria-label={smile === 'before-brushing' ? 'Your friend smiling, with green wisps showing that it’s time to brush'
       : 'Your friend smiling with clean teeth after bathing and brushing'}>
     <BathSupplies />
     <div className={ui('wash-character')} aria-hidden="true">
-      <img src={bathSprite} alt="" width="1024" height="1536" draggable={false} />
-      <img src={brushFinishMouth} alt="" width="112" height="64" draggable={false}
-        className="absolute [left:49.8%] [top:23.02%] w-[4.2%]! -translate-x-1/2 -translate-y-1/2" />
+      <SmilingCharacterArt />
       {smile === 'before-brushing' && <svg className={ui('brush-breath')} viewBox="0 0 84 42" fill="none" aria-hidden="true">
         <path d="M2 23c18-10 29 1 47-10l6 21C30 35 20 23 2 27Z" fill="#c4d580" opacity=".52" />
         <g stroke="#71894a" strokeLinecap="round">
@@ -83,11 +97,7 @@ export function CleanBathScene({ smile }: { smile: 'before-brushing' | 'after-br
       </svg>}
       <HairShine />
       <BodyShine />
-      {bathScrapes.map(({ name, x, y, angle }) => (
-        <span key={name} className={ui('wash-spot wash-decoration')} style={{ left: x + '%', top: y + '%' }}>
-          <i className={ui('wash-supply-art wash-supply-bandage')} style={{ rotate: angle + 'deg' }} />
-        </span>
-      ))}
+      <BathBandages />
     </div>
   </div>
 }

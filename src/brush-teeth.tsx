@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } fr
 import { createRoot } from 'react-dom/client'
 import { InkFilters } from './ink-filters'
 import { ActivityEntry } from './activity-loading'
+import { BedtimeLink } from './bedtime-transition'
 import { bathSprite, brushFinishMouth, CleanBathScene } from './bath-scene'
 import { ToothCoating, ToothpasteFoam, ToothRowShine, frontArt } from './tooth-coating'
 import { TongueMouth } from './tongue-mouth'
@@ -429,7 +430,7 @@ function BrushTeeth() {
 
   const introWipe = (intro === 'cover' || intro === 'reveal') && <ToothpasteTransition revealing={intro === 'reveal'} />
 
-  if (intro === 'face' || intro === 'cover' || finished) return <main className={ui("wash-page")} inert={intro === 'cover'}>
+  if (intro === 'face' || intro === 'cover' || finished) return <main className={ui("wash-page activity-type")} inert={intro === 'cover'}>
     <InkFilters />
     <a href="/" className={ui("wash-back")} aria-label="Back to home"><svg className={ui("ink-wiggle")} viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M29 18c-5 1-14 0-22 0m0 0 8-8m-8 8 8 8" /></svg></a>
     <div className={ui(finished ? "brush-welcome-scene activity-finish" : "brush-welcome-scene")}>
@@ -437,7 +438,10 @@ function BrushTeeth() {
       <div className={ui("message-box")}>
         <h1 ref={stepTitle} tabIndex={-1} className={ui("ink-wiggle")}>{finished ? <>All clean!<br />Ready to smile!</> : <>Bath done!<br />Brush time!</>}</h1>
         <p>{finished ? 'You washed up and brushed your teeth. Great job taking care of yourself!' : 'Uh-oh, a little bad breath! Let’s brush for clean teeth and fresher breath.'}</p>
-        {finished ? <button className={ui("cta cta-brush")} onClick={event => { keyboardAdvance.current = event.detail === 0; go(0) }}>Play again</button> : <button className={ui("cta cta-brush")} disabled={intro === 'cover'} onClick={event => {
+        {finished ? <div className="flex flex-wrap gap-x-3 gap-y-1">
+          <BedtimeLink className={ui("cta cta-brush")}>Choose pajamas</BedtimeLink>
+          <button className={ui("cta cta-brush-outline")} onClick={event => { keyboardAdvance.current = event.detail === 0; go(0) }}>Play again</button>
+        </div> : <button className={ui("cta cta-brush")} disabled={intro === 'cover'} onClick={event => {
           focusGame.current = event.detail === 0
           setIntro(window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'game' : 'cover')
         }}>Let’s brush our teeth</button>}
@@ -446,7 +450,7 @@ function BrushTeeth() {
     {introWipe}
   </main>
 
-  return <main className={ui("brush-page brush-activity")} inert={intro === 'reveal'}>
+  return <main className={ui("brush-page brush-activity activity-type")} inert={intro === 'reveal'}>
     <InkFilters />
     <a href="/" className={ui("brush-back")} aria-label="Back to home"><svg className={ui("ink-wiggle")} viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M29 18c-5 1-14 0-22 0m0 0 8-8m-8 8 8 8" /></svg></a>
     <div className={ui("brush-layout")}>

@@ -2,6 +2,7 @@
 const bathDesktopLayout = `[@media(min-width:761px)]:[grid-template-columns:minmax(0,_min(68%,_var(--stage-height)))_minmax(0,_430px)] [@media(min-width:761px)]:justify-center`
 
 const utilities: Record<string, string> = {
+  "activity-type": `[--game-title-size:clamp(1.625rem,_calc(.625rem_+_2.4vw),_3.25rem)] [--game-body-size:clamp(1rem,_calc(.8rem_+_.55vw),_1.375rem)] [--game-label-size:clamp(.875rem,_calc(.78rem_+_.45vw),_1.25rem)]`,
   "activity-finish": `motion-safe:[animation:activity-finish_.32s_ease-out_both]`,
   "activity-feedback": [
     `[&[data-wrong='true']]:[width:fit-content] [&[data-wrong='true']]:[color:#873326] [&[data-wrong='true']]:[background:#fae9df] [&[data-wrong='true']]:[border:1px_solid_#c88572] [&[data-wrong='true']]:[border-radius:12px] [&[data-wrong='true']]:[padding:10px_14px]`,
@@ -38,7 +39,7 @@ const utilities: Record<string, string> = {
   "brush-activity": [
     `[max-width:1920px] [padding-inline:var(--brush-space)]`,
     `[&_.brush-layout]:[--brush-column-gap:clamp(16px,_2vw,_32px)] [&_.brush-layout]:[grid-template-columns:minmax(0,_min(74%,_calc(100%_-_250px_-_var(--brush-column-gap)),_calc((100dvh_-_62px_-_var(--brush-space)_*_2)_*_1.35)))_minmax(250px,_430px)] [&_.brush-layout]:[grid-template-rows:minmax(0,_1fr)_auto] [&_.brush-layout]:[grid-template-areas:'scene_instructions'_'scene_footer'] [&_.brush-layout]:justify-center [&_.brush-layout]:[gap:12px_var(--brush-column-gap)]`,
-    `[&_.brush-reset]:[min-height:48px] [&_.brush-reset]:[padding:6px_10px] [&_.brush-reset]:[border-radius:12px] [&_.brush-reset]:[border:1px_solid_var(--shade)] [&_.brush-reset]:[text-decoration:underline] [&_.brush-reset]:[text-underline-offset:4px] [&_.brush-reset]:[font-size:16px] [&_.brush-reset]:font-bold [&_.brush-reset]:[background:#fff] [&_.brush-reset]:[color:var(--ink)]`,
+    `[&_.brush-reset]:[min-height:48px] [&_.brush-reset]:[padding:6px_10px] [&_.brush-reset]:[border-radius:12px] [&_.brush-reset]:[border:1px_solid_var(--shade)] [&_.brush-reset]:[text-decoration:underline] [&_.brush-reset]:[text-underline-offset:4px] [&_.brush-reset]:font-bold [&_.brush-reset]:[background:#fff] [&_.brush-reset]:[color:var(--ink)]`,
     `[&_.brush-reset:is(:hover,_:focus-visible)]:[background:#e9f0e4] [&_.brush-reset:is(:hover,_:focus-visible)]:[border-color:#819177] [&_.brush-reset:is(:hover,_:focus-visible)]:[color:var(--ink)]`,
     `[@media(max-width:760px)]:[&_.brush-layout]:[grid-template-columns:minmax(0,_1fr)] [@media(max-width:760px)]:[&_.brush-layout]:[grid-template-rows:auto_minmax(0,_1fr)_auto] [@media(max-width:760px)]:[&_.brush-layout]:[grid-template-areas:'instructions'_'scene'_'footer'] [@media(max-width:760px)]:[&_.brush-layout]:[gap:8px]`,
   ].join(" "),
@@ -85,7 +86,7 @@ const utilities: Record<string, string> = {
     `[left:75.5%] [width:calc(var(--brush-water-width)_/_.92)] [aspect-ratio:640_/_700] [&.brush-counter-tool]:h-auto [&.brush-counter-tool]:p-0 [&.brush-counter-tool]:[bottom:25%]`,
   ].join(" "),
   "brush-current-spot": [
-    `[color:#385e50] [font-size:19px]`,
+    `[color:#385e50] [font-size:var(--game-label-size)]`,
   ].join(" "),
   "brush-food-piece": [
     `motion-safe:[transition:opacity_.28s_ease-out]`,
@@ -128,9 +129,8 @@ const utilities: Record<string, string> = {
     `[@media(max-width:760px)]:[padding:80px_20px_18px]`,
   ].join(" "),
   "brush-panel": [
-    `[&_h1]:[font-size:clamp(34px,_3.5vw,_56px)] [&_h1]:[text-wrap:wrap]`,
+    `[&_h1]:[text-wrap:wrap]`,
     `[@media(max-width:760px)]:[grid-row:auto]`,
-    `[@media(max-width:760px)]:[&_h1]:[font-size:34px]`,
     `[min-height:0]`,
   ].join(" "),
   "brush-paste-cover": [
@@ -170,7 +170,7 @@ const utilities: Record<string, string> = {
     `[&_progress::-moz-progress-bar]:[background:#547b68]`,
   ].join(" "),
   "brush-reset": [
-    `[grid-column:2] [justify-self:start] [color:#654630] [font-size:17px] [text-decoration:underline] [text-underline-offset:4px] [padding:10px_0] [border:0] [border-radius:10px]`,
+    `[grid-column:2] [justify-self:start] [color:#654630] [font-size:var(--game-label-size)] [text-decoration:underline] [text-underline-offset:4px] [padding:10px_0] [border:0] [border-radius:10px]`,
     `[&:hover]:[background:#eee2ce]`,
     `[&:focus-visible]:[background:#eee2ce]`,
     `[@media(max-width:760px)]:[grid-column:1]`,
@@ -180,19 +180,18 @@ const utilities: Record<string, string> = {
   ].join(" "),
   "brush-simple-panel": [
     `[grid-area:instructions] [align-self:center]`,
-    `[&_h1]:[font-size:clamp(38px,_3.8vw,_62px)]`,
-    `[&_.brush-step-label]:flex [&_.brush-step-label]:items-center [&_.brush-step-label]:[gap:9px] [&_.brush-step-label]:[margin-bottom:8px] [&_.brush-step-label]:[font-size:21px] [&_.brush-step-label]:[line-height:1.2]`,
-    `[&_.brush-hint]:[max-width:33ch] [&_.brush-hint]:[font-size:clamp(19px,_1.6vw,_24px)] [&_.brush-hint]:[line-height:1.4] [&_.brush-hint]:[margin:14px_0_21px]`,
-    `[&_.brush-progress]:[gap:6px] [&_.brush-progress]:[margin-block:16px] [&_.brush-progress]:[font-size:25px]`,
-    `[&_.brush-status]:[min-height:0] [&_.brush-status]:[margin:0_0_9px] [&_.brush-status]:[font-size:19px]`,
+    `[&_h1]:[font-size:var(--game-title-size)]`,
+    `[&_.brush-step-label]:flex [&_.brush-step-label]:items-center [&_.brush-step-label]:[gap:9px] [&_.brush-step-label]:[margin-bottom:8px] [&_.brush-step-label]:[font-size:var(--game-label-size)] [&_.brush-step-label]:[line-height:1.2]`,
+    `[&_.brush-hint]:[max-width:33ch] [&_.brush-hint]:[font-size:var(--game-body-size)] [&_.brush-hint]:[line-height:1.4] [&_.brush-hint]:[margin:14px_0_21px]`,
+    `[&_.brush-progress]:[gap:6px] [&_.brush-progress]:[margin-block:16px] [&_.brush-progress]:[font-size:var(--game-body-size)]`,
+    `[&_.brush-status]:[min-height:0] [&_.brush-status]:[margin:0_0_9px] [&_.brush-status]:[font-size:var(--game-label-size)]`,
     `[&_.brush-status[data-done='true']]:[color:var(--ink)]`,
     `[&_.brush-status:empty]:[margin:0]`,
     `[&_.cta.brush-retry]:[background:var(--card)] [&_.cta.brush-retry]:[color:var(--ink)] [&_.cta.brush-retry]:[border-color:var(--ink)]`,
     `[&_.cta.brush-retry:hover]:[background:var(--shade)]`,
-    `[@media(max-width:760px)]:[&_h1]:[font-size:28px]`,
-    `[@media(max-width:760px)]:[&_.brush-step-label]:[margin-bottom:4px] [@media(max-width:760px)]:[&_.brush-step-label]:[font-size:17px]`,
-    `[@media(max-width:760px)]:[&_.brush-hint]:[font-size:16px] [@media(max-width:760px)]:[&_.brush-hint]:[margin-block:4px]`,
-    `[@media(max-width:760px)]:[&_.brush-progress]:[gap:3px] [@media(max-width:760px)]:[&_.brush-progress]:[margin-block:6px] [@media(max-width:760px)]:[&_.brush-progress]:[font-size:17px]`,
+    `[@media(max-width:760px)]:[&_.brush-step-label]:[margin-bottom:4px]`,
+    `[@media(max-width:760px)]:[&_.brush-hint]:[margin-block:4px]`,
+    `[@media(max-width:760px)]:[&_.brush-progress]:[gap:3px] [@media(max-width:760px)]:[&_.brush-progress]:[margin-block:6px]`,
   ].join(" "),
   "brush-sink-stage": [
     `[width:min(100cqw,_150cqh)] [aspect-ratio:3_/_2] [border-radius:24px] [background:#e2e8dc_url('/brush-sink-sage.webp')_center_/_100%_100%_no-repeat] overflow-hidden`,
@@ -218,13 +217,31 @@ const utilities: Record<string, string> = {
     `[&_.brush-held-paste_>_img]:[translate:-50%_-50%]`,
     `[&_.brush-held-water_>_img]:[translate:-50%_-50%]`,
   ].join(" "),
+  "dress-page": `mx-auto max-w-[1920px] p-[clamp(18px,2.6vw,48px)]`,
+  "home-page": `mx-auto max-w-[1200px] px-6 py-8 sm:px-10 sm:py-12`,
+  "home-game": `overflow-hidden rounded-2xl border-2 border-[#c6b8a3] bg-[#fffdfa] text-[#4a4947] no-underline transition-colors hover:border-[#79563f] hover:bg-white focus-visible:outline-[#79563f]`,
+  "night-transition": `fixed inset-0 z-[2147483000] overflow-hidden text-[#f4e5c6]`,
+  "night-blanket-cover": `absolute inset-0 bg-[#233348] motion-safe:[animation:quilt-cover_1.4s_cubic-bezier(.22,1,.36,1)_both]`,
+  "night-loading": `overflow-hidden [&.activity-loading]:bg-[#233348] [&.activity-loading]:text-[#f4e5c6] [&>p]:relative [&>div]:relative [&>a]:relative [&>button]:relative [&_.activity-loading-back]:text-[#f4e5c6] [&[data-revealing]]:pointer-events-none motion-safe:[&[data-revealing]]:[animation:night-reveal_.55s_ease-out_both]`,
+  "dress-layout": `mx-auto grid max-w-[1520px] gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(310px,0.48fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:gap-x-10`,
+  "dress-preview": `relative mx-auto grid w-full max-w-[28rem] aspect-[4/3] [place-items:end_center] self-start overflow-hidden rounded-[24px] border-[3px] border-[#eadac0] bg-[#667681] select-none md:border-[5px] lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:max-w-none`,
+  "dress-panel": `flex min-h-0 min-w-0 flex-col items-start gap-4 lg:col-start-2 lg:row-start-2 lg:[contain:size]`,
+  "dress-picker": `flex min-h-0 w-full flex-col gap-3 rounded-2xl border border-[#b7aa93] bg-[#f4efe3] p-3 sm:p-4 lg:grow`,
+  "dress-options": `grid grid-cols-3 content-start gap-2 px-1 py-1 lg:min-h-0 lg:grow lg:overflow-y-auto lg:overscroll-contain lg:[scrollbar-color:#a99a80_transparent] xl:data-[category=headwear]:grid-cols-4`,
+  "dress-category": `group grid min-w-0 justify-items-center gap-1 rounded-lg text-[13px] leading-tight xl:text-base`,
+  "dress-category-icon": `grid size-9 place-items-center rounded-full border border-[#c2b7a5] bg-[#fffdfa] p-1.5 motion-safe:transition-colors group-hover:border-[#506548] group-hover:bg-[#f0f2e8] group-aria-pressed:border-[#506548] group-aria-pressed:bg-[#dce7d5] sm:size-10 sm:p-2`,
+  "dress-choice": [
+    `min-w-0 rounded-xl border border-[#a69d86] bg-[#fffdfa] p-1 text-center text-base leading-tight text-[#4a4947] motion-safe:transition-colors`,
+    `hover:border-[#506548] hover:bg-[#f0f2e8] aria-pressed:border-[#506548] aria-pressed:bg-[#dce7d5] aria-pressed:text-[#304429] aria-pressed:[box-shadow:inset_0_0_0_1px_#506548]`,
+  ].join(" "),
+  "dress-thumbnail": `block aspect-[4/5] overflow-hidden rounded-lg bg-[#e6e9e4] p-2 sm:p-3 xl:p-4`,
   "message-box": [
     `relative [z-index:2] grid self-center [gap:clamp(16px,_1vw,_19px)] [min-width:0] [container-type:inline-size] [padding:clamp(20px,_2.5vw,_38px)] [border:2px_solid_#776a59] [border-radius:30px_32px_16px_30px] [background:#fcfaf3] [box-shadow:0_5px_16px_#594d390d]`,
     `origin-left motion-safe:[transition:rotate_.2s_ease] motion-safe:hover:rotate-[-0.9deg] motion-safe:has-[:focus-visible]:rotate-[-0.9deg]`,
     `[&::after]:[content:''] [&::after]:absolute [&::after]:[left:-12px] [&::after]:[top:34px] [&::after]:[width:22px] [&::after]:[height:22px] [&::after]:[background:inherit] [&::after]:[border-left:2px_solid_#776a59] [&::after]:[border-bottom:2px_solid_#776a59] [&::after]:[rotate:45deg]`,
-    `[&_h1]:[margin:0] [&_h1]:[font-size:clamp(34px,_14.5cqi,_52px)] [&_h1]:[line-height:1.12] [&_h1]:[letter-spacing:-.025em]`,
-    `[&_p]:[margin:0] [&_p]:[max-width:30ch] [&_p]:[font-size:clamp(17px,_6.2cqi,_22px)] [&_p]:[line-height:1.45] [&_p]:[text-wrap:pretty]`,
-    `[&_.cta]:[justify-self:start] [&_.cta]:[max-width:100%] [&_.cta]:[margin-top:6px] [&_.cta]:[font-size:clamp(17px,_6.2cqi,_22px)]`,
+    `[&_h1]:[margin:0] [&_h1]:[font-size:clamp(1.875rem,_13cqi,_2.875rem)] [&_h1]:[line-height:1.12] [&_h1]:[letter-spacing:-.025em]`,
+    `[&_p]:[margin:0] [&_p]:[max-width:30ch] [&_p]:[font-size:var(--game-body-size)] [&_p]:[line-height:1.45] [&_p]:[text-wrap:pretty]`,
+    `[&_.cta]:[justify-self:start] [&_.cta]:[max-width:100%] [&_.cta]:[margin-top:6px]`,
     `[@media(max-width:760px)]:[&::after]:[left:calc(50%_-_11px)] [@media(max-width:760px)]:[&::after]:[top:-12px] [@media(max-width:760px)]:[&::after]:[rotate:135deg]`,
   ].join(" "),
   "brush-breath": [
@@ -284,7 +301,7 @@ const utilities: Record<string, string> = {
     `[&:is(:hover,_:focus-visible)]:[background:#e9f0e4] [&:is(:hover,_:focus-visible)]:[color:#405338]`,
   ].join(" "),
   "brush-tip-dialog": [
-    `[&.wash-reset-dialog]:[width:min(460px,_calc(100%_-_32px))] [&.wash-reset-dialog_h2]:[font-size:clamp(32px,_4vw,_38px)] [&.wash-reset-dialog_p]:[font-size:clamp(21px,_2.5vw,_24px)] [&.wash-reset-dialog_p]:[line-height:1.4]`,
+    `[&.wash-reset-dialog]:[width:min(460px,_calc(100%_-_32px))] [&.wash-reset-dialog_p]:[line-height:1.4]`,
   ].join(" "),
   "brush-tool-label": [
     `absolute [z-index:3] [top:calc(100%_+_4px)] [padding:1px_7px] [border-radius:5px] [background:var(--card)] [opacity:0] pointer-events-none whitespace-nowrap`,
@@ -339,7 +356,7 @@ const utilities: Record<string, string> = {
     `motion-safe:[&[data-extra-glint="true"]]:[animation-fill-mode:backwards] motion-reduce:[&[data-extra-glint="true"]]:hidden`,
   ].join(" "),
   "cta": [
-    `inline-flex items-center [gap:24px] [border:2px_solid_var(--ink)] [border-radius:12px] [padding:8px_16px] [background:var(--ink)] [color:var(--card)] [font-size:23px] [transition:background-color_.2s]`,
+    `inline-flex items-center [gap:24px] [min-height:48px] [border:2px_solid_var(--ink)] [border-radius:12px] [padding:8px_16px] [background:var(--ink)] [color:var(--card)] [font-size:var(--game-body-size,23px)] [transition:background-color_.2s]`,
     `[&:hover]:[background:var(--shade)] [&:hover]:[color:var(--ink)]`,
     `[&_[aria-hidden]]:[font-family:sans-serif]`,
   ].join(" "),
@@ -350,6 +367,12 @@ const utilities: Record<string, string> = {
   "cta-brush-outline": [
     `[&.cta]:[background:var(--card)] [&.cta]:[border-color:#506548] [&.cta]:[color:#304429]`,
     `[&.cta:is(:hover,:focus-visible)]:[background:#dce7d5] [&.cta:is(:hover,:focus-visible)]:[color:#304429]`,
+  ].join(" "),
+  "cta-dress": [
+    `[&.cta]:[background:#79563f] [&.cta]:[border-color:#63432f] [&.cta]:text-white disabled:opacity-60 disabled:cursor-not-allowed`,
+    `[&.cta:enabled:is(:hover,:focus-visible)]:[background:#fffdfa] [&.cta:enabled:is(:hover,:focus-visible)]:text-[#79563f] [&.cta:enabled:is(:hover,:focus-visible)]:[box-shadow:0_4px_10px_#51372340]`,
+    `[&.cta:focus-visible]:outline-2 [&.cta:focus-visible]:outline-offset-4 [&.cta:focus-visible]:outline-[#79563f]`,
+    `motion-safe:[&.cta]:[transition:background-color_.18s_ease-out,box-shadow_.18s_ease-out,translate_.18s_ease-out] motion-reduce:[&.cta]:transition-none`,
   ].join(" "),
   "day": [
     `[margin-top:36px]`,
@@ -478,15 +501,14 @@ const utilities: Record<string, string> = {
   ].join(" "),
   "wash-panel": [
     `[grid-area:1_/_2] [align-self:center]`,
-    `[&_h1]:[font-size:clamp(38px,_3.8vw,_62px)]`,
-    `[&_p]:[margin:14px_0_21px] [&_p]:[max-width:33ch] [&_p]:[font-size:clamp(19px,_1.6vw,_24px)] [&_p]:[line-height:1.4]`,
+    `[&_h1]:[font-size:var(--game-title-size)]`,
+    `[&_p]:[margin:14px_0_21px] [&_p]:[max-width:33ch] [&_p]:[font-size:var(--game-body-size)] [&_p]:[line-height:1.4]`,
     `[&_.wash-feedback]:[width:fit-content] [&_.wash-feedback]:[margin:0] [&_.wash-feedback]:[font-size:inherit]`,
     `[&[data-wetting-hair="true"]_.wash-feedback-slot]:[margin-block:8px_16px]`,
     `[&_.wash-feedback-slot[data-done="true"]]:[min-height:0] [&_.wash-feedback-slot[data-done="true"]]:[margin-bottom:8px]`,
     `[&_.wash-actions_.cta]:font-bold`,
     `[@media(max-width:760px)]:[grid-area:auto]`,
-    `[@media(max-width:760px)]:[&_h1]:[font-size:28px]`,
-    `[@media(max-width:760px)]:[&_p]:[margin-block:4px] [@media(max-width:760px)]:[&_p]:[font-size:16px]`,
+    `[@media(max-width:760px)]:[&_p]:[margin-block:4px]`,
     `[@media(max-width:760px)]:[&_.wash-feedback]:[margin:0] [@media(max-width:760px)]:[&_.wash-feedback]:[font-size:inherit]`,
   ].join(" "),
   "wash-progress-row": [
@@ -513,7 +535,7 @@ const utilities: Record<string, string> = {
     `absolute [inset:0] pointer-events-none [z-index:2]`,
   ].join(" "),
   "wash-reset": [
-    `font-bold [grid-area:1_/_2] [align-self:end] [justify-self:start] [z-index:3] [margin-bottom:12px] [min-height:48px] [padding:6px_10px] [border-radius:12px] [background:var(--card)] [border:1px_solid_var(--shade)] [text-decoration:underline] [text-underline-offset:4px] [font-size:16px]`,
+    `font-bold [grid-area:1_/_2] [align-self:end] [justify-self:start] [z-index:3] [margin-bottom:12px] [min-height:48px] [padding:6px_10px] [border-radius:12px] [background:var(--card)] [border:1px_solid_var(--shade)] [text-decoration:underline] [text-underline-offset:4px] [font-size:var(--game-label-size)]`,
     `[@media(max-width:760px)]:[grid-area:2_/_1]`,
     `[&:hover]:[background:#f2e6d2] [&:hover]:[border-color:#94785e]`,
     `[&:focus-visible]:[background:#f2e6d2] [&:focus-visible]:[border-color:#94785e]`,
@@ -521,8 +543,8 @@ const utilities: Record<string, string> = {
   "wash-reset-dialog": [
     `[width:min(420px,_calc(100%_-_32px))] box-border [margin:auto] [padding:clamp(20px,_4vw,_32px)] [border:2px_solid_var(--shade)] [border-radius:20px] [background:var(--card)] [color:inherit] [box-shadow:0_8px_24px_#392d2233]`,
     `[&::backdrop]:[background:#392d2266] [&::backdrop]:[cursor:inherit]`,
-    `[&_h2]:[margin:0] [&_h2]:[font-size:32px] [&_h2]:[line-height:1.1]`,
-    `[&_p]:[margin:12px_0_22px] [&_p]:[font-size:19px]`,
+    `[&_h2]:[margin:0] [&_h2]:[font-size:clamp(1.625rem,_calc(1.2rem_+_.75vw),_2rem)] [&_h2]:[line-height:1.1]`,
+    `[&_p]:[margin:12px_0_22px] [&_p]:[font-size:var(--game-body-size)]`,
   ].join(" "),
   "wash-rinse-layer": [
     `[&[data-washed="true"]]:[opacity:0]`,
@@ -606,17 +628,16 @@ const utilities: Record<string, string> = {
     `absolute [z-index:3] [inset:auto_12px_12px] flex items-center pointer-events-none`,
   ].join(" "),
   "wash-step-number": [
-    `flex items-center [gap:9px] [margin-bottom:8px] [color:#654630] [font-size:21px] [line-height:1.2]`,
+    `flex items-center [gap:9px] [margin-bottom:8px] [color:#654630] [font-size:var(--game-label-size)] [line-height:1.2]`,
     `[&_strong]:[font-size:1.22em]`,
     `[&_svg]:[width:32px] [&_svg]:[height:32px] [&_svg]:shrink-0`,
-    `[@media(max-width:760px)]:[margin-bottom:4px] [@media(max-width:760px)]:[font-size:17px]`,
+    `[@media(max-width:760px)]:[margin-bottom:4px]`,
     `[@media(max-width:760px)]:[&_svg]:[width:23px] [@media(max-width:760px)]:[&_svg]:[height:23px]`,
   ].join(" "),
   "wash-step-progress": [
-    `[@media(max-width:760px)]:[margin-block:6px] [@media(max-width:760px)]:[gap:3px] [@media(max-width:760px)]:[font-size:15px]`,
-    `[@media(max-width:760px)]:[&_strong]:[font-size:17px]`,
-    `grid [gap:6px] [margin-block:16px] [font-size:18px]`,
-    `[&_strong]:[font-size:25px]`,
+    `[@media(max-width:760px)]:[margin-block:6px] [@media(max-width:760px)]:[gap:3px]`,
+    `grid [gap:6px] [margin-block:16px] [font-size:var(--game-label-size)]`,
+    `[&_strong]:[font-size:var(--game-body-size)]`,
     `[&_progress]:[appearance:none] [&_progress]:w-full [&_progress]:[height:13px] [&_progress]:[border:1px_solid_#a69d86] [&_progress]:[border-radius:999px] [&_progress]:overflow-hidden [&_progress]:[background:#e7dfcb]`,
     `[&_progress::-webkit-progress-bar]:[background:#e7dfcb]`,
     `[&_progress::-webkit-progress-value]:[background:#547b68]`,

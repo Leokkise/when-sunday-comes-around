@@ -473,7 +473,7 @@ function WashUp() {
   }
 
   return (
-    <main className={ui("wash-page")}>
+    <main className={ui("wash-page activity-type")}>
       <InkFilters />
       <svg className={ui("ink-filters")} width="0" height="0" aria-hidden="true">
         <filter id="bath-paper-key" colorInterpolationFilters="sRGB">

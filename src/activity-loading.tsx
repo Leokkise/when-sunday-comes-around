@@ -1,23 +1,32 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { ui } from './ui-classes'
+import { BedtimeQuilt, nightQuilt } from './bedtime-transition'
 
 const activityCursors = ['/bath-pointer.svg', '/bath-pointer-hover.svg', '/hand-grab.svg', '/hand-grabbing.svg']
 
-export function ActivityEntry({ assets, label, errorMessage, children }: {
+export function ActivityEntry({ assets, label, errorMessage, children, night = false }: {
   assets: readonly string[]
   label: string
   errorMessage: string
   children: ReactNode
+  night?: boolean
 }) {
   const [phase, setPhase] = useState<'loading' | 'rendering' | 'ready' | 'error'>('loading')
   const [attempt, setAttempt] = useState(0)
   const [loaded, setLoaded] = useState(0)
+  const [revealed, setRevealed] = useState(false)
   const scene = useRef<HTMLDivElement>(null)
   const ready = phase === 'ready'
+  useEffect(() => {
+    if (!night || !ready) return
+    const timer = window.setTimeout(() => setRevealed(true),
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 550)
+    return () => window.clearTimeout(timer)
+  }, [night, ready])
 
   useEffect(() => {
     let active = true
-    Promise.all([...activityCursors, ...assets].map(async src => {
+    Promise.all([...activityCursors, ...assets, ...(night ? [nightQuilt] : [])].map(async src => {
       const image = new Image()
       image.src = src
       await image.decode()
@@ -27,7 +36,7 @@ export function ActivityEntry({ assets, label, errorMessage, children }: {
       () => { if (active) setPhase('error') },
     )
     return () => { active = false }
-  }, [assets, attempt])
+  }, [assets, attempt, night])
 
   useEffect(() => {
     if (phase !== 'rendering' || !scene.current) return
@@ -49,7 +58,8 @@ export function ActivityEntry({ assets, label, errorMessage, children }: {
 
   return <>
     {(phase === 'rendering' || ready) && <div ref={scene} className="contents" inert={!ready}>{children}</div>}
-    {!ready && <ActivityLoading label={label} loaded={loaded} total={assets.length + activityCursors.length + 1}
+    {(!ready || (night && !revealed)) && <ActivityLoading label={label} loaded={loaded} total={assets.length + activityCursors.length + 1 + Number(night)}
+      night={night} revealing={ready}
       error={phase === 'error' ? errorMessage : undefined} onRetry={() => {
         setLoaded(0)
         setPhase('loading')
@@ -64,10 +74,14 @@ type LoadingProps = {
   total: number
   error?: string
   onRetry: () => void
+  night?: boolean
+  revealing?: boolean
 }
 
-function ActivityLoading({ label, loaded, total, error, onRetry }: LoadingProps) {
-  return <main className={ui("activity-loading fixed inset-0 z-[110] grid place-content-center justify-items-center gap-5 p-6 text-center")}>
+function ActivityLoading({ label, loaded, total, error, onRetry, night, revealing }: LoadingProps) {
+  return <main className={ui(`activity-loading fixed inset-0 z-[110] grid place-content-center justify-items-center gap-5 p-6 text-center ${night ? 'night-loading' : ''}`)}
+    data-revealing={revealing || undefined}>
+    {night && <BedtimeQuilt />}
     <p className={ui("activity-loading-title m-0 leading-tight")} role="status" data-loading={!error || undefined}>{error || label}</p>
     {!error && <div className={ui("activity-loading-track overflow-hidden")} role="progressbar" aria-label={label}
       aria-valuemin={0} aria-valuemax={total} aria-valuenow={loaded}>

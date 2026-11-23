@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@keyframes quilt-cover {
+  from { transform: translateY(105%); border-radius: 24% 18% 0 0; }
+  to { transform: none; border-radius: 0; }
+}
+@keyframes night-reveal {
+  from { transform: translateY(0); }
+  to { transform: translateY(-105%); }
+}
+
 @font-face {
   font-family: Schoolbell;
   src: url('/schoolbell.ttf') format('truetype');

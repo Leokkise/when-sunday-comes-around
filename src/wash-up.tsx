@@ -92,13 +92,13 @@ const bodyWaterAccents = [
 const scrapeSpots = scrapes.map(scrape => ({ ...scrape, kind: 'scrape' }))
 const shampooMoves = 30
 const washStepArtwork = {
-  Leaf: { href: '/bath-dirt.webp', width: 750, height: 500, crop: '80 57 115 145' },
-  Shower: { href: '/handheld-shower.webp', width: 384, height: 384, crop: '21 22 151 145' },
-  Shampoo: { href: '/bath-fixtures.webp', width: 768, height: 768, crop: '505 78 145 251' },
-  Soap: { href: '/bath-supplies.webp', width: 640, height: 640, crop: '366 119 207 132' },
-  Sponge: { href: '/bath-supplies.webp', width: 640, height: 640, crop: '48 87 275 196' },
-  Towel: { href: '/bath-fixtures.webp', width: 768, height: 768, crop: '51 427 282 317' },
-  Bandage: { href: '/bath-supplies.webp', width: 640, height: 640, crop: '45 402 269 114' },
+  Leaf: { href: '/bath/bath-dirt.webp', width: 750, height: 500, crop: '80 57 115 145' },
+  Shower: { href: '/bath/handheld-shower.webp', width: 384, height: 384, crop: '21 22 151 145' },
+  Shampoo: { href: '/shared/bath-fixtures.webp', width: 768, height: 768, crop: '505 78 145 251' },
+  Soap: { href: '/shared/bath-supplies.webp', width: 640, height: 640, crop: '366 119 207 132' },
+  Sponge: { href: '/shared/bath-supplies.webp', width: 640, height: 640, crop: '48 87 275 196' },
+  Towel: { href: '/shared/bath-fixtures.webp', width: 768, height: 768, crop: '51 427 282 317' },
+  Bandage: { href: '/shared/bath-supplies.webp', width: 640, height: 640, crop: '45 402 269 114' },
 }
 
 function WashStepArtwork({ tool }: { tool?: Tool }) {
@@ -545,9 +545,9 @@ function WashUp() {
             {tool && phase !== 0 && !finishedBath && <div className={ui("wash-held")} data-wrong={wrong}><ToolArt tool={tool} />{tool.name}</div>}
           </div>
           {spray && <div ref={sprayElement} className={ui("wash-spray")} style={{ '--spray-x': spray.x + 'px', '--spray-y': spray.y + 'px', '--shower-reach': showerReach } as CSSProperties} aria-hidden="true">
-            <svg className={ui("wash-spray-head")} viewBox="0 0 1 1"><image href="/handheld-shower.webp" width="2" height="2" /></svg>
+            <svg className={ui("wash-spray-head")} viewBox="0 0 1 1"><image href="/bath/handheld-shower.webp" width="2" height="2" /></svg>
             {Array.from({ length: 36 }, (_, index) => (
-              <img key={index} className={ui("wash-spray-drop")} src="/shower-droplet.svg" alt=""
+              <img key={index} className={ui("wash-spray-drop")} src="/bath/shower-droplet.svg" alt=""
                 onAnimationIteration={event => {
                   const position = sprayPosition.current
                   if (!position) return
@@ -716,7 +716,7 @@ function WashUp() {
 }
 
 const bathArtwork = [
-  '/bathroom.webp', bathSprite, '/shampoo-bubble-white.webp', '/shower-droplet.svg',
+  '/shared/bathroom.webp', bathSprite, '/bath/shampoo-bubble-white.webp', '/bath/shower-droplet.svg',
   ...new Set(Object.values(washStepArtwork).map(art => art.href)),
 ]
 

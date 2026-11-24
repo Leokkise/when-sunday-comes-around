@@ -11,7 +11,7 @@ import { restoreToothProgress, sectionForTooth, teethPerRow, toothAt, toothCente
 
 type Point = { x: number; y: number }
 type Tool = 'brush' | 'paste' | 'water'
-const toolArt: Record<Tool, string> = { brush: '/brush-toothbrush-v2.webp', paste: '/brush-toothpaste-v2.webp', water: '/brush-water.webp' }
+const toolArt: Record<Tool, string> = { brush: '/brush/brush-toothbrush-v2.webp', paste: '/brush/brush-toothpaste-v2.webp', water: '/brush/brush-water.webp' }
 type BrushSpot = Point & { label: string; radius: number; radiusY: number }
 type Round = { title: string; hint: string; view: 'mouth' | 'tongue'; spots: BrushSpot[] }
 const outsideHint = 'Gently brush back and forth over the outside of every tooth in the guide.'
@@ -32,8 +32,8 @@ const rounds: Record<number, Round | undefined> = {
     { x: 53, y: 61.5, radius: .20, radiusY: .115, label: 'Tongue' },
   ] },
 }
-const organizerArt = '/brush-organizer-caddy.webp'
-const images = ['/bathroom.webp', bathSprite, brushFinishMouth, '/bath-fixtures.webp', '/bath-supplies.webp', '/brush-smile.webp', frontArt, '/brush-sink-sage.webp', '/brush-front.webp', '/brush-contact.webp', '/brush-paste-dab.svg', organizerArt, ...Object.values(toolArt)]
+const organizerArt = '/brush/brush-organizer-caddy.webp'
+const images = ['/shared/bathroom.webp', bathSprite, brushFinishMouth, '/shared/bath-fixtures.webp', '/shared/bath-supplies.webp', '/brush/tongue-source.webp', frontArt, '/brush/brush-sink-sage.webp', '/brush/step-toothbrush.webp', '/brush/brush-contact.webp', '/brush/brush-paste-dab.svg', organizerArt, ...Object.values(toolArt)]
 const saveKey = 'when-sunday.brush-teeth.v2'
 // Saved spots use the same progress scale even when a round has more spots.
 const spotUnits = 5000
@@ -517,7 +517,7 @@ function BrushTeeth() {
           {applyingPaste && <ToothpasteSqueeze duration={pasteSqueezeTime} />}
           {held && <div ref={cursor} className={ui(`brush-held brush-held-${held}`)} data-pose={held === 'brush' ? 'contact' : undefined}
             data-tongue={held === 'brush' && step === 7} hidden aria-hidden="true">
-            <img src={held === 'brush' ? '/brush-contact.webp' : toolArt[held]} alt="" />
+            <img src={held === 'brush' ? '/brush/brush-contact.webp' : toolArt[held]} alt="" />
             <span className={ui("brush-grip")} />
           </div>}
 
@@ -525,7 +525,7 @@ function BrushTeeth() {
       </div>
       <section className={ui("brush-panel brush-simple-panel")} aria-labelledby="brush-title">
         <div className={ui("brush-step-label")}>
-          <img src={step === 0 ? toolArt.paste : step === 8 ? toolArt.water : '/brush-front.webp'} alt="" />
+          <img src={step === 0 ? toolArt.paste : step === 8 ? toolArt.water : '/brush/step-toothbrush.webp'} alt="" />
           <span>Step <strong>{stepNumber}</strong> of {stepOrder.length}</span>
         </div>
         <h1 id="brush-title" ref={stepTitle} tabIndex={-1} className={ui("ink-wiggle")}>{title}</h1>

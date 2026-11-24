@@ -1,4 +1,9 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+@source "./";
+@source "../index.html";
+@source "../wash-up/index.html";
+@source "../brush-teeth/index.html";
+@source "../dress-up/index.html";
 
 @keyframes quilt-cover {
   from { transform: translateY(105%); border-radius: 24% 18% 0 0; }
@@ -11,7 +16,7 @@
 
 @font-face {
   font-family: Schoolbell;
-  src: url('/schoolbell.ttf') format('truetype');
+  src: url('/fonts/schoolbell.woff2') format('woff2');
   font-style: normal;
   font-weight: 400;
   font-display: swap;

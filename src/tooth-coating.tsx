@@ -2,7 +2,7 @@ import { ui } from './ui-classes'
 import { StaggeredGlints } from './character-shine'
 import { sectionForTooth, toothAt, toothBounds, toothCenters } from './brush-sections'
 
-export const frontArt = '/brush-pencil-slim-laterals.webp'
+export const frontArt = '/brush/brush-pencil-slim-laterals.webp'
 export const brushedEnamelOpacity = .32
 const rinsedEnamelOpacity = .64
 

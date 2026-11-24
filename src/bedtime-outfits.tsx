@@ -1,10 +1,16 @@
-import accessory0 from '../assets/bedtime/starry-mask.webp'
-import accessory1 from '../assets/bedtime/midnight-mask.webp'
-import accessory2 from '../assets/bedtime/bunny-mask.webp'
-import accessory3 from '../assets/bedtime/pink-cat-mask.webp'
-import accessory4 from '../assets/bedtime/starry-cap.webp'
-import accessory5 from '../assets/bedtime/bunny-hat.webp'
-import accessory6 from '../assets/bedtime/blue-cat-hat.webp'
+import woodlandFoxAtlas from '../assets/bedtime/woodland-fox.webp'
+import polarSkateAtlas from '../assets/bedtime/polar-skate.webp'
+import pandaAtlas from '../assets/bedtime/panda.webp'
+import brownBearAtlas from '../assets/bedtime/brown-bear.webp'
+import grayCatHat from '../assets/bedtime/gray-cat-hat.webp'
+import dreamyPuppyMask from '../assets/bedtime/dreamy-puppy-mask.webp'
+import buttercupPuppyHood from '../assets/bedtime/buttercup-puppy-hood.webp'
+import starryMask from '../assets/bedtime/starry-mask.webp'
+import midnightMask from '../assets/bedtime/midnight-mask.webp'
+import bunnyMask from '../assets/bedtime/bunny-mask.webp'
+import starryCap from '../assets/bedtime/starry-cap.webp'
+import bunnyHat from '../assets/bedtime/bunny-hat.webp'
+import blueCatHat from '../assets/bedtime/blue-cat-hat.webp'
 import cloudBlueAtlas from '../assets/bedtime/blue-classic.webp'
 import sleepyCatAtlas from '../assets/bedtime/cat.webp'
 import cherryChecksAtlas from '../assets/bedtime/cherry-gingham.webp'
@@ -33,6 +39,7 @@ export type BedtimeOutfit = {
   parts: readonly Garment[]
   fit?: Partial<Record<Garment, Bounds>>
   hoodLining?: string
+  hairCover?: number
   coversArms?: boolean
 }
 
@@ -52,7 +59,13 @@ const maskedPajamas = [...pajamas, 'mask'] as const
 const hoodedPajamas = [...pajamas, 'headwear'] as const
 const checkedPajamas = [...hoodedPajamas, 'mask'] as const
 
+const animalFit = { top: [278, 362, 344, 368], pants: [321, 651, 258, 603], headwear: [250, 2, 400, 416], socks: [320, 1184, 260, 154] } as const
+
 export const bedtimeOutfits: readonly BedtimeOutfit[] = [
+  { id: 'woodland-fox', name: 'Woodland Fox', atlas: woodlandFoxAtlas, parts: pajamas, fit: { ...referenceFit, top: [290, 370, 320, 360], socks: [308, 1183, 284, 164] } },
+  { id: 'polar-skate', name: 'Polar Skate', atlas: polarSkateAtlas, parts: pajamas, fit: { ...referenceFit, top: [290, 370, 320, 360], socks: [308, 1183, 284, 164] } },
+  { id: 'panda', name: 'Panda Cuddles', atlas: pandaAtlas, parts: hoodedPajamas, hoodLining: '#b8ad98', fit: { ...animalFit, top: [278, 362, 344, 388] } },
+  { id: 'brown-bear', name: 'Honey Bear', atlas: brownBearAtlas, parts: hoodedPajamas, hoodLining: '#70513d', fit: { ...animalFit, top: [290, 362, 320, 368], pants: [329, 651, 242, 603] } },
   {
     id: 'dinosaur', name: 'Little Dinosaur', atlas: dinosaurAtlas, parts: hoodedPajamas, hoodLining: '#50573c',
     fit: { top: [283, 369, 334, 395], pants: [305, 650, 263, 604], headwear: [231, 2, 400, 416], socks: [320, 1197, 260, 143] },
@@ -83,26 +96,28 @@ export const bedtimeOutfits: readonly BedtimeOutfit[] = [
   },
   {
     id: 'yarn-cat', name: 'Yarn Cat', atlas: yarnCatAtlas, maskArt: yarnCatMask, parts: maskedPajamas,
-    fit: { ...referenceFit, top: [289, 335, 322, 399], socks: [308, 1183, 284, 164] }, coversArms: true,
+    fit: { ...referenceFit, top: [289, 360, 322, 374], socks: [308, 1183, 284, 164] }, coversArms: true,
   },
   {
     id: 'cocoa-puppy', name: 'Cocoa Puppy', atlas: cocoaPuppyAtlas, maskArt: cocoaPuppyMask, parts: maskedPajamas,
-    fit: { ...referenceFit, top: [289, 338, 322, 396], pants: [325, 650, 250, 598] }, coversArms: true,
+    fit: { ...referenceFit, top: [289, 362, 322, 372], pants: [325, 650, 250, 598] }, coversArms: true,
   },
 ]
 
 export function garmentName(garment: Garment, outfit: BedtimeOutfit) {
-  return garment === 'headwear' && outfit.hoodLining ? 'hood' : garments[garment].item
+  return garment === 'headwear' && (outfit.hoodLining || outfit.id.endsWith('-hood')) ? 'hood' : garments[garment].item
 }
 
 export const bedtimeChoices: readonly BedtimeOutfit[] = [...bedtimeOutfits,
-  { id: 'starry-mask', name: 'Starry Night', parts: ['mask'], maskArt: accessory0 },
-  { id: 'midnight-mask', name: 'Midnight', parts: ['mask'], maskArt: accessory1 },
-  { id: 'bunny-mask', name: 'Bunny Dreams', parts: ['mask'], maskArt: accessory2, fit: { 'mask': [312, 100, 275, 200] } },
-  { id: 'pink-cat-mask', name: 'Pink Cat', parts: ['mask'], maskArt: accessory3, fit: { 'mask': [312, 170, 275, 130] } },
-  { id: 'starry-cap', name: 'Starry Night', parts: ['headwear'], headwearArt: accessory4, fit: { 'headwear': [250, 0, 420, 380] } },
-  { id: 'bunny-hat', name: 'Bunny Dreams', parts: ['headwear'], headwearArt: accessory5, fit: { 'headwear': [210, 0, 480, 480] } },
-  { id: 'blue-cat-hat', name: 'Blue Cat', parts: ['headwear'], headwearArt: accessory6, fit: { 'headwear': [285, 0, 330, 212] } },
+  { id: 'gray-cat-hat', name: 'Gray Cat', parts: ['headwear'], headwearArt: grayCatHat, hairCover: 105, fit: { headwear: [283, 12, 334, 240] } },
+  { id: 'dreamy-puppy-mask', name: 'Dreamy Puppy', parts: ['mask'], maskArt: dreamyPuppyMask },
+  { id: 'buttercup-puppy-hood', name: 'Buttercup Puppy', parts: ['headwear'], headwearArt: buttercupPuppyHood, hairCover: 105, fit: { headwear: [215, 0, 470, 500] } },
+  { id: 'starry-mask', name: 'Starry Night', parts: ['mask'], maskArt: starryMask },
+  { id: 'midnight-mask', name: 'Midnight', parts: ['mask'], maskArt: midnightMask },
+  { id: 'bunny-mask', name: 'Bunny Dreams', parts: ['mask'], maskArt: bunnyMask, fit: { mask: [326, 120, 248, 180] } },
+  { id: 'starry-cap', name: 'Starry Night', parts: ['headwear'], headwearArt: starryCap, hairCover: 105, fit: { headwear: [285, 25, 400, 380] } },
+  { id: 'bunny-hat', name: 'Bunny Dreams', parts: ['headwear'], headwearArt: bunnyHat, fit: { headwear: [215, 0, 470, 500] } },
+  { id: 'blue-cat-hat', name: 'Blue Cat', parts: ['headwear'], headwearArt: blueCatHat, hairCover: 105, fit: { headwear: [283, 16, 334, 220] } },
 ]
 export const outfitAssets = bedtimeChoices.flatMap(({ atlas, maskArt, headwearArt }) =>
   [atlas, maskArt, headwearArt].filter((src): src is string => Boolean(src)))

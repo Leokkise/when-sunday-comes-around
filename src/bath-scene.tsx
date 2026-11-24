@@ -1,8 +1,8 @@
 import { BodyShine, HairShine } from './character-shine'
 import { ui } from './ui-classes'
 
-export const bathSprite = '/bath-sprite.webp'
-export const brushFinishMouth = '/brush-finish-mouth.webp'
+export const bathSprite = '/shared/bath-sprite.webp'
+export const brushFinishMouth = '/shared/brush-finish-mouth.webp'
 
 export const bathTools = [
   { name: 'Shampoo', x: 75.3, y: 22.2, width: 8, height: 12 },

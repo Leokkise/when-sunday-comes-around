@@ -92,7 +92,7 @@ const utilities: Record<string, string> = {
     `motion-safe:[transition:opacity_.28s_ease-out]`,
   ].join(" "),
   "brush-grip": [
-    `absolute [left:65%] [top:-10px] [width:30px] [height:30px] [background:url('/hand-grabbing.svg')_center_/_contain]`,
+    `absolute [left:65%] [top:-10px] [width:30px] [height:30px] [background:url('/cursors/hand-grabbing.svg')_center_/_contain]`,
   ].join(" "),
   "brush-held": [
     `absolute [left:0] [top:0] [width:200px] pointer-events-none [z-index:4]`,
@@ -138,7 +138,7 @@ const utilities: Record<string, string> = {
     `[&::after]:[content:''] [&::after]:absolute [&::after]:[left:-10%] [&::after]:[top:44%] [&::after]:[width:120%] [&::after]:[height:12%] [&::after]:[border-radius:50%] [&::after]:[background:#d5e5d4] [&::after]:[rotate:-8deg]`,
   ].join(" "),
   "brush-paste-dab": [
-    `absolute [background:url('/brush-paste-dab.svg')_center_/_100%_100%_no-repeat] pointer-events-none`,
+    `absolute [background:url('/brush/brush-paste-dab.svg')_center_/_100%_100%_no-repeat] pointer-events-none`,
   ].join(" "),
   "brush-paste-scene": [
     `absolute [left:50%] [top:50%] [width:var(--paste-scene-width)] [aspect-ratio:16_/_9] [translate:-50%_-50%]`,
@@ -194,7 +194,7 @@ const utilities: Record<string, string> = {
     `[@media(max-width:760px)]:[&_.brush-progress]:[gap:3px] [@media(max-width:760px)]:[&_.brush-progress]:[margin-block:6px]`,
   ].join(" "),
   "brush-sink-stage": [
-    `[width:min(100cqw,_150cqh)] [aspect-ratio:3_/_2] [border-radius:24px] [background:#e2e8dc_url('/brush-sink-sage.webp')_center_/_100%_100%_no-repeat] overflow-hidden`,
+    `[width:min(100cqw,_150cqh)] [aspect-ratio:3_/_2] [border-radius:24px] [background:#e2e8dc_url('/brush/brush-sink-sage.webp')_center_/_100%_100%_no-repeat] overflow-hidden`,
     `[anchor-name:--brush-game-edge] [--brush-water-width:16%]`,
     `[&:has(.brush-zone:focus-visible)_.brush-keyboard-hint]:[clip-path:none]`,
     `[&_.brush-picture]:absolute [&_.brush-picture]:[width:66%] [&_.brush-picture]:h-auto [&_.brush-picture]:[max-height:none] [&_.brush-picture]:[aspect-ratio:1747_/_900] [&_.brush-picture]:[left:50%] [&_.brush-picture]:[top:35%] [&_.brush-picture]:[translate:-50%_-50%] [&_.brush-picture]:[margin:0]`,
@@ -218,6 +218,8 @@ const utilities: Record<string, string> = {
     `[&_.brush-held-water_>_img]:[translate:-50%_-50%]`,
   ].join(" "),
   "dress-page": `mx-auto max-w-[1920px] p-[clamp(18px,2.6vw,48px)]`,
+  "dress-header": `text-[#4a4947] lg:col-start-2 lg:row-start-1 lg:self-start`,
+  "dress-back": `[&:focus-visible]:outline-[#603b24]`,
   "home-page": `mx-auto max-w-[1200px] px-6 py-8 sm:px-10 sm:py-12`,
   "home-game": `overflow-hidden rounded-2xl border-2 border-[#c6b8a3] bg-[#fffdfa] text-[#4a4947] no-underline transition-colors hover:border-[#79563f] hover:bg-white focus-visible:outline-[#79563f]`,
   "night-transition": `fixed inset-0 z-[2147483000] overflow-hidden text-[#f4e5c6]`,
@@ -226,15 +228,22 @@ const utilities: Record<string, string> = {
   "dress-layout": `mx-auto grid max-w-[1520px] gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(310px,0.48fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:gap-x-10`,
   "dress-preview": `relative mx-auto grid w-full max-w-[28rem] aspect-[4/3] [place-items:end_center] self-start overflow-hidden rounded-[24px] border-[3px] border-[#eadac0] bg-[#667681] select-none md:border-[5px] lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:max-w-none`,
   "dress-panel": `flex min-h-0 min-w-0 flex-col items-start gap-4 lg:col-start-2 lg:row-start-2 lg:[contain:size]`,
-  "dress-picker": `flex min-h-0 w-full flex-col gap-3 rounded-2xl border border-[#b7aa93] bg-[#f4efe3] p-3 sm:p-4 lg:grow`,
-  "dress-options": `grid grid-cols-3 content-start gap-2 px-1 py-1 lg:min-h-0 lg:grow lg:overflow-y-auto lg:overscroll-contain lg:[scrollbar-color:#a99a80_transparent] xl:data-[category=headwear]:grid-cols-4`,
-  "dress-category": `group grid min-w-0 justify-items-center gap-1 rounded-lg text-[13px] leading-tight xl:text-base`,
-  "dress-category-icon": `grid size-9 place-items-center rounded-full border border-[#c2b7a5] bg-[#fffdfa] p-1.5 motion-safe:transition-colors group-hover:border-[#506548] group-hover:bg-[#f0f2e8] group-aria-pressed:border-[#506548] group-aria-pressed:bg-[#dce7d5] sm:size-10 sm:p-2`,
+  "dress-actions": `mt-auto flex w-full shrink-0 flex-wrap items-center gap-2`,
+  "dress-shuffle": `inline-flex min-h-11 items-center gap-2 rounded-lg border-2 border-[#79563f] bg-[#fffdfa] px-3 py-2 text-lg leading-tight text-[#603b24] hover:bg-[#f0e3cf] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#603b24] motion-safe:transition-colors`,
+  "dress-wearing": `absolute right-1 top-1/2 z-10 grid max-h-[calc(100%-0.5rem)] -translate-y-1/2 gap-0 overflow-y-auto overscroll-contain rounded-xl border-[3px] border-[#79563f] bg-white p-1 text-[#564736] [scrollbar-width:thin] [scrollbar-color:#603b24_#e7e5e4] sm:right-3 sm:gap-1.5 sm:p-2`,
+  "dress-worn-tile": `relative block size-[72px] shrink-0 rounded-lg border-2 border-dashed border-[#79563f] bg-white p-1.5 transition-colors duration-200 hover:bg-[#f0e3cf] focus-within:bg-[#f0e3cf] motion-safe:[&>svg]:transition-transform motion-safe:[&>svg]:duration-200 motion-safe:hover:[&>svg]:scale-[1.035] motion-safe:focus-within:[&>svg]:scale-[1.035] sm:size-20`,
+  "dress-remove-mark": `absolute -right-1 -top-1 z-10 grid size-7 place-items-center rounded-full border border-[#79563f] bg-white text-xl leading-none text-[#603b24] transition-colors duration-150 hover:bg-[#603b24] hover:text-white focus-visible:bg-[#603b24] focus-visible:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#603b24]`,
+  "dress-picker": `flex min-h-0 w-full flex-col gap-3 rounded-xl border-[3px] border-[#79563f] bg-white p-3 text-[#564736] sm:p-4 lg:grow`,
+  "dress-picker-heading": `-mx-3 -mt-3 grid shrink-0 gap-3 rounded-t-[9px] border-b-2 border-dashed border-[#79563f] bg-white p-3 text-[#4B2E2B] sm:-mx-4 sm:-mt-4 sm:p-4`,
+  "dress-options": `grid grid-cols-3 auto-rows-max content-start gap-2 overflow-y-scroll overscroll-contain p-1 [scrollbar-gutter:stable] [scrollbar-width:auto] [scrollbar-color:#603b24_#e7e5e4] [&::-webkit-scrollbar]:w-4 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-[#e7e5e4] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border-2 [&::-webkit-scrollbar-thumb]:border-solid [&::-webkit-scrollbar-thumb]:border-[#e7e5e4] [&::-webkit-scrollbar-thumb]:bg-[#603b24] max-h-[32rem] lg:min-h-0 lg:max-h-none lg:grow`,
+  "dress-choice-name": `block px-1 py-1.5 text-[13px] leading-tight sm:text-sm`,
+  "dress-category": `group grid min-w-0 justify-items-center gap-1 rounded-lg text-[13px] leading-tight aria-pressed:underline aria-pressed:decoration-[#79563f] aria-pressed:underline-offset-4 xl:text-base`,
+  "dress-category-icon": `grid size-10 place-items-center rounded-full border border-dashed border-[#79563f] bg-white p-1.5 transition-colors group-hover:border-[#603b24] group-aria-pressed:border-2 group-aria-pressed:border-[#603b24] sm:size-12 sm:p-2`,
   "dress-choice": [
-    `min-w-0 rounded-xl border border-[#a69d86] bg-[#fffdfa] p-1 text-center text-base leading-tight text-[#4a4947] motion-safe:transition-colors`,
-    `hover:border-[#506548] hover:bg-[#f0f2e8] aria-pressed:border-[#506548] aria-pressed:bg-[#dce7d5] aria-pressed:text-[#304429] aria-pressed:[box-shadow:inset_0_0_0_1px_#506548]`,
+    `group grid min-w-0 grid-rows-[1fr_auto] overflow-hidden rounded-lg border-2 border-dashed border-[#79563f] bg-white text-center text-base leading-tight text-[#564736] transition-colors duration-150`,
+    `hover:bg-[#f0e3cf] aria-pressed:bg-[#f0e3cf] aria-pressed:border-[#79563f] focus-visible:outline-[#603b24]`,
   ].join(" "),
-  "dress-thumbnail": `block aspect-[4/5] overflow-hidden rounded-lg bg-[#e6e9e4] p-2 sm:p-3 xl:p-4`,
+  "dress-thumbnail": `block aspect-[3/4] overflow-hidden p-1.5 sm:p-2`,
   "message-box": [
     `relative [z-index:2] grid self-center [gap:clamp(16px,_1vw,_19px)] [min-width:0] [container-type:inline-size] [padding:clamp(20px,_2.5vw,_38px)] [border:2px_solid_#776a59] [border-radius:30px_32px_16px_30px] [background:#fcfaf3] [box-shadow:0_5px_16px_#594d390d]`,
     `origin-left motion-safe:[transition:rotate_.2s_ease] motion-safe:hover:rotate-[-0.9deg] motion-safe:has-[:focus-visible]:rotate-[-0.9deg]`,
@@ -281,7 +290,7 @@ const utilities: Record<string, string> = {
     `motion-safe:[animation:brush-squeeze-tube_var(--brush-squeeze-time)_ease-in-out_both]`,
   ].join(" "),
   "brush-stage": [
-    `relative [min-width:0] [border:0] [cursor:url('/hand-grab.svg')_17_16,_grab] [max-height:100%]`,
+    `relative [min-width:0] [border:0] [cursor:url('/cursors/hand-grab.svg')_17_16,_grab] [max-height:100%]`,
     `[&_button]:[cursor:inherit]`,
     `[@media(max-width:760px)]:[grid-row:1]`,
   ].join(" "),
@@ -336,21 +345,6 @@ const utilities: Record<string, string> = {
     `[&_svg>*]:[stroke-dasharray:.037_.0255] motion-safe:[&_svg>*]:[animation:brush-guide-dashes_.8s_linear_infinite]`,
     `[&:disabled]:[opacity:1]`,
   ].join(" "),
-  "chapters": [
-    `grid [grid-template-columns:repeat(3,_minmax(0,_1fr))] [gap:16px]`,
-    `[&_button]:grid [&_button]:justify-items-start [&_button]:text-left [&_button]:[gap:9px] [&_button]:[border-radius:16px_13px_15px_12px] [&_button]:[padding:20px_24px] [&_button]:[box-shadow:0_5px_18px_#4a49470c] [&_button]:[background:var(--card)] [&_button]:[font-size:clamp(22px,_3vw,_30px)]`,
-    `[&_button[aria-pressed="true"]]:[background:var(--shade)] [&_button[aria-pressed="true"]]:[text-decoration:underline] [&_button[aria-pressed="true"]]:[text-underline-offset:4px]`,
-    `[&_svg]:[width:43px] [&_svg]:[color:var(--accent)]`,
-    `[&_svg_path]:[stroke:currentColor] [&_svg_path]:[stroke-width:4] [&_svg_path]:[stroke-linecap:round] [&_svg_path]:[stroke-linejoin:round]`,
-    `[&_path]:[animation:draw_1.2s_ease-out_both]`,
-    `[&_button:nth-child(2)_path]:[animation-delay:.18s]`,
-    `[&_button:nth-child(3)_path]:[animation-delay:.36s]`,
-    `[@media(max-width:560px)]:[grid-template-columns:1fr] [@media(max-width:560px)]:[gap:10px]`,
-    `[@media(max-width:560px)]:[&_button]:[grid-template-columns:auto_1fr] [@media(max-width:560px)]:[&_button]:items-center [@media(max-width:560px)]:[&_button]:[padding:12px_16px]`,
-  ].join(" "),
-  "hover-lift": [
-    `motion-safe:[transition:translate_.2s_ease] motion-safe:hover:-translate-y-1 motion-safe:[&:is(:focus-visible,:has(:focus-visible))]:-translate-y-1`,
-  ].join(" "),
   "character-glint": [
     `motion-safe:[animation:wet-hair-glint_1.5s_ease-in-out_infinite]`,
     `motion-safe:[&[data-extra-glint="true"]]:[animation-fill-mode:backwards] motion-reduce:[&[data-extra-glint="true"]]:hidden`,
@@ -369,17 +363,13 @@ const utilities: Record<string, string> = {
     `[&.cta:is(:hover,:focus-visible)]:[background:#dce7d5] [&.cta:is(:hover,:focus-visible)]:[color:#304429]`,
   ].join(" "),
   "cta-dress": [
-    `[&.cta]:[background:#79563f] [&.cta]:[border-color:#63432f] [&.cta]:text-white disabled:opacity-60 disabled:cursor-not-allowed`,
-    `[&.cta:enabled:is(:hover,:focus-visible)]:[background:#fffdfa] [&.cta:enabled:is(:hover,:focus-visible)]:text-[#79563f] [&.cta:enabled:is(:hover,:focus-visible)]:[box-shadow:0_4px_10px_#51372340]`,
-    `[&.cta:focus-visible]:outline-2 [&.cta:focus-visible]:outline-offset-4 [&.cta:focus-visible]:outline-[#79563f]`,
+    `[&.cta]:[background:#603b24] [&.cta]:[border-color:#482b19] [&.cta]:text-white disabled:opacity-70 disabled:cursor-not-allowed`,
+    `[&.cta:enabled:is(:hover,:focus-visible)]:[background:#fffdfa] [&.cta:enabled:is(:hover,:focus-visible)]:text-[#603b24] [&.cta:enabled:is(:hover,:focus-visible)]:[box-shadow:0_4px_10px_#51372340]`,
+    `[&.cta:focus-visible]:outline-2 [&.cta:focus-visible]:outline-offset-4 [&.cta:focus-visible]:outline-[#603b24]`,
     `motion-safe:[&.cta]:[transition:background-color_.18s_ease-out,box-shadow_.18s_ease-out,translate_.18s_ease-out] motion-reduce:[&.cta]:transition-none`,
   ].join(" "),
-  "day": [
-    `[margin-top:36px]`,
-    `[&_h2]:[font-size:26px] [&_h2]:[margin-bottom:12px]`,
-  ].join(" "),
   "dirt": [
-    `aspect-square [background-image:url('/bath-dirt.webp')] [background-size:300%_200%] bg-no-repeat [filter:url("#bath-paper-key")] pointer-events-none absolute [left:50%] [top:50%] [translate:-50%_-50%] [width:var(--dirt-width,8cqi)]`,
+    `aspect-square [background-image:url('/bath/bath-dirt.webp')] [background-size:300%_200%] bg-no-repeat [filter:url("#bath-paper-key")] pointer-events-none absolute [left:50%] [top:50%] [translate:-50%_-50%] [width:var(--dirt-width,8cqi)]`,
   ].join(" "),
   "dirt-leaf": [
     `[--dirt-width:13cqi] [rotate:8deg]`,
@@ -399,29 +389,12 @@ const utilities: Record<string, string> = {
   "dirt-speckles": [
     `[--dirt-width:6.5cqi] [background-position:100%_0] [rotate:12deg]`,
   ].join(" "),
-  "hero": [
-    `[padding:clamp(20px,_4vw,_56px)_0_64px]`,
-  ].join(" "),
   "ink-filters": [
     `absolute pointer-events-none`,
   ].join(" "),
   "ink-wiggle": [
     `[filter:url("#title-ink-2")]`,
     `motion-safe:[animation:ink-wiggle_.5s_step-end_infinite]`,
-  ].join(" "),
-  "intro": [
-    `[&_p]:[margin:25px_0_29px] [&_p]:[max-width:53ch] [&_p]:[font-size:clamp(19px,_2vw,_22px)] [&_p]:[line-height:1.35]`,
-  ].join(" "),
-  "masthead": [
-    `flex items-center [gap:10px] [min-height:88px] [font-size:23px]`,
-    `[&_svg]:[width:37px] [&_svg]:[color:var(--accent)]`,
-    `[&_svg_path]:[stroke:currentColor] [&_svg_path]:[stroke-width:4] [&_svg_path]:[stroke-linecap:round] [&_svg_path]:[stroke-linejoin:round]`,
-  ].join(" "),
-  "note": [
-    `[margin:19px_0_0] [font-size:20px] [line-height:1.3]`,
-  ].join(" "),
-  "page": [
-    `[width:min(976px,_100%_-_64px)] [margin:auto]`,
   ].join(" "),
   "wash-actions": [
     `flex [gap:12px] items-center flex-wrap`,
@@ -466,9 +439,6 @@ const utilities: Record<string, string> = {
     `[min-height:calc(2.8em_+_22px)] [margin-block:14px_9px] [font-size:19px]`,
     `[@media(max-width:760px)]:[margin-block:4px] [@media(max-width:760px)]:[font-size:16px]`,
   ].join(" "),
-  "wash-game-link": [
-    `inline-block [margin-top:12px] [padding-block:8px] [font-size:20px] [text-decoration:underline] [text-underline-offset:4px]`,
-  ].join(" "),
   "wash-hair-detail": [
     `absolute [left:-6%] [top:-28%] [width:112%] [height:115%] overflow-visible`,
     `motion-safe:[transition:opacity_.45s_ease-out]`,
@@ -477,7 +447,7 @@ const utilities: Record<string, string> = {
     `absolute [width:var(--glint-width,_3.25%)] [translate:-50%_-50%] [color:#fffdf4] [filter:drop-shadow(0_0_0.9px_#564736)]`,
   ].join(" "),
   "wash-character-shine": [
-    `absolute [inset:0] [z-index:2] pointer-events-none [mask:url('/bath-sprite.webp')_center_/_100%_100%_no-repeat]`,
+    `absolute [inset:0] [z-index:2] pointer-events-none [mask:url('/shared/bath-sprite.webp')_center_/_100%_100%_no-repeat]`,
     `[&[data-hair="true"]]:[clip-path:polygon(31.5%_10%,_34%_7%,_38%_4.8%,_45%_2.8%,_51%_3%,_56%_5.5%,_61%_7.3%,_64%_10%,_65%_14%,_63%_18%,_60%_17.8%,_57%_15%,_55%_13.6%,_52%_15.3%,_49%_17%,_47.3%_17.5%,_48.4%_14.2%,_45%_15.9%,_41%_17.4%,_36%_18.3%,_34%_18.8%,_32%_16%,_31.2%_13%)]`,
   ].join(" "),
   "wash-held": [
@@ -554,8 +524,8 @@ const utilities: Record<string, string> = {
     `absolute [left:28%] [top:1%] [width:44%] [height:19%] pointer-events-none`,
     `[&_i]:absolute [&_i]:[width:14%] [&_i]:aspect-square [&_i]:[translate:-50%_-50%] [&_i]:[border:1px_solid_#f5f0e9] [&_i]:[border-radius:47%_51%_48%_52%] [&_i]:[background:radial-gradient(circle_at_32%_27%,_#fffdf7_0_10%,_transparent_18%),_radial-gradient(circle_at_45%_38%,_#fffdf561_24%,_#f6f4ebe0_80%)]`,
     `[&_i:nth-child(3n)]:[width:11%]`,
-    `[&_i:nth-child(odd)]:[width:16%] [&_i:nth-child(odd)]:[border:0] [&_i:nth-child(odd)]:[background:url('/shampoo-bubble-white.webp')_left_center_/_58%_no-repeat,_url('/shampoo-bubble-white.webp')_right_top_/_66%_no-repeat,_url('/shampoo-bubble-white.webp')_right_bottom_/_50%_no-repeat]`,
-    `[&_i:nth-child(4n_+_3)::after]:[content:''] [&_i:nth-child(4n_+_3)::after]:absolute [&_i:nth-child(4n_+_3)::after]:[inset:auto_auto_0_14%] [&_i:nth-child(4n_+_3)::after]:[width:34%] [&_i:nth-child(4n_+_3)::after]:aspect-square [&_i:nth-child(4n_+_3)::after]:[background:url('/shampoo-bubble-white.webp')_center_/_contain_no-repeat]`,
+    `[&_i:nth-child(odd)]:[width:16%] [&_i:nth-child(odd)]:[border:0] [&_i:nth-child(odd)]:[background:url('/bath/shampoo-bubble-white.webp')_left_center_/_58%_no-repeat,_url('/bath/shampoo-bubble-white.webp')_right_top_/_66%_no-repeat,_url('/bath/shampoo-bubble-white.webp')_right_bottom_/_50%_no-repeat]`,
+    `[&_i:nth-child(4n_+_3)::after]:[content:''] [&_i:nth-child(4n_+_3)::after]:absolute [&_i:nth-child(4n_+_3)::after]:[inset:auto_auto_0_14%] [&_i:nth-child(4n_+_3)::after]:[width:34%] [&_i:nth-child(4n_+_3)::after]:aspect-square [&_i:nth-child(4n_+_3)::after]:[background:url('/bath/shampoo-bubble-white.webp')_center_/_contain_no-repeat]`,
     `[&_i:nth-child(even)]:[background:radial-gradient(circle_at_32%_27%,_#fffdf7_0_10%,_transparent_18%),_radial-gradient(circle_at_45%_38%,_#e5f3f440_24%,_#c5e3edd9_80%)]`,
     `[&[data-rinsed="true"]_i]:[opacity:0]`,
     `motion-safe:[&[data-rinsed="true"]_i]:[animation:shampoo-bubble-rinse_1.05s_ease-in_var(--rinse-delay)_both]`,
@@ -578,7 +548,7 @@ const utilities: Record<string, string> = {
     `[&[data-bandage="true"]]:[width:11cqi]`,
     `[&[data-bandage="true"]_.wash-supply-art]:[translate:-50%_-50%] [&[data-bandage="true"]_.wash-supply-art]:[rotate:-18deg]`,
     `[&[data-bandage="true"]::after]:[translate:-18%_-24%]`,
-    `[&::after]:[content:''] [&::after]:absolute [&::after]:[left:0] [&::after]:[top:0] [&::after]:[width:30px] [&::after]:aspect-square [&::after]:[translate:-50%_-48%] [&::after]:[background:url('/hand-grabbing.svg')_center_/_contain_no-repeat]`,
+    `[&::after]:[content:''] [&::after]:absolute [&::after]:[left:0] [&::after]:[top:0] [&::after]:[width:30px] [&::after]:aspect-square [&::after]:[translate:-50%_-48%] [&::after]:[background:url('/cursors/hand-grabbing.svg')_center_/_contain_no-repeat]`,
   ].join(" "),
   "wash-shampoo-dab": [
     `[background:linear-gradient(105deg,_#b6c9bc,_#f5f2e7_55%,_#d6ded1)] absolute [left:46%] [top:10%] [width:8%] [height:1.5%] [border:1px_solid_#a5b3a4] [border-radius:62%_42%_55%_45%] pointer-events-none`,
@@ -616,13 +586,13 @@ const utilities: Record<string, string> = {
     `absolute [inset:auto_auto_80%_-2%] w-full [height:var(--spray-width)] overflow-hidden [translate:var(--spray-x)_var(--spray-y)] [will-change:translate] [z-index:1]`,
   ].join(" "),
   "wash-stage": [
-    `[grid-area:1_/_1] relative grid [place-items:end_center] overflow-hidden [border-radius:24px] [background:#e2e8dc_url('/bathroom.webp')_center_/_cover_no-repeat] aspect-square [container-type:inline-size] touch-none select-none [cursor:url('/hand-grab.svg')_17_16,_grab]`,
+    `[grid-area:1_/_1] relative grid [place-items:end_center] overflow-hidden [border-radius:24px] [background:#e2e8dc_url('/shared/bathroom.webp')_center_/_cover_no-repeat] aspect-square [container-type:inline-size] touch-none select-none [cursor:url('/cursors/hand-grab.svg')_17_16,_grab]`,
     `[@media(min-width:761px)]:[max-height:var(--stage-height)]`,
     `[@media(max-width:760px)]:[grid-area:auto] [@media(max-width:760px)]:[justify-self:center] [@media(max-width:760px)]:h-full [@media(max-width:760px)]:[max-width:100%]`,
-    `[&:has(.wash-spray)]:overflow-visible [&:has(.wash-spray)]:[cursor:url('/hand-grabbing.svg')_17_16,_grabbing]`,
+    `[&:has(.wash-spray)]:overflow-visible [&:has(.wash-spray)]:[cursor:url('/cursors/hand-grabbing.svg')_17_16,_grabbing]`,
     `[&[data-wetting-hair="true"]_.wash-target]:[width:26%] [&[data-wetting-hair="true"]_.wash-target]:[height:20%] [&[data-wetting-hair="true"]_.wash-target]:[border-color:transparent] [&[data-wetting-hair="true"]_.wash-target]:[background:transparent] [&[data-wetting-hair="true"]_.wash-target]:pointer-events-none`,
-    `[&[data-grabbing="true"]]:[cursor:url('/hand-grabbing.svg')_17_16,_grabbing]`,
-    `[&_button:active]:[cursor:url('/hand-grabbing.svg')_17_16,_grabbing]`,
+    `[&[data-grabbing="true"]]:[cursor:url('/cursors/hand-grabbing.svg')_17_16,_grabbing]`,
+    `[&_button:active]:[cursor:url('/cursors/hand-grabbing.svg')_17_16,_grabbing]`,
   ].join(" "),
   "wash-stage-controls": [
     `absolute [z-index:3] [inset:auto_12px_12px] flex items-center pointer-events-none`,
@@ -644,22 +614,22 @@ const utilities: Record<string, string> = {
     `[&_progress::-moz-progress-bar]:[background:#547b68]`,
   ].join(" "),
   "wash-supply-art": [
-    `block [width:min(100%,_64px)] aspect-square [background-image:var(--bath-supply-sheet,url('/bath-supplies.webp'))] [background-size:200%_200%] bg-no-repeat pointer-events-none`,
+    `block [width:min(100%,_64px)] aspect-square [background-image:var(--bath-supply-sheet,url('/shared/bath-supplies.webp'))] [background-size:200%_200%] bg-no-repeat pointer-events-none`,
   ].join(" "),
   "wash-supply-bandage": [
     `[background-position:0_100%]`,
   ].join(" "),
   "wash-supply-shampoo": [
-    `[--bath-supply-sheet:url('/bath-fixtures.webp')] [background-position:100%_0]`,
+    `[--bath-supply-sheet:url('/shared/bath-fixtures.webp')] [background-position:100%_0]`,
   ].join(" "),
   "wash-supply-shower": [
-    `[--bath-supply-sheet:url('/bath-fixtures.webp')]`,
+    `[--bath-supply-sheet:url('/shared/bath-fixtures.webp')]`,
   ].join(" "),
   "wash-supply-soap": [
     `[background-position:100%_0]`,
   ].join(" "),
   "wash-supply-towel": [
-    `[--bath-supply-sheet:url('/bath-fixtures.webp')] [background-position:0_100%]`,
+    `[--bath-supply-sheet:url('/shared/bath-fixtures.webp')] [background-position:0_100%]`,
   ].join(" "),
   "wash-target": [
     `[&[data-shower-target="true"]]:[z-index:1] [&[data-shower-target="true"]]:[border:0] [&[data-shower-target="true"]]:[background:#f2dfc233]`,

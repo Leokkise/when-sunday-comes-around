@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { ui } from './ui-classes'
 import { BedtimeQuilt, nightQuilt } from './bedtime-transition'
 
-const activityCursors = ['/bath-pointer.svg', '/bath-pointer-hover.svg', '/hand-grab.svg', '/hand-grabbing.svg']
+const activityCursors = ['/cursors/bath-pointer.svg', '/cursors/bath-pointer-hover.svg', '/cursors/hand-grab.svg', '/cursors/hand-grabbing.svg']
 
 export function ActivityEntry({ assets, label, errorMessage, children, night = false }: {
   assets: readonly string[]
@@ -17,6 +17,7 @@ export function ActivityEntry({ assets, label, errorMessage, children, night = f
   const [revealed, setRevealed] = useState(false)
   const scene = useRef<HTMLDivElement>(null)
   const ready = phase === 'ready'
+  const sources = useMemo(() => [...new Set([...activityCursors, ...assets, ...(night ? [nightQuilt] : [])])], [assets, night])
   useEffect(() => {
     if (!night || !ready) return
     const timer = window.setTimeout(() => setRevealed(true),
@@ -26,7 +27,7 @@ export function ActivityEntry({ assets, label, errorMessage, children, night = f
 
   useEffect(() => {
     let active = true
-    Promise.all([...activityCursors, ...assets, ...(night ? [nightQuilt] : [])].map(async src => {
+    Promise.all(sources.map(async src => {
       const image = new Image()
       image.src = src
       await image.decode()
@@ -36,7 +37,7 @@ export function ActivityEntry({ assets, label, errorMessage, children, night = f
       () => { if (active) setPhase('error') },
     )
     return () => { active = false }
-  }, [assets, attempt, night])
+  }, [sources, attempt])
 
   useEffect(() => {
     if (phase !== 'rendering' || !scene.current) return
@@ -45,6 +46,7 @@ export function ActivityEntry({ assets, label, errorMessage, children, night = f
     const images = [...scene.current.querySelectorAll('img')]
     Promise.all([...images.map(image => image.decode()), document.fonts.load('400 16px Schoolbell')]).then(() => {
       if (!active) return
+      setLoaded(sources.length + 1)
       // Leave the overlay in place through a frame with the decoded scene mounted.
       frame = requestAnimationFrame(() => {
         frame = requestAnimationFrame(() => setPhase('ready'))
@@ -54,11 +56,11 @@ export function ActivityEntry({ assets, label, errorMessage, children, night = f
       active = false
       cancelAnimationFrame(frame)
     }
-  }, [phase])
+  }, [phase, sources])
 
   return <>
     {(phase === 'rendering' || ready) && <div ref={scene} className="contents" inert={!ready}>{children}</div>}
-    {(!ready || (night && !revealed)) && <ActivityLoading label={label} loaded={loaded} total={assets.length + activityCursors.length + 1 + Number(night)}
+    {(!ready || (night && !revealed)) && <ActivityLoading label={label} loaded={loaded} total={sources.length + 1}
       night={night} revealing={ready}
       error={phase === 'error' ? errorMessage : undefined} onRetry={() => {
         setLoaded(0)

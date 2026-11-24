@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { ui } from './ui-classes'
-import nightQuilt from '../assets/bedtime-night-quilt.webp'
+import nightQuilt from '../assets/bedtime/night-quilt.webp'
 export { nightQuilt }
 
 export function BedtimeQuilt() {

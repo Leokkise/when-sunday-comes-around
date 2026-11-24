@@ -43,7 +43,7 @@ export function TongueMouth({ progress }: { progress: number }) {
       </g>
       <g transform={tongueTransform}>
         <g clipPath="url(#brush-tongue-shape)">
-          <image href="/brush-smile.webp" width="1747" height="900" filter="url(#brush-tongue-color)" />
+          <image href="/brush/tongue-source.webp" width="1747" height="900" filter="url(#brush-tongue-color)" />
           {!finished && <path d={tongueShape} fill="url(#brush-tongue-coating)" />}
         </g>
         <path d={tongueShape} fill="none" stroke="#845559" strokeWidth="7" />

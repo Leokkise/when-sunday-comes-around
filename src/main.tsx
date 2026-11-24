@@ -1,8 +1,8 @@
 import { createRoot } from 'react-dom/client'
 import { ui } from './ui-classes'
-import washArt from '../assets/home-wash.webp'
-import brushArt from '../assets/home-brush.webp'
-import dressArt from '../assets/home-dress.webp'
+import washArt from '../assets/home/home-wash.webp'
+import brushArt from '../assets/home/home-brush.webp'
+import dressArt from '../assets/home/home-dress.webp'
 import { BedtimeLink } from './bedtime-transition'
 const games = [
   { name: 'Wash up', href: '/wash-up/', art: washArt },

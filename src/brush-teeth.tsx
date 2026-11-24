@@ -8,6 +8,7 @@ import { bathSprite, brushFinishMouth, CleanBathScene } from './bath-scene'
 import { ToothCoating, ToothpasteFoam, ToothRowShine, frontArt } from './tooth-coating'
 import { TongueMouth } from './tongue-mouth'
 import { restoreToothProgress, sectionForTooth, teethPerRow, toothAt, toothCenters, toothSectionBounds } from './brush-sections'
+import { loadImages } from './image-loading'
 
 type Point = { x: number; y: number }
 type Tool = 'brush' | 'paste' | 'water'
@@ -33,7 +34,10 @@ const rounds: Record<number, Round | undefined> = {
   ] },
 }
 const organizerArt = '/brush/brush-organizer-caddy.webp'
-const images = ['/shared/bathroom.webp', bathSprite, brushFinishMouth, '/shared/bath-fixtures.webp', '/shared/bath-supplies.webp', '/brush/tongue-source.webp', frontArt, '/brush/brush-sink-sage.webp', '/brush/step-toothbrush.webp', '/brush/brush-contact.webp', '/brush/brush-paste-dab.svg', organizerArt, ...Object.values(toolArt)]
+const bathImages = ['/shared/bathroom.webp', bathSprite, brushFinishMouth, '/shared/bath-fixtures.webp', '/shared/bath-supplies.webp']
+const gameImages = [frontArt, '/brush/brush-sink-sage.webp', '/brush/step-toothbrush.webp', '/brush/brush-contact.webp', '/brush/brush-paste-dab.svg', organizerArt, ...Object.values(toolArt)]
+const imagesForRound = (step: number) => step === 9 ? bathImages
+  : step === 7 ? [...gameImages, '/brush/tongue-source.webp'] : gameImages
 const saveKey = 'when-sunday.brush-teeth.v2'
 // Saved spots use the same progress scale even when a round has more spots.
 const spotUnits = 5000
@@ -152,6 +156,8 @@ function BrushTeeth() {
   const spitting = spitState === 'spitting'
   const spitDone = spitState === 'done'
   const [toolFeedback, setToolFeedback] = useState<{ tool: Tool | null; attempt: number } | null>(null)
+  const [stageLoad, setStageLoad] = useState<'loading' | 'error' | null>(null)
+  const loadingStage = useRef(false)
   const picked = held === 'brush'
   const heldRef = useRef<Tool | null>(held)
   heldRef.current = held
@@ -268,7 +274,24 @@ function BrushTeeth() {
     else (spotButton.current ?? stepTitle.current)?.focus()
   }, [intro, step, stepDone])
 
-  function go(next: number) {
+  async function prepare(images: readonly string[]) {
+    if (loadingStage.current) return false
+    loadingStage.current = true
+    setStageLoad('loading')
+    try {
+      await loadImages(images)
+      setStageLoad(null)
+      return true
+    } catch {
+      setStageLoad('error')
+      return false
+    } finally {
+      loadingStage.current = false
+    }
+  }
+
+  async function go(next: number) {
+    if (!await prepare(next === 0 ? bathImages : imagesForRound(next))) return
     const freshAmounts = Array<number>(next === 1 || next === 2 ? teethPerRow : rounds[next]?.spots.length ?? 4).fill(0)
     stroke.current = null
     skipPointerClick.current = false
@@ -438,11 +461,15 @@ function BrushTeeth() {
       <div className={ui("message-box")}>
         <h1 ref={stepTitle} tabIndex={-1} className={ui("ink-wiggle")}>{finished ? <>All clean!<br />Ready to smile!</> : <>Bath done!<br />Brush time!</>}</h1>
         <p>{finished ? 'You washed up and brushed your teeth. Great job taking care of yourself!' : 'Uh-oh, a little bad breath! Let’s brush for clean teeth and fresher breath.'}</p>
+        {stageLoad && <p aria-live="polite">{stageLoad === 'loading' ? 'Getting the pictures ready…' : 'The pictures didn’t load. Please try again.'}</p>}
         {finished ? <div className="flex flex-wrap gap-x-3 gap-y-1">
           <BedtimeLink className={ui("cta cta-brush")}>Choose pajamas</BedtimeLink>
           <button className={ui("cta cta-brush-outline")} onClick={event => { keyboardAdvance.current = event.detail === 0; go(0) }}>Play again</button>
-        </div> : <button className={ui("cta cta-brush")} disabled={intro === 'cover'} onClick={event => {
+        </div> : <button className={ui("cta cta-brush")} disabled={intro === 'cover' || stageLoad === 'loading'}
+          onPointerEnter={() => { void loadImages(gameImages).catch(() => {}) }}
+          onFocus={() => { void loadImages(gameImages).catch(() => {}) }} onClick={async event => {
           focusGame.current = event.detail === 0
+          if (!await prepare(gameImages)) return
           setIntro(window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'game' : 'cover')
         }}>Let’s brush our teeth</button>}
       </div>
@@ -535,10 +562,13 @@ function BrushTeeth() {
           <strong>{Math.floor(brushedPercent)}% brushed</strong>
           <progress aria-label={title} value={brushedPercent} max={100} />
         </div>}
-        <p className={ui("brush-status activity-feedback")} data-wrong={Boolean(toolFeedback)} data-done={stepDone} role="status">{toolFeedback ? toolHint : stepDone ? 'Nice work!' : ''}</p>
+        <p className={ui("brush-status activity-feedback")} data-wrong={Boolean(toolFeedback) || stageLoad === 'error'} data-done={stepDone} role="status">{stageLoad === 'loading' ? 'Getting the pictures ready…' : stageLoad === 'error' ? 'The pictures didn’t load. Please try again.' : toolFeedback ? toolHint : stepDone ? 'Nice work!' : ''}</p>
         <div className={ui("brush-actions")}>
           {stepDone && <>
-            <button ref={nextButton} className={ui("cta cta-brush")} onClick={event => { keyboardAdvance.current = event.detail === 0; go(spitDone ? 9 : stepOrder[stepNumber]) }}>{spitDone ? 'Finish' : 'Next step'}</button>
+            <button ref={nextButton} className={ui("cta cta-brush")} disabled={stageLoad === 'loading'}
+              onPointerEnter={() => { void loadImages(imagesForRound(spitDone ? 9 : stepOrder[stepNumber])).catch(() => {}) }}
+              onFocus={() => { void loadImages(imagesForRound(spitDone ? 9 : stepOrder[stepNumber])).catch(() => {}) }}
+              onClick={event => { keyboardAdvance.current = event.detail === 0; void go(spitDone ? 9 : stepOrder[stepNumber]) }}>{spitDone ? 'Finish' : 'Next step'}</button>
             <button className={ui("cta brush-retry")} onClick={event => { keyboardAdvance.current = event.detail === 0; go(step) }}>Try again</button>
             {step === 2 && <button type="button" className={ui("brush-tip-button")} aria-haspopup="dialog" onClick={() => homeTip.current?.showModal()}>
               <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
@@ -577,8 +607,9 @@ function BrushTeeth() {
   </main>
 }
 
+const initialSave = new URLSearchParams(window.location.search).get('start') === '1' ? null : readSave()
 createRoot(document.getElementById('root')!).render(
-  <ActivityEntry assets={images} label="Getting your toothbrush ready…" errorMessage="The pictures couldn’t load. Please try again.">
+  <ActivityEntry assets={initialSave?.started ? imagesForRound(initialSave.step) : bathImages} label="Getting your toothbrush ready…" errorMessage="The pictures couldn’t load. Please try again.">
     <BrushTeeth />
   </ActivityEntry>,
 )

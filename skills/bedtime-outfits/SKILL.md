@@ -20,3 +20,5 @@ Use the [pajama and accessory repair prompts](references/outfit-prompts.md) for 
 ## Wrist registration
 
 The worn character uses a 900 × 1350 coordinate system. Near y=710, its left wrist spans approximately x=297–338 and its right wrist x=561–602. Check cuff centers against those positions after packing, since trimming the source changes its registration. A cuff should meet the wrist before the hand widens around y=730. Fit clothing around the original arms. Never use an arm cutout mask to compensate for undersized sleeves. Use Sleepy Cat as the approved sleeve-width, wrist and ankle-join reference. Tighten an oversized collar opening in the artwork instead of moving the entire top farther up the neck.
+
+After updating this project's outfit art, parts or fitting bounds, run npm run generate:wardrobe-previews from the project root. Commit the generated assets/bedtime/previews images and src/wardrobe-previews.ts in the same change. The generator removes obsolete preview files. Keep the approved full-size art for worn layers, and keep new full-size wardrobe images out of the opening preload list.

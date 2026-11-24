@@ -119,8 +119,10 @@ export const bedtimeChoices: readonly BedtimeOutfit[] = [...bedtimeOutfits,
   { id: 'bunny-hat', name: 'Bunny Dreams', parts: ['headwear'], headwearArt: bunnyHat, fit: { headwear: [215, 0, 470, 500] } },
   { id: 'blue-cat-hat', name: 'Blue Cat', parts: ['headwear'], headwearArt: blueCatHat, hairCover: 105, fit: { headwear: [283, 16, 334, 220] } },
 ]
-export const outfitAssets = bedtimeChoices.flatMap(({ atlas, maskArt, headwearArt }) =>
-  [atlas, maskArt, headwearArt].filter((src): src is string => Boolean(src)))
+export function garmentAsset(outfit: BedtimeOutfit, garment: Garment) {
+  return (garment === 'mask' ? outfit.maskArt : garment === 'headwear' ? outfit.headwearArt : undefined)
+    ?? outfit.atlas!
+}
 
 function AtlasPiece({ outfit, garment, bounds }: { outfit: BedtimeOutfit; garment: Garment; bounds: Bounds }) {
   const [x, y, width, height] = bounds

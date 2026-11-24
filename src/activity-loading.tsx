@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { ui } from './ui-classes'
 import { BedtimeQuilt, nightQuilt } from './bedtime-transition'
+import { loadImage } from './image-loading'
 
 const activityCursors = ['/cursors/bath-pointer.svg', '/cursors/bath-pointer-hover.svg', '/cursors/hand-grab.svg', '/cursors/hand-grabbing.svg']
 
@@ -28,9 +29,7 @@ export function ActivityEntry({ assets, label, errorMessage, children, night = f
   useEffect(() => {
     let active = true
     Promise.all(sources.map(async src => {
-      const image = new Image()
-      image.src = src
-      await image.decode()
+      await loadImage(src)
       if (active) setLoaded(previous => previous + 1)
     })).then(
       () => { if (active) setPhase('rendering') },
@@ -43,7 +42,7 @@ export function ActivityEntry({ assets, label, errorMessage, children, night = f
     if (phase !== 'rendering' || !scene.current) return
     let active = true
     let frame = 0
-    const images = [...scene.current.querySelectorAll('img')]
+    const images = [...scene.current.querySelectorAll<HTMLImageElement>('img:not([loading="lazy"])')]
     Promise.all([...images.map(image => image.decode()), document.fonts.load('400 16px Schoolbell')]).then(() => {
       if (!active) return
       setLoaded(sources.length + 1)

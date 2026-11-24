@@ -229,7 +229,7 @@ const utilities: Record<string, string> = {
   "dress-preview": `relative mx-auto grid w-full max-w-[28rem] aspect-[4/3] [place-items:end_center] self-start overflow-hidden rounded-[24px] border-[3px] border-[#eadac0] bg-[#667681] select-none md:border-[5px] lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:max-w-none`,
   "dress-panel": `flex min-h-0 min-w-0 flex-col items-start gap-4 lg:col-start-2 lg:row-start-2 lg:[contain:size]`,
   "dress-actions": `mt-auto flex w-full shrink-0 flex-wrap items-center gap-2`,
-  "dress-shuffle": `inline-flex min-h-11 items-center gap-2 rounded-lg border-2 border-[#79563f] bg-[#fffdfa] px-3 py-2 text-lg leading-tight text-[#603b24] hover:bg-[#f0e3cf] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#603b24] motion-safe:transition-colors`,
+  "dress-shuffle": `inline-flex min-h-11 items-center gap-2 rounded-lg border-2 border-[#79563f] bg-[#fffdfa] px-3 py-2 text-lg leading-tight text-[#603b24] hover:bg-[#f0e3cf] disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#603b24] motion-safe:transition-colors`,
   "dress-wearing": `absolute right-1 top-1/2 z-10 grid max-h-[calc(100%-0.5rem)] -translate-y-1/2 gap-0 overflow-y-auto overscroll-contain rounded-xl border-[3px] border-[#79563f] bg-white p-1 text-[#564736] [scrollbar-width:thin] [scrollbar-color:#603b24_#e7e5e4] sm:right-3 sm:gap-1.5 sm:p-2`,
   "dress-worn-tile": `relative block size-[72px] shrink-0 rounded-lg border-2 border-dashed border-[#79563f] bg-white p-1.5 transition-colors duration-200 hover:bg-[#f0e3cf] focus-within:bg-[#f0e3cf] motion-safe:[&>svg]:transition-transform motion-safe:[&>svg]:duration-200 motion-safe:hover:[&>svg]:scale-[1.035] motion-safe:focus-within:[&>svg]:scale-[1.035] sm:size-20`,
   "dress-remove-mark": `absolute -right-1 -top-1 z-10 grid size-7 place-items-center rounded-full border border-[#79563f] bg-white text-xl leading-none text-[#603b24] transition-colors duration-150 hover:bg-[#603b24] hover:text-white focus-visible:bg-[#603b24] focus-visible:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#603b24]`,
@@ -240,7 +240,7 @@ const utilities: Record<string, string> = {
   "dress-category": `group grid min-w-0 justify-items-center gap-1 rounded-lg text-[13px] leading-tight aria-pressed:underline aria-pressed:decoration-[#79563f] aria-pressed:underline-offset-4 xl:text-base`,
   "dress-category-icon": `grid size-10 place-items-center rounded-full border border-dashed border-[#79563f] bg-white p-1.5 transition-colors group-hover:border-[#603b24] group-aria-pressed:border-2 group-aria-pressed:border-[#603b24] sm:size-12 sm:p-2`,
   "dress-choice": [
-    `group grid min-w-0 grid-rows-[1fr_auto] overflow-hidden rounded-lg border-2 border-dashed border-[#79563f] bg-white text-center text-base leading-tight text-[#564736] transition-colors duration-150`,
+    `group grid min-w-0 grid-rows-[1fr_auto] overflow-hidden rounded-lg border-2 border-dashed border-[#79563f] bg-white text-center text-base leading-tight text-[#564736] transition-colors duration-150 disabled:cursor-wait`,
     `hover:bg-[#f0e3cf] aria-pressed:bg-[#f0e3cf] aria-pressed:border-[#79563f] focus-visible:outline-[#603b24]`,
   ].join(" "),
   "dress-thumbnail": `block aspect-[3/4] overflow-hidden p-1.5 sm:p-2`,

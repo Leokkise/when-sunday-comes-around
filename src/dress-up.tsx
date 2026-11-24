@@ -2,12 +2,16 @@ import { useId, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ActivityEntry } from './activity-loading'
 import { BathBandages, SmilingCharacterArt, bathSprite, brushFinishMouth } from './bath-scene'
-import { bedtimeChoices, bedtimeOutfits, GarmentArt, garmentName, garments, outfitAssets, SetArt, type BedtimeOutfit, type Garment } from './bedtime-outfits'
+import { bedtimeChoices, bedtimeOutfits, GarmentArt, garmentAsset, garmentName, garments, type BedtimeOutfit, type Garment } from './bedtime-outfits'
+import { categoryPreviews, wardrobePreviews } from './wardrobe-previews'
+import { WardrobeThumbnail } from './wardrobe-thumbnail'
+import { loadImages } from './image-loading'
 import { InkFilters } from './ink-filters'
 import { ui } from './ui-classes'
 
 const bedroom = '/bedtime/pajama-bedroom.webp'
-const assets = [bedroom, bathSprite, brushFinishMouth, '/shared/bath-supplies.webp', ...outfitAssets]
+const assets = [bedroom, bathSprite, brushFinishMouth, '/shared/bath-supplies.webp', ...Object.values(categoryPreviews),
+  ...bedtimeOutfits.slice(0, 3).map(choice => wardrobePreviews[choice.id].sets!)]
 
 type Outfit = Partial<Record<Garment, BedtimeOutfit>>
 const categories = {
@@ -18,7 +22,6 @@ type Category = keyof typeof categories
 const categoryNames = (Object.keys(categories) as Category[]).filter(name =>
   name === 'sets' || bedtimeChoices.some(choice => choice.parts.includes(name)))
 const layers: Garment[] = ['socks', 'pants', 'top', 'headwear', 'mask']
-const categoryPreview = bedtimeOutfits.find(choice => choice.id === 'cherry-gingham')!
 
 function matchesSet(outfit: Outfit, choice: BedtimeOutfit) {
   return layers.every(garment => outfit[garment] === (choice.parts.includes(garment) ? choice : undefined))
@@ -44,6 +47,9 @@ function DressUp() {
   const [outfit, setOutfit] = useState<Outfit>({})
   const [category, setCategory] = useState<Category>('sets')
   const [finished, setFinished] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [selectionError, setSelectionError] = useState(false)
+  const selectionRequest = useRef(0)
   const options = useRef<HTMLDivElement>(null)
   const wearing = useRef<HTMLDivElement>(null)
   const bodyMask = useId()
@@ -61,17 +67,33 @@ function DressUp() {
     ...(outfit.pants ? ['right knee', 'left shin'] : []),
   ]
 
-  function choose(choice: BedtimeOutfit) {
-    setOutfit(previous => {
-      if (category === 'sets') {
-        return matchesSet(previous, choice)
-          ? {} : Object.fromEntries(choice.parts.map(garment => [garment, choice]))
+  async function applyOutfit(next: Outfit) {
+    const request = ++selectionRequest.current
+    setLoading(true)
+    setSelectionError(false)
+    try {
+      await loadImages(layers.flatMap(garment => next[garment] ? [garmentAsset(next[garment]!, garment)] : []))
+      if (request === selectionRequest.current) {
+        setOutfit(next)
+        setFinished(false)
       }
-      return { ...previous, [category]: previous[category] === choice ? undefined : choice }
-    })
+    } catch {
+      if (request === selectionRequest.current) setSelectionError(true)
+    } finally {
+      if (request === selectionRequest.current) setLoading(false)
+    }
+  }
+
+  function choose(choice: BedtimeOutfit) {
+    void applyOutfit(category === 'sets'
+      ? matchesSet(outfit, choice) ? {} : Object.fromEntries(choice.parts.map(garment => [garment, choice]))
+      : { ...outfit, [category]: outfit[category] === choice ? undefined : choice })
   }
 
   function takeOff(garment: Garment, index: number) {
+    selectionRequest.current++
+    setLoading(false)
+    setSelectionError(false)
     setOutfit(previous => ({ ...previous, [garment]: undefined }))
     setFinished(false)
     requestAnimationFrame(() => {
@@ -90,7 +112,7 @@ function DressUp() {
         && choice !== outfit[garment] && (garment !== 'top' || choice !== mixed.pants))
       mixed[garment] = candidates[Math.floor(Math.random() * candidates.length)]
     }
-    setOutfit(mixed)
+    void applyOutfit(mixed)
     setCategory('sets')
     setFinished(false)
     options.current?.scrollTo({ top: 0 })
@@ -146,7 +168,7 @@ function DressUp() {
           </div>
         </section>}
       </div>
-      <section className={ui('dress-panel')} aria-label="Outfit choices">
+      <section className={ui('dress-panel')} aria-label="Outfit choices" aria-busy={loading}>
         <div className={ui('dress-picker')} hidden={finished}>
           <div className={ui('dress-picker-heading')}>
             <h2 id="pajama-category-title" className="text-center [font-size:var(--game-body-size)] leading-tight">{categories[category].label}</h2>
@@ -158,8 +180,7 @@ function DressUp() {
                     options.current?.scrollTo({ top: 0 })
                   }}>
                   <span className={ui('dress-category-icon')}>
-                    {name === 'sets' ? <SetArt outfit={categoryPreview} />
-                      : <GarmentArt garment={name} outfit={categoryPreview} />}
+                    <img src={categoryPreviews[name]} alt="" className="size-full min-h-0 min-w-0 object-contain" />
                   </span>
                   {categories[name].category}
                 </button>
@@ -170,10 +191,8 @@ function DressUp() {
             {choices.map(choice => (
               <button key={choice.id} type="button" className={ui('dress-choice')}
                 aria-label={`${choice.name} ${category === 'sets' ? categories.sets.item : garmentName(category, choice)}`} aria-pressed={selected === choice}
-                onClick={() => choose(choice)}>
-                <span className={ui('dress-thumbnail')}>
-                  {category === 'sets' ? <SetArt outfit={choice} /> : <GarmentArt garment={category} outfit={choice} />}
-                </span>
+                disabled={loading} onClick={() => choose(choice)}>
+                <WardrobeThumbnail key={category} source={wardrobePreviews[choice.id][category]!} />
                 <span className={ui('dress-choice-name')}>{choice.name}</span>
               </button>
             ))}
@@ -181,15 +200,18 @@ function DressUp() {
         </div>
         <div className={ui('dress-actions')}>
           <button type="button" className={ui('cta cta-dress')}
-            disabled={!ready} onClick={() => setFinished(!finished)}>
+            disabled={!ready || loading} onClick={() => setFinished(!finished)}>
             {finished ? 'Change outfit' : 'Ready for bed'}
           </button>
-          <button type="button" className={ui('dress-shuffle')} hidden={finished} onClick={shuffle}>
+          <button type="button" className={ui('dress-shuffle')} hidden={finished} disabled={loading} onClick={shuffle}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="size-5 shrink-0" aria-hidden="true">
               <path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c2 0 4-3 6-6s4-6 6-6h3m-4-4 4 4-4 4" />
             </svg>
             Shuffle outfits
           </button>
+          {(loading || selectionError) && <p className="w-full text-base text-[#603b24]" aria-live="polite">
+            {loading ? 'Getting your outfit ready…' : 'That outfit didn’t load. Try picking it again.'}
+          </p>}
         </div>
       </section>
     </div>

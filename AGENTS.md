@@ -13,3 +13,7 @@
 - Fit Bedtime sleeves around the unchanged character arms. Do not hide or cut away arms to compensate for a narrow garment. Use Sleepy Cat as the approved sleeve, wrist-cuff and pant-to-sock transition reference.
 
 - Keep the full Schoolbell WOFF2 font and its license in public/fonts. Update all four HTML preloads with any font-path replacement; do not ship the superseded TTF or subset away supported characters. Keep caches and QA output out of Git and deployment uploads.
+
+- Entry loaders should wait only for the opening or restored scene's required artwork. Fetch later-round and selected-outfit assets on demand, decode them before switching scenes, and keep failures retryable without discarding the current scene. Do not preload the whole wardrobe at entry.
+- After changing outfit artwork, parts or fitting bounds, run `npm run generate:wardrobe-previews` and commit its generated previews and `src/wardrobe-previews.ts`. Keep the approved full-size art for worn layers; the small previews are intentional display variants. The generator removes superseded previews automatically.
+- Cache content-hashed `/assets/` files with immutable URLs. Keep HTML and mutable public assets revalidated so published repairs remain visible.

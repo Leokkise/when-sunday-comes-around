@@ -1,1 +1,23 @@
-{"name":"when-sunday-comes-around","private":true,"type":"module","scripts":{"dev":"vite","build":"tsc --noEmit && vite build"},"dependencies":{"react":"^19.2.0","react-dom":"^19.2.0"},"devDependencies":{"vite":"^7.2.0","typescript":"^5.9.3","@types/react":"^19.2.0","@types/react-dom":"^19.2.0","tailwindcss":"^4.1.0","@tailwindcss/vite":"^4.1.0"}}
+{
+  "name": "when-sunday-comes-around",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "generate:wardrobe-previews": "node scripts/generate-wardrobe-previews.mjs"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.0"
+  }
+}

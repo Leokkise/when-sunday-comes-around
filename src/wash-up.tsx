@@ -5,7 +5,7 @@ import { InkFilters } from './ink-filters'
 import { ActivityEntry } from './activity-loading'
 import { HairShine, BodyShine } from './character-shine'
 import { bathScrapes as scrapes, bathSprite, bathTools as tools, BathSupplies, ToolArt } from './bath-scene'
-import { advanceHairSweep } from './hair-wetting'
+import { advanceHairRinse, advanceHairSweep } from './hair-wetting'
 import { addShampooRub, restoreShampooProgress, shampooAreaAt, shampooAreas, shampooMoves, shampooRubsPerArea, type ShampooArea, type ShampooProgress } from './shampoo-progress'
 
 const dirtSpots = [
@@ -44,6 +44,23 @@ const dirtSpots = [
 
 type Tool = typeof tools[number]['name']
 const hair = [{ name: 'hair', x: 50, y: 11, kind: 'target' }]
+// Trace the visible hair, including the crown tufts and fringe, in bath-sprite pixels.
+const scalpOutline = `M322 278C295 260 283 224 285 183C287 115 335 63 399 43C445 28 492 37 515 77
+  C522 50 506 29 478 24C493 10 521 17 534 34C543 46 545 59 542 73
+  C566 72 586 91 590 108L589 116C576 102 564 95 550 94
+  C576 114 594 153 597 184C600 211 590 236 580 251C574 245 568 246 562 251L541 272
+  C545 252 535 241 521 229C505 218 494 198 487 176C481 209 455 238 426 247
+  C437 231 441 208 442 187C423 221 390 232 358 242L359 259C349 247 337 247 328 254C322 260 322 270 322 278Z`
+
+function shampooBubblePosition(area: number, index: number) {
+  const radius = Math.sqrt((index + .5) / shampooRubsPerArea)
+  const angle = index * 2.39996 + area * 1.7
+  return {
+    x: [.26, .5, .73][area] + Math.cos(angle) * radius * [.16, .17, .14][area],
+    y: [.51, .44, .51][area] + Math.sin(angle) * radius * .34,
+  }
+}
+
 const body = [{ name: 'body', x: 50, y: 37, kind: 'target' }]
 const bodyWetSpots = [
   { name: 'left arm', x: 37, y: 43, kind: 'target' },
@@ -145,6 +162,8 @@ function readCheckpoint() {
       shampooProgress: step?.tool === 'Shampoo' ? restoreShampooProgress(saved.shampooProgress) : [0, 0, 0] as ShampooProgress,
       shampooApplied: step?.tool === 'Shampoo' && (saved.shampooApplied === true || saved.massages > 0
         || restoreShampooProgress(saved.shampooProgress).some(count => count > 0)),
+      hairRinseProgress: phase === rinseHairPhase && Number.isFinite(saved.hairRinseProgress)
+        ? Math.max(0, Math.min(1, saved.hairRinseProgress)) : 0,
       wettingPasses: saved.phase === 1 && Number.isInteger(saved.wettingPasses)
         ? saved.wettingPattern !== 2 && saved.wettingPasses >= 2
           ? wettingDirections.length
@@ -165,7 +184,7 @@ function WashUp() {
   const [shampoo, setShampoo] = useState(() => {
     const progress = checkpoint?.shampooProgress ?? [0, 0, 0] as ShampooProgress
     return { progress, positions: progress.flatMap((count, area) => Array.from({ length: count }, (_, index) =>
-      ({ x: (area + .5) / 3 + (index % 2 ? -.05 : .05), y: .3 + (index % 4) * .13 }))) }
+      shampooBubblePosition(area, index))) }
   })
   const shampooProgress = shampoo.progress
   const massages = shampooProgress.reduce((sum, count) => sum + count, 0)
@@ -175,6 +194,7 @@ function WashUp() {
   const [shampooCursor, setShampooCursor] = useState<{ x: number; y: number; pointerType: string }>()
   const heldToolCursor = useRef<HTMLSpanElement>(null)
   const [wettingPasses, setWettingPasses] = useState(checkpoint?.wettingPasses ?? 0)
+  const [hairRinseProgress, setHairRinseProgress] = useState(checkpoint?.hairRinseProgress ?? 0)
   const [spray, setSpray] = useState<{ x: number; y: number; time: number; drift: number } | null>(null)
   const sprayPosition = useRef<typeof spray>(null)
   const sprayElement = useRef<HTMLDivElement>(null)
@@ -182,6 +202,7 @@ function WashUp() {
   const resetDialog = useRef<HTMLDialogElement>(null)
   const wettingSweepStart = useRef<number | null>(null)
   const massageStart = useRef<{ x: number; y: number; area: ShampooArea } | null>(null)
+  const scalpPath = useRef<SVGPathElement>(null)
   const step = steps[phase]
   const shampooing = step?.tool === 'Shampoo'
   const rubbingShampoo = shampooing && shampooApplied
@@ -224,14 +245,14 @@ function WashUp() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(checkpointKey, JSON.stringify({ phase, cleaned, selected, massages, shampooProgress, shampooApplied, shampooMoves, wettingPasses, wettingPattern: 2, combinedShower: true, soapChestPasses: true, bodyRinseTargets: true, guidedDrying: true, directBandaging: true }))
+      localStorage.setItem(checkpointKey, JSON.stringify({ phase, cleaned, selected, massages, shampooProgress, shampooApplied, shampooMoves, wettingPasses, hairRinseProgress, wettingPattern: 2, combinedShower: true, soapChestPasses: true, bodyRinseTargets: true, guidedDrying: true, directBandaging: true }))
     } catch {
       // The game can still run when browser storage is unavailable.
     }
-  }, [phase, cleaned, selected, shampooProgress, shampooApplied, wettingPasses])
+  }, [phase, cleaned, selected, shampooProgress, shampooApplied, wettingPasses, hairRinseProgress])
 
-  const progress = wettingHair ? wettingPasses : shampooing ? massages : cleaned.length
-  const progressMax = wettingHair ? wettingDirections.length : shampooing ? shampooMoves : step?.spots.length
+  const progress = wettingHair ? wettingPasses : cleaned.length
+  const progressMax = wettingHair ? wettingDirections.length : step?.spots.length
 
   function useOn(names: string[]) {
     if (!ready || done || !names.length) return
@@ -242,17 +263,23 @@ function WashUp() {
     }
   }
 
+  function rinseHairTo(progress: number) {
+    setHairRinseProgress(progress)
+    if (progress === 1) setCleaned(previous => [...new Set([...previous, 'hair'])])
+  }
+
   function applyShampoo() {
     setShampooApplied(true)
     setSelected(undefined)
     setPouring(true)
   }
 
-  function rubHair(area: ShampooArea, position = { x: (area + .5) / 3, y: .5 }) {
+  function rubHair(area: ShampooArea, position?: { x: number; y: number }) {
     if (!rubbingShampoo || pouring || done) return
     setShampoo(previous => {
       const progress = addShampooRub(previous.progress, area)
-      return progress === previous.progress ? previous : { progress, positions: [...previous.positions, position] }
+      if (progress === previous.progress) return previous
+      return { progress, positions: [...previous.positions, position ?? shampooBubblePosition(area, previous.progress[area])] }
     })
   }
 
@@ -323,6 +350,15 @@ function WashUp() {
         }
         return
       }
+      if (phase === rinseHairPhase && !hairRinsed) {
+        const foam = stage.querySelector('.wash-scalp-foam')?.getBoundingClientRect()
+        if (!foam || sprayTop > foam.bottom || sprayBottom < foam.top) return
+        const hairLeft = foam.left + foam.width * .08
+        const hairWidth = foam.width * .82
+        const reach = Math.min(.18, sprayWidth * .32 / hairWidth)
+        rinseHairTo(advanceHairRinse(hairRinseProgress, (sprayCenter - hairLeft) / hairWidth, reach))
+        return
+      }
       const hits = [...stage.querySelectorAll<HTMLButtonElement>('[data-spot]')].filter(spot => {
         if (phase === rinseHairPhase && !hairRinsed && spot.dataset.spot !== 'hair') return false
         const target = spot.getBoundingClientRect()
@@ -350,11 +386,16 @@ function WashUp() {
 
     const { clientX, clientY } = event
     if (shampooing) {
-      const scalp = stage.querySelector('[data-scalp]')?.getBoundingClientRect()
-      const x = scalp ? (clientX - scalp.left) / scalp.width : 0
-      const y = scalp ? (clientY - scalp.top) / scalp.height : 0
-      const onSideLock = y >= .58 && y <= 1.14 && ((x >= .06 && x <= .22) || (x >= .78 && x <= .94))
-      if (!scalp || (!onSideLock && Math.abs(2 * x - 1) ** 2.5 + Math.abs(2 * y - 1) ** 2.5 > 1)) {
+      const path = scalpPath.current
+      const outline = path?.ownerSVGElement
+      if (!path || !outline) return
+      const scalp = outline.getBoundingClientRect()
+      const x = (clientX - scalp.left) / scalp.width
+      const y = (clientY - scalp.top) / scalp.height
+      const area = shampooAreaAt(x)
+      const view = outline.viewBox.baseVal
+      const point = new DOMPoint(view.x + x * view.width, view.y + y * view.height)
+      if (area === null || (!path.isPointInFill(point) && !path.isPointInStroke(point))) {
         massageStart.current = null
         return
       }
@@ -363,8 +404,6 @@ function WashUp() {
         return
       }
       if (pouring) return
-      const area = shampooAreaAt(x)
-      if (area === null) return
       const start = massageStart.current
       if (starting || !start || start.area !== area) {
         massageStart.current = { x: clientX, y: clientY, area }
@@ -372,7 +411,7 @@ function WashUp() {
       }
       const dx = clientX - start.x
       const dy = clientY - start.y
-      if (Math.hypot(dx, dy) >= scalp.width * .18) {
+      if (Math.hypot(dx, dy) >= Math.max(3, scalp.width * .05)) {
         massageStart.current = { x: clientX, y: clientY, area }
         rubHair(area, { x, y })
       }
@@ -469,6 +508,7 @@ function WashUp() {
     showerPointer.current = null
     wettingSweepStart.current = null
     setWettingPasses(0)
+    setHairRinseProgress(0)
     setSpray(null)
     sprayPosition.current = null
     massageStart.current = null
@@ -502,8 +542,9 @@ function WashUp() {
           <p>{finishedBath ? 'All clean and dry. Nice work!' : shampooing && ready
             ? done ? 'Nice work! Now wash off the bubbles.'
               : pouring ? 'Adding shampoo…'
-              : shampooApplied ? 'Gently rub the left, middle, and right parts of the hair.'
-              : 'Tap the circle on the hair to add shampoo.'
+              : shampooApplied ? 'Rub each part of the hair.'
+              : 'Tap the hair to add shampoo.'
+            : phase === rinseHairPhase && !hairRinsed ? 'Move the shower over the hair from left to right.'
             : soaping && ready && !done
               ? soapArea === 'arms' ? 'Follow the arrows. Rub down, then up on each arm.'
                 : soapArea === 'body' ? `Rub down, then up ${soapChest?.name === 'body' ? 'in the middle of the chest' : soapChest?.name === 'left chest' ? 'on the left side of the chest' : 'on the right side of the chest'}.`
@@ -514,21 +555,24 @@ function WashUp() {
                   ? ['Touch the circle on the hair with the towel.', 'Wipe down, then up on both shoulders.', 'Wipe down, then up on the chest.', 'Wipe down, then up on both thighs.', 'Wipe down, then up on both feet.'][dryGroup]
                 : holdingBandage ? 'Drag the bandage onto a cut.'
                   : step?.hint}</p>
-          {!finishedBath && step && <div className={ui("wash-step-progress")}>
-            <div className={ui("wash-progress-row")} aria-live="polite">
-              <strong>{phase === 0 ? `${progress} of ${progressMax} leaves removed` : wettingHair ? `${progress} of ${progressMax} moves` : `${progress} / ${progressMax} ${shampooing ? 'rubs' : step.tool === 'Sponge' ? 'spots cleaned' : step.tool === 'Bandage' ? 'cuts covered' : 'done'}`}</strong>
-              {wettingHair && wettingDirection && <span className={ui("wash-next-sweep")}>Move {wettingDirection} <span aria-hidden="true">{wettingDirection === 'right' ? '→' : '←'}</span></span>}
-            </div>
-            <progress aria-label={step.title} value={progress} max={progressMax} />
-            {shampooing && <div className={ui('wash-shampoo-progress')} role="group" aria-label="Hair area progress">
-              {shampooAreas.map((area, index) => <span key={area} data-complete={shampooProgress[index] === shampooRubsPerArea}
-                aria-label={`${area} hair: ${shampooProgress[index]} of ${shampooRubsPerArea} rubs`}>
-                {area[0].toUpperCase() + area.slice(1)} {shampooProgress[index]} / {shampooRubsPerArea}
-              </span>)}
-            </div>}
+          {!finishedBath && step && (!shampooing || (shampooApplied && !pouring)) && <div className={ui("wash-step-progress")}>
+            {shampooing ? <div className={ui('wash-shampoo-progress')} role="group" aria-label="Hair coverage">
+              {shampooAreas.map((area, index) => <div key={area} className={ui('wash-shampoo-section')}
+                data-complete={shampooProgress[index] === shampooRubsPerArea}>
+                <span className={ui('wash-shampoo-label')}>{area[0].toUpperCase() + area.slice(1)}</span>
+                <progress aria-label={`${area} hair coverage`} value={shampooProgress[index]} max={shampooRubsPerArea} />
+              </div>)}
+              <span className="sr-only" aria-live="polite">{massages} of {shampooMoves} rubs</span>
+            </div> : <>
+              <div className={ui("wash-progress-row")} aria-live="polite">
+                <strong>{phase === 0 ? `${progress} of ${progressMax} leaves removed` : wettingHair ? `${progress} of ${progressMax} moves` : `${progress} / ${progressMax} ${step.tool === 'Sponge' ? 'spots cleaned' : step.tool === 'Bandage' ? 'cuts covered' : 'done'}`}</strong>
+                {wettingHair && wettingDirection && <span className={ui("wash-next-sweep")}>Move {wettingDirection} <span aria-hidden="true">{wettingDirection === 'right' ? '→' : '←'}</span></span>}
+              </div>
+              <progress aria-label={step.title} value={progress} max={progressMax} />
+            </>}
           </div>}
-          {!finishedBath && step && <div className={ui("wash-feedback-slot")} data-done={done}>
-            <p className={ui("wash-feedback activity-feedback")} data-wrong={wrong} role="status">{shampooing && !wrong ? '' : done ? 'Nice work!' : wrong ? (rubbingShampoo ? 'Use your hands to rub the hair.' : requiredTool ? `Find the ${requiredTool.toLowerCase()}.` : 'Use your hands to pick up the leaves.') : !ready && requiredTool && !step.hint.startsWith('Pick ') ? `Pick up the ${requiredTool.toLowerCase()}.` : !wettingHair && step.spots.length === 1 && selected ? `Use the ${selected.toLowerCase()} on the marked spot.` : ''}</p>
+          {!finishedBath && step && (!shampooing || wrong) && <div className={ui("wash-feedback-slot")} data-done={done}>
+            <p className={ui("wash-feedback activity-feedback")} data-wrong={wrong} role="status">{done ? 'Nice work!' : wrong ? (rubbingShampoo ? 'Use your hands to rub the hair.' : requiredTool ? `Find the ${requiredTool.toLowerCase()}.` : 'Use your hands to pick up the leaves.') : !ready && requiredTool && !step.hint.startsWith('Pick ') ? `Pick up the ${requiredTool.toLowerCase()}.` : !wettingHair && step.spots.length === 1 && selected ? `Use the ${selected.toLowerCase()} on the marked spot.` : ''}</p>
           </div>}
 
           <div className={ui("wash-actions")}>
@@ -613,18 +657,13 @@ function WashUp() {
             </span>}
             {shampooing && shampooApplied && massages === 0 && <span className={ui("wash-shampoo-dab")} aria-hidden="true" />}
             {pouring && <span className={ui("wash-shampoo-pour")} aria-hidden="true" onAnimationEnd={() => setPouring(false)}><i className={ui("wash-supply-art wash-supply-shampoo")} /></span>}
-            {foamCount > 0 && <span className={ui("wash-scalp-foam")} data-rinsed={hairRinsed} aria-hidden="true">
+            {foamCount > 0 && <span className={ui("wash-scalp-foam")} aria-hidden="true">
               {Array.from({ length: foamCount }, (_, index) => {
-              const radius = .43 * Math.sqrt((index + .5) / shampooMoves)
-              const angle = index * 2.4
-              const position = bubblePositions[index] ?? (
-                index % 9 < 2 ? { x: index % 9 === 0 ? .14 : .86, y: .77 + Math.floor(index / 9) * .1 }
-                  : { x: .5 + radius * Math.cos(angle), y: .5 + radius * Math.sin(angle) }
-              )
-              const sideLock = position.x <= .22 || position.x >= .78
-              const top = sideLock ? Math.max(8, Math.min(106, position.y * 100)) : 7 + position.y * 66
-              return <i key={index} style={{ left: Math.max(8, Math.min(92, position.x * 100)) + '%', top: top + '%', '--rinse-delay': index * 35 + 'ms' } as CSSProperties} />
-            })}</span>}
+                const position = bubblePositions[index] ?? shampooBubblePosition(Math.floor(index / shampooRubsPerArea), index % shampooRubsPerArea)
+                const rinsed = phase === rinseHairPhase && (hairRinsed || (hairRinseProgress > 0 && position.x <= .08 + hairRinseProgress * .82))
+                return <i key={index} data-rinsed={rinsed} style={{ left: position.x * 100 + '%', top: position.y * 100 + '%' }} />
+              })}
+            </span>}
             {(hairRinsed || phase > rinseHairPhase) && <HairShine />}
             {(phase > 6 || (phase === 6 && cleaned.length > 0)) && <BodyShine rinsed={phase === 6 ? cleaned : undefined} />}
             {phase >= rinseHairPhase && phase <= dryPhase && [...bodyWetSpots, ...bodyWaterAccents].map((spot, index) => (
@@ -656,7 +695,10 @@ function WashUp() {
                 ))
               })}
             </span>}
-            {shampooing && ready && !done && <div className={ui("wash-scalp-target")} data-scalp role="group" aria-label="Shampoo hair areas">
+            {shampooing && ready && !done && <div className={ui("wash-scalp-target")} role="group" aria-label="Shampoo hair areas">
+              <svg className={ui('wash-scalp-outline')} viewBox="252 13.5 396 256.5" preserveAspectRatio="none" aria-hidden="true">
+                <path ref={scalpPath} d={scalpOutline} fill="transparent" stroke="transparent" strokeWidth="14" strokeLinejoin="round" />
+              </svg>
               {shampooAreas.map((area, index) => <button key={area} type="button" className={ui('wash-shampoo-area')}
                 style={{ left: `${index * 100 / 3}%` }} aria-label={`Rub ${area} hair`}
                 disabled={!shampooApplied || pouring || shampooProgress[index] === shampooRubsPerArea}
@@ -720,7 +762,22 @@ function WashUp() {
               || (soaping && soapArea === 'legs' && !cleaned.includes(spot.name.replace(/knee|foot/, part => part === 'knee' ? 'foot' : 'knee'))))
               && (!soaping || (soapArea === 'arms' ? spot.name.endsWith('arm') : soapArea === 'body' ? spot.name === soapChest?.name : spot.y >= 74))).map(spot => (
               <button key={spot.name} className={ui("wash-spot wash-target")} data-shower-target={phase === rinseHairPhase || phase === 6} data-soap-guide={soaping ? soapArea : undefined} type="button" style={{ left: spot.x + '%', top: spot.y + '%' }}
-                data-spot={spot.name} disabled={!ready || (phase === rinseHairPhase && !hairRinsed && spot.name !== 'hair')} aria-label={soaping ? 'Rub soap on the ' + spot.name : step.title} onClick={wettingHair || soaping ? undefined : () => useOn([spot.name])}>
+                data-spot={spot.name} disabled={!ready || (phase === rinseHairPhase && !hairRinsed && spot.name !== 'hair')}
+                aria-label={phase === rinseHairPhase && spot.name === 'hair' ? `Rinse ${shampooAreas[Math.min(2, Math.floor(hairRinseProgress * 3))]} hair` : soaping ? 'Rub soap on the ' + spot.name : step.title}
+                onClick={wettingHair || soaping ? undefined : event => {
+                  if (phase === rinseHairPhase && spot.name === 'hair') {
+                    if (event.detail === 0) {
+                      const next = Math.min(1, (Math.floor(hairRinseProgress * 3) + 1) / 3)
+                      rinseHairTo(next)
+                      if (next === 1) {
+                        const stage = event.currentTarget.closest('.wash-stage')
+                        requestAnimationFrame(() => stage?.querySelector<HTMLButtonElement>('[data-shower-target]:enabled')?.focus())
+                      }
+                    }
+                    return
+                  }
+                  useOn([spot.name])
+                }}>
                 {holdingSoap && !((soapArea === 'legs') && spot.name.endsWith('foot')) && <svg className={ui("ink-wiggle")} key={String(soapDownSpots.includes(spot.name))} data-up={soapDownSpots.includes(spot.name)} viewBox="0 0 48 48" fill="none" aria-hidden="true">
                   <path d={scrubArrow} />
                 </svg>}

@@ -1,5 +1,5 @@
 export const shampooAreas = ['left', 'middle', 'right'] as const
-export const shampooRubsPerArea = 10
+export const shampooRubsPerArea = 30
 export const shampooMoves = shampooAreas.length * shampooRubsPerArea
 export type ShampooArea = 0 | 1 | 2
 export type ShampooProgress = [number, number, number]

@@ -52,6 +52,7 @@
 
 @keyframes shampoo-bubble-rinse {
     0% { opacity: 1; transform: translateY(0); }
+    25% { opacity: .9; }
     100% { opacity: 0; transform: translateY(12cqi); }
   }
 

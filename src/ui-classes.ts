@@ -485,7 +485,9 @@ const utilities: Record<string, string> = {
   "wash-progress-row": [
     `flex [align-items:baseline] flex-wrap justify-between [gap:4px_16px]`,
   ].join(" "),
-  "wash-shampoo-progress": `grid grid-cols-3 gap-2 text-sm sm:text-base [&_[data-complete="true"]]:text-[#47634b] [&_[data-complete="true"]]:underline`,
+  "wash-shampoo-progress": `grid grid-cols-3 gap-3`,
+  "wash-shampoo-section": `grid min-w-0 gap-1 [&[data-complete="true"]]:text-[#47634b]`,
+  "wash-shampoo-label": `text-base sm:text-lg`,
   "wash-shampoo-area": `pointer-events-none absolute inset-y-0 w-1/3 rounded-[45%] focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-offset-[-2px] focus-visible:outline-[#74563d]`,
   "wash-prop": [
     `absolute [translate:-50%_-50%] grid [place-items:center] [border-radius:12px] pointer-events-auto`,
@@ -530,13 +532,14 @@ const utilities: Record<string, string> = {
     `[&_i:nth-child(odd)]:[width:16%] [&_i:nth-child(odd)]:[border:0] [&_i:nth-child(odd)]:[background:url('/bath/shampoo-bubble-white.webp')_left_center_/_58%_no-repeat,_url('/bath/shampoo-bubble-white.webp')_right_top_/_66%_no-repeat,_url('/bath/shampoo-bubble-white.webp')_right_bottom_/_50%_no-repeat]`,
     `[&_i:nth-child(4n_+_3)::after]:[content:''] [&_i:nth-child(4n_+_3)::after]:absolute [&_i:nth-child(4n_+_3)::after]:[inset:auto_auto_0_14%] [&_i:nth-child(4n_+_3)::after]:[width:34%] [&_i:nth-child(4n_+_3)::after]:aspect-square [&_i:nth-child(4n_+_3)::after]:[background:url('/bath/shampoo-bubble-white.webp')_center_/_contain_no-repeat]`,
     `[&_i:nth-child(even)]:[background:radial-gradient(circle_at_32%_27%,_#fffdf7_0_10%,_transparent_18%),_radial-gradient(circle_at_45%_38%,_#e5f3f440_24%,_#c5e3edd9_80%)]`,
-    `[&[data-rinsed="true"]_i]:[opacity:0]`,
-    `motion-safe:[&[data-rinsed="true"]_i]:[animation:shampoo-bubble-rinse_1.05s_ease-in_var(--rinse-delay)_both]`,
+    `[&_i[data-rinsed="true"]]:[opacity:0]`,
+    `motion-safe:[&_i[data-rinsed="true"]]:[animation:shampoo-bubble-rinse_1.1s_ease-in_both]`,
     `motion-safe:[&_i]:[animation:shampoo-bubble-in_.38s_ease-out_both]`,
   ].join(" "),
   "wash-scalp-target": [
     `absolute [left:28%] [top:1%] [width:44%] [height:19%]`,
   ].join(" "),
+  "wash-scalp-outline": `absolute inset-0 size-full overflow-visible pointer-events-none`,
   "wash-shampoo-cursor": [
     `absolute [z-index:4] [width:20cqi] pointer-events-none [top:0] [left:0]`,
     `[&_.wash-supply-art]:w-full [&_.wash-supply-art]:[translate:-50%_-39%]`,
@@ -589,7 +592,7 @@ const utilities: Record<string, string> = {
     `absolute [inset:auto_auto_80%_-2%] w-full [height:var(--spray-width)] overflow-hidden [translate:var(--spray-x)_var(--spray-y)] [will-change:translate] [z-index:1]`,
   ].join(" "),
   "wash-stage": [
-    `[grid-area:1_/_1] relative grid [place-items:end_center] overflow-hidden [border-radius:24px] [background:#e2e8dc_url('/shared/bathroom.webp')_center_/_cover_no-repeat] aspect-square [container-type:inline-size] touch-none select-none [cursor:url('/cursors/hand-grab.svg')_17_16,_grab]`,
+    `[grid-area:1_/_1] relative grid min-h-0 min-w-0 [place-items:end_center] overflow-hidden [border-radius:24px] [background:#e2e8dc_url('/shared/bathroom.webp')_center_/_cover_no-repeat] aspect-square [container-type:inline-size] touch-none select-none [cursor:url('/cursors/hand-grab.svg')_17_16,_grab]`,
     `[@media(min-width:761px)]:[max-height:var(--stage-height)]`,
     `[@media(max-width:760px)]:[grid-area:2_/_1] [@media(max-width:760px)]:[justify-self:center] [@media(max-width:760px)]:h-full [@media(max-width:760px)]:[max-width:100%]`,
     `[&:has(.wash-spray)]:overflow-visible [&:has(.wash-spray)]:[cursor:url('/cursors/hand-grabbing.svg')_17_16,_grabbing]`,

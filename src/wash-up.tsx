@@ -6,6 +6,7 @@ import { ActivityEntry } from './activity-loading'
 import { HairShine, BodyShine } from './character-shine'
 import { bathScrapes as scrapes, bathSprite, bathTools as tools, BathSupplies, ToolArt } from './bath-scene'
 import { advanceHairSweep } from './hair-wetting'
+import { addShampooRub, restoreShampooProgress, shampooAreaAt, shampooAreas, shampooMoves, shampooRubsPerArea, type ShampooArea, type ShampooProgress } from './shampoo-progress'
 
 const dirtSpots = [
   { name: 'leaf in the hair', x: 41, y: 9, kind: 'leaf' },
@@ -90,7 +91,6 @@ const bodyWaterAccents = [
   { name: 'right knee', x: 56, y: 86 },
 ]
 const scrapeSpots = scrapes.map(scrape => ({ ...scrape, kind: 'scrape' }))
-const shampooMoves = 30
 const washStepArtwork = {
   Leaf: { href: '/bath/bath-dirt.webp', width: 750, height: 500, crop: '80 57 115 145' },
   Shower: { href: '/bath/handheld-shower.webp', width: 384, height: 384, crop: '21 22 151 145' },
@@ -142,10 +142,9 @@ function readCheckpoint() {
           || (phase === 6 && saved.bodyRinseTargets !== true && saved.cleaned.includes('body'))
           || (phase === dryPhase && saved.guidedDrying !== true && saved.cleaned.includes('body'))))).map(spot => spot.name) ?? [],
       selected: skippedScrapeStep ? undefined : tools.find(item => item.name === saved.selected)?.name,
-      massages: step?.tool === 'Shampoo' && Number.isInteger(saved.massages)
-        ? saved.massages === (saved.shampooMoves ?? 4) ? shampooMoves : Math.max(0, Math.min(shampooMoves, saved.massages))
-        : 0,
-      shampooApplied: step?.tool === 'Shampoo' && (saved.shampooApplied === true || saved.massages > 0),
+      shampooProgress: step?.tool === 'Shampoo' ? restoreShampooProgress(saved.shampooProgress) : [0, 0, 0] as ShampooProgress,
+      shampooApplied: step?.tool === 'Shampoo' && (saved.shampooApplied === true || saved.massages > 0
+        || restoreShampooProgress(saved.shampooProgress).some(count => count > 0)),
       wettingPasses: saved.phase === 1 && Number.isInteger(saved.wettingPasses)
         ? saved.wettingPattern !== 2 && saved.wettingPasses >= 2
           ? wettingDirections.length
@@ -163,12 +162,18 @@ function WashUp() {
   const [phase, setPhase] = useState(checkpoint?.phase ?? 0)
   const [cleaned, setCleaned] = useState<string[]>(checkpoint?.cleaned ?? [])
   const [selected, setSelected] = useState<Tool | undefined>(checkpoint?.shampooApplied ? undefined : checkpoint?.selected)
-  const [massages, setMassages] = useState(checkpoint?.massages ?? 0)
+  const [shampoo, setShampoo] = useState(() => {
+    const progress = checkpoint?.shampooProgress ?? [0, 0, 0] as ShampooProgress
+    return { progress, positions: progress.flatMap((count, area) => Array.from({ length: count }, (_, index) =>
+      ({ x: (area + .5) / 3 + (index % 2 ? -.05 : .05), y: .3 + (index % 4) * .13 }))) }
+  })
+  const shampooProgress = shampoo.progress
+  const massages = shampooProgress.reduce((sum, count) => sum + count, 0)
+  const bubblePositions = shampoo.positions
   const [shampooApplied, setShampooApplied] = useState(checkpoint?.shampooApplied ?? false)
   const [pouring, setPouring] = useState(false)
   const [shampooCursor, setShampooCursor] = useState<{ x: number; y: number; pointerType: string }>()
   const heldToolCursor = useRef<HTMLSpanElement>(null)
-  const [bubblePositions, setBubblePositions] = useState<{ x: number; y: number }[]>([])
   const [wettingPasses, setWettingPasses] = useState(checkpoint?.wettingPasses ?? 0)
   const [spray, setSpray] = useState<{ x: number; y: number; time: number; drift: number } | null>(null)
   const sprayPosition = useRef<typeof spray>(null)
@@ -176,7 +181,7 @@ function WashUp() {
   const showerPointer = useRef<number | null>(null)
   const resetDialog = useRef<HTMLDialogElement>(null)
   const wettingSweepStart = useRef<number | null>(null)
-  const massageStart = useRef<{ x: number; y: number } | null>(null)
+  const massageStart = useRef<{ x: number; y: number; area: ShampooArea } | null>(null)
   const step = steps[phase]
   const shampooing = step?.tool === 'Shampoo'
   const rubbingShampoo = shampooing && shampooApplied
@@ -219,11 +224,11 @@ function WashUp() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(checkpointKey, JSON.stringify({ phase, cleaned, selected, massages, shampooApplied, shampooMoves, wettingPasses, wettingPattern: 2, combinedShower: true, soapChestPasses: true, bodyRinseTargets: true, guidedDrying: true, directBandaging: true }))
+      localStorage.setItem(checkpointKey, JSON.stringify({ phase, cleaned, selected, massages, shampooProgress, shampooApplied, shampooMoves, wettingPasses, wettingPattern: 2, combinedShower: true, soapChestPasses: true, bodyRinseTargets: true, guidedDrying: true, directBandaging: true }))
     } catch {
       // The game can still run when browser storage is unavailable.
     }
-  }, [phase, cleaned, selected, massages, shampooApplied, wettingPasses])
+  }, [phase, cleaned, selected, shampooProgress, shampooApplied, wettingPasses])
 
   const progress = wettingHair ? wettingPasses : shampooing ? massages : cleaned.length
   const progressMax = wettingHair ? wettingDirections.length : shampooing ? shampooMoves : step?.spots.length
@@ -235,6 +240,20 @@ function WashUp() {
       setSelected(undefined)
       setShampooCursor(undefined)
     }
+  }
+
+  function applyShampoo() {
+    setShampooApplied(true)
+    setSelected(undefined)
+    setPouring(true)
+  }
+
+  function rubHair(area: ShampooArea, position = { x: (area + .5) / 3, y: .5 }) {
+    if (!rubbingShampoo || pouring || done) return
+    setShampoo(previous => {
+      const progress = addShampooRub(previous.progress, area)
+      return progress === previous.progress ? previous : { progress, positions: [...previous.positions, position] }
+    })
   }
 
   function scrub(event: PointerEvent<HTMLDivElement>) {
@@ -340,30 +359,22 @@ function WashUp() {
         return
       }
       if (!shampooApplied) {
-        if (starting) {
-          setShampooApplied(true)
-          setSelected(undefined)
-          setPouring(true)
-        }
+        if (starting) applyShampoo()
         return
       }
       if (pouring) return
+      const area = shampooAreaAt(x)
+      if (area === null) return
       const start = massageStart.current
-      if (starting || !start) {
-        massageStart.current = { x: clientX, y: clientY }
+      if (starting || !start || start.area !== area) {
+        massageStart.current = { x: clientX, y: clientY, area }
         return
       }
       const dx = clientX - start.x
       const dy = clientY - start.y
       if (Math.hypot(dx, dy) >= scalp.width * .18) {
-        massageStart.current = { x: clientX, y: clientY }
-        const position = { x, y }
-        setBubblePositions(previous => {
-          const positions = [...previous]
-          positions[massages] = position
-          return positions
-        })
-        setMassages(massages + 1)
+        massageStart.current = { x: clientX, y: clientY, area }
+        rubHair(area, { x, y })
       }
       return
     }
@@ -461,11 +472,10 @@ function WashUp() {
     setSpray(null)
     sprayPosition.current = null
     massageStart.current = null
-    setMassages(0)
+    setShampoo(previous => ({ progress: [0, 0, 0], positions: next === rinseHairPhase ? previous.positions : [] }))
     setShampooApplied(false)
     setPouring(false)
     setShampooCursor(undefined)
-    if (next !== 3) setBubblePositions([])
     setGrabbing(false)
     setPhase(next)
     setSelected(undefined)
@@ -492,7 +502,7 @@ function WashUp() {
           <p>{finishedBath ? 'All clean and dry. Nice work!' : shampooing && ready
             ? done ? 'Nice work! Now wash off the bubbles.'
               : pouring ? 'Adding shampoo…'
-              : shampooApplied ? 'Press and drag to gently rub the shampoo into the hair.'
+              : shampooApplied ? 'Gently rub the left, middle, and right parts of the hair.'
               : 'Tap the circle on the hair to add shampoo.'
             : soaping && ready && !done
               ? soapArea === 'arms' ? 'Follow the arrows. Rub down, then up on each arm.'
@@ -510,6 +520,12 @@ function WashUp() {
               {wettingHair && wettingDirection && <span className={ui("wash-next-sweep")}>Move {wettingDirection} <span aria-hidden="true">{wettingDirection === 'right' ? '→' : '←'}</span></span>}
             </div>
             <progress aria-label={step.title} value={progress} max={progressMax} />
+            {shampooing && <div className={ui('wash-shampoo-progress')} role="group" aria-label="Hair area progress">
+              {shampooAreas.map((area, index) => <span key={area} data-complete={shampooProgress[index] === shampooRubsPerArea}
+                aria-label={`${area} hair: ${shampooProgress[index]} of ${shampooRubsPerArea} rubs`}>
+                {area[0].toUpperCase() + area.slice(1)} {shampooProgress[index]} / {shampooRubsPerArea}
+              </span>)}
+            </div>}
           </div>}
           {!finishedBath && step && <div className={ui("wash-feedback-slot")} data-done={done}>
             <p className={ui("wash-feedback activity-feedback")} data-wrong={wrong} role="status">{shampooing && !wrong ? '' : done ? 'Nice work!' : wrong ? (rubbingShampoo ? 'Use your hands to rub the hair.' : requiredTool ? `Find the ${requiredTool.toLowerCase()}.` : 'Use your hands to pick up the leaves.') : !ready && requiredTool && !step.hint.startsWith('Pick ') ? `Pick up the ${requiredTool.toLowerCase()}.` : !wettingHair && step.spots.length === 1 && selected ? `Use the ${selected.toLowerCase()} on the marked spot.` : ''}</p>
@@ -522,6 +538,7 @@ function WashUp() {
           </div>
         </div>
         <div className={ui("wash-stage")} data-wetting-hair={wettingHair} data-grabbing={grabbing && !finishedBath} onPointerLeave={() => setShampooCursor(undefined)} onLostPointerCapture={event => {
+          massageStart.current = null
           soapStart.current = null
           towelStrokeStart.current = null
           setGrabbing(false)
@@ -639,9 +656,22 @@ function WashUp() {
                 ))
               })}
             </span>}
-            {shampooing && ready && !done && <div className={ui("wash-scalp-target")} data-scalp aria-hidden="true" />}
-            {holdingShampoo && <span className={ui("wash-spot wash-target wash-sponge-guide")} data-shower-target="true" data-spot="hair"
-              style={{ left: hair[0].x + '%', top: hair[0].y + '%' }} aria-hidden="true" />}
+            {shampooing && ready && !done && <div className={ui("wash-scalp-target")} data-scalp role="group" aria-label="Shampoo hair areas">
+              {shampooAreas.map((area, index) => <button key={area} type="button" className={ui('wash-shampoo-area')}
+                style={{ left: `${index * 100 / 3}%` }} aria-label={`Rub ${area} hair`}
+                disabled={!shampooApplied || pouring || shampooProgress[index] === shampooRubsPerArea}
+                onClick={event => {
+                  if (event.detail !== 0) return
+                  rubHair(index as ShampooArea)
+                  if (shampooProgress[index] + 1 === shampooRubsPerArea) {
+                    const page = event.currentTarget.closest('.wash-page')
+                    requestAnimationFrame(() => page?.querySelector<HTMLButtonElement>('.wash-shampoo-area:enabled, .wash-actions button')?.focus())
+                  }
+                }} />)}
+            </div>}
+            {holdingShampoo && <button type="button" className={ui("wash-spot wash-target wash-sponge-guide")} data-shower-target="true" data-spot="hair"
+              style={{ left: hair[0].x + '%', top: hair[0].y + '%' }} aria-label="Add shampoo to the hair"
+              onClick={event => { if (event.detail === 0) applyShampoo() }} />}
             {scrapes.map(scrape => {
               const style = { left: scrape.x + '%', top: scrape.y + '%' }
               const finished = cleaned.includes(scrape.name)

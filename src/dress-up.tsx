@@ -209,9 +209,9 @@ function DressUp() {
             </svg>
             Shuffle outfits
           </button>
-          {(loading || selectionError) && <p className="w-full text-base text-[#603b24]" aria-live="polite">
-            {loading ? 'Getting your outfit ready…' : 'That outfit didn’t load. Try picking it again.'}
-          </p>}
+          <p className={ui('dress-load-feedback')} aria-live="polite">
+            {loading ? 'Getting your outfit ready…' : selectionError ? 'That outfit didn’t load. Try picking it again.' : ''}
+          </p>
         </div>
       </section>
     </div>

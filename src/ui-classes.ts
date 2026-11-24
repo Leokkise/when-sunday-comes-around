@@ -228,7 +228,8 @@ const utilities: Record<string, string> = {
   "dress-layout": `mx-auto grid max-w-[1520px] gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(310px,0.48fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:gap-x-10`,
   "dress-preview": `relative mx-auto grid w-full max-w-[28rem] aspect-[4/3] [place-items:end_center] self-start overflow-hidden rounded-[24px] border-[3px] border-[#eadac0] bg-[#667681] select-none md:border-[5px] lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:max-w-none`,
   "dress-panel": `flex min-h-0 min-w-0 flex-col items-start gap-4 lg:col-start-2 lg:row-start-2 lg:[contain:size]`,
-  "dress-actions": `mt-auto flex w-full shrink-0 flex-wrap items-center gap-2`,
+  "dress-actions": `relative mt-auto flex w-full shrink-0 flex-wrap items-center gap-2`,
+  "dress-load-feedback": `absolute inset-x-0 top-full min-h-11 pt-1 text-base leading-5 text-[#603b24]`,
   "dress-shuffle": `inline-flex min-h-11 items-center gap-2 rounded-lg border-2 border-[#79563f] bg-[#fffdfa] px-3 py-2 text-lg leading-tight text-[#603b24] hover:bg-[#f0e3cf] disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#603b24] motion-safe:transition-colors`,
   "dress-wearing": `absolute right-1 top-1/2 z-10 grid max-h-[calc(100%-0.5rem)] -translate-y-1/2 gap-0 overflow-y-auto overscroll-contain rounded-xl border-[3px] border-[#79563f] bg-white p-1 text-[#564736] [scrollbar-width:thin] [scrollbar-color:#603b24_#e7e5e4] sm:right-3 sm:gap-1.5 sm:p-2`,
   "dress-worn-tile": `relative block size-[72px] shrink-0 rounded-lg border-2 border-dashed border-[#79563f] bg-white p-1.5 transition-colors duration-200 hover:bg-[#f0e3cf] focus-within:bg-[#f0e3cf] motion-safe:[&>svg]:transition-transform motion-safe:[&>svg]:duration-200 motion-safe:hover:[&>svg]:scale-[1.035] motion-safe:focus-within:[&>svg]:scale-[1.035] sm:size-20`,
@@ -484,6 +485,8 @@ const utilities: Record<string, string> = {
   "wash-progress-row": [
     `flex [align-items:baseline] flex-wrap justify-between [gap:4px_16px]`,
   ].join(" "),
+  "wash-shampoo-progress": `grid grid-cols-3 gap-2 text-sm sm:text-base [&_[data-complete="true"]]:text-[#47634b] [&_[data-complete="true"]]:underline`,
+  "wash-shampoo-area": `pointer-events-none absolute inset-y-0 w-1/3 rounded-[45%] focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-offset-[-2px] focus-visible:outline-[#74563d]`,
   "wash-prop": [
     `absolute [translate:-50%_-50%] grid [place-items:center] [border-radius:12px] pointer-events-auto`,
     `[&:enabled:hover]:[outline:2px_dashed_#74563d] [&:enabled:hover]:[outline-offset:2px]`,
@@ -588,7 +591,7 @@ const utilities: Record<string, string> = {
   "wash-stage": [
     `[grid-area:1_/_1] relative grid [place-items:end_center] overflow-hidden [border-radius:24px] [background:#e2e8dc_url('/shared/bathroom.webp')_center_/_cover_no-repeat] aspect-square [container-type:inline-size] touch-none select-none [cursor:url('/cursors/hand-grab.svg')_17_16,_grab]`,
     `[@media(min-width:761px)]:[max-height:var(--stage-height)]`,
-    `[@media(max-width:760px)]:[grid-area:auto] [@media(max-width:760px)]:[justify-self:center] [@media(max-width:760px)]:h-full [@media(max-width:760px)]:[max-width:100%]`,
+    `[@media(max-width:760px)]:[grid-area:2_/_1] [@media(max-width:760px)]:[justify-self:center] [@media(max-width:760px)]:h-full [@media(max-width:760px)]:[max-width:100%]`,
     `[&:has(.wash-spray)]:overflow-visible [&:has(.wash-spray)]:[cursor:url('/cursors/hand-grabbing.svg')_17_16,_grabbing]`,
     `[&[data-wetting-hair="true"]_.wash-target]:[width:26%] [&[data-wetting-hair="true"]_.wash-target]:[height:20%] [&[data-wetting-hair="true"]_.wash-target]:[border-color:transparent] [&[data-wetting-hair="true"]_.wash-target]:[background:transparent] [&[data-wetting-hair="true"]_.wash-target]:pointer-events-none`,
     `[&[data-grabbing="true"]]:[cursor:url('/cursors/hand-grabbing.svg')_17_16,_grabbing]`,

@@ -1,6 +1,6 @@
 Built-in ImageGen prompts for the current basketball artwork
 
-court-soft.webp
+court-soft.avif
 
 Use case: style-transfer. Image 1 is the basketball court edit target. Image 2 is the strict surface-style reference from the same children's game. Redraw Image 1 in the more restrained colored-pencil style of Image 2. Keep the existing 16:9 frame and exactly the current placement of the court boundary, painted key, free-throw semicircle, fence, trees and distant rooflines, with the horizon and pavement in the same places. The pale blue-gray pavement and warm cream sky should have broad even color with subtle paper grain, soft muted sage foliage and carefully defined pale marking edges. Keep only occasional light pencil accents on foliage, fence and pavement. Suppress dense directional hatching, scratchy shading and high contrast. Quiet warm daylight. No people, added objects, hoop, ball, lettering or logos. Fill the original frame edge to edge.
 

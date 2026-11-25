@@ -6,7 +6,7 @@ import { BasketballNet } from './basketball-net'
 import { aimFromPointer, aimGuide, courtSize, defaultAim, floorY, hoopPlacement, hoopPoint, playerPosition, shootingSpots, shotStep, traceShot, type Point, type ShotFrame } from './basketball-shot'
 import { loadImage } from './image-loading'
 import { ui } from './ui-classes'
-import courtArt from '../assets/basketball/court-soft.webp'
+import courtArt from '../assets/basketball/court-soft.avif'
 import hoopArt from '../assets/basketball/hoop-soft.webp'
 import ballArt from '../assets/basketball/ball-soft.webp'
 import readyArt from '../assets/basketball/player-ready.webp'
@@ -25,7 +25,7 @@ const leaves = Array.from({ length: 5 }, (_, index) => {
     animationDuration: `${duration}s`,
     animationDelay: `${-duration * ((index * 7 + 3) % 17) / 17}s`,
     '--leaf-drift': `${(index % 2 ? 1 : -1) * (3 + index % 4)}cqw`,
-    '--leaf-size': `${2.1 + (index % 3) * .38}cqw`,
+    '--leaf-size': `${2.65 + (index % 3) * .45}cqw`,
   } as CSSProperties
 })
 
@@ -136,8 +136,9 @@ function Basketball() {
     <h1 className="sr-only">After-School Hoops</h1>
     <div className={ui('hoops-challenge')}>
       <div className={ui('hoops-score')} data-complete={complete} role="group" aria-label="Round score">
-        <strong className={ui('ink-wiggle')}>{basketGoal} baskets to win</strong>
-        <span>{round.baskets} made <span aria-hidden="true">·</span> {shotsLeft} {shotsLeft === 1 ? 'shot' : 'shots'} left</span>
+        <strong>{basketGoal} to win</strong>
+        <span>{round.baskets} {round.baskets === 1 ? 'basket' : 'baskets'} made</span>
+        <span>{shotsLeft} {shotsLeft === 1 ? 'shot' : 'shots'} left</span>
       </div>
       <button ref={court} type="button" className={ui('hoops-stage')} aria-label="Aim and shoot the basketball"
         aria-describedby="hoops-hint" aria-disabled={!canShoot} tabIndex={complete ? -1 : 0} data-phase={phase}

@@ -27,8 +27,17 @@ assert.ok(guide[0].y - guide[4].y > guide[4].y - guide[8].y, 'the guide bends as
 assert.ok(aimGuide({ x: 2190, y: 520 }).dots[0].x > releasePoint.x, 'the guide follows the pointer across the player')
 assert.deepEqual(curve.start, guide[0])
 assert.ok(Math.hypot(curve.finish.x - defaultAim.x, curve.finish.y - defaultAim.y) < .001, 'the aiming line reaches the cursor')
-const lowGuide = aimGuide({ x: 2200, y: 800 }).curve
-assert.ok(Math.abs(lowGuide.finish.y - lowGuide.control.y) < .001 && lowGuide.finish.y < releasePoint.y, 'the line stops at the apex for low aim')
+const aimByFeet = { x: 1100, y: 1040 }
+const closeSpot = shootingSpots[1]
+const downwardGuide = aimGuide(aimByFeet, closeSpot)
+const downwardShot = traceShot(aimByFeet, closeSpot)
+assert.ok(downwardGuide.dots.length >= 2, 'the guide is visible when aiming down near the player')
+assert.ok(downwardGuide.dots.every(dot => downwardShot.frames.some(frame => Math.hypot(frame.x - dot.x, frame.y - dot.y) < .001)), 'low dots match the flight up to the cursor')
+const lowAims = [[aimByFeet, closeSpot], [{ x: 1480, y: 940 }, playerPosition.x], [{ x: 2200, y: 800 }, playerPosition.x], [{ x: releasePoint.x + 10, y: 844 }, playerPosition.x]]
+for (const [target, playerX] of lowAims) {
+  const { curve } = aimGuide(target, playerX)
+  assert.ok(Math.hypot(curve.finish.x - target.x, curve.finish.y - target.y) < .001, 'the guide reaches the cursor for low aim')
+}
 const longGuide = aimGuide({ x: 105, y: 220 }).curve
 const riseAboveChord = ((longGuide.start.y + longGuide.finish.y) / 2 - longGuide.control.y) / 2
 assert.ok(riseAboveChord > 90, 'long shots have a visible arc rather than a nearly straight aim line')

@@ -190,12 +190,12 @@ function Basketball() {
           <image href={hoopArt} width="1024" height="1536" />
         </svg>
         {canShoot && <>
-          {curve && <svg className={ui('hoops-aim-curve')}
+          <svg className={ui('hoops-aim-curve')}
             viewBox={`0 0 ${courtSize.width} ${courtSize.height}`} aria-hidden="true"
             style={{ maskImage: `radial-gradient(circle var(--aim-ring-radius) at ${aimPosition.left} ${aimPosition.top}, transparent calc(100% - 2px), #000 calc(100% - 1px))` }}>
             <path d={`M${curve.start.x} ${curve.start.y} Q${curve.control.x} ${curve.control.y} ${curve.finish.x} ${curve.finish.y}`}
               fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-          </svg>}
+          </svg>
           {dots.map((dot, index) => <span key={index} className={ui('hoops-dot')} style={position(dot.x, dot.y, 18)} aria-hidden="true" />)}
           <span className={ui('hoops-dot hoops-aim-ring')} style={aimPosition} aria-hidden="true" />
         </>}

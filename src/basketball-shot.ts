@@ -63,9 +63,7 @@ function launchVelocity(target: Point, playerX: number) {
 
 export function aimGuide(target: Point, playerX = playerPosition.x) {
   const velocity = launchVelocity(target, playerX)
-  const { origin } = velocity
-  const apexTime = -velocity.y / gravity
-  const end = Math.min(velocity.duration, apexTime)
+  const { origin, duration: end } = velocity
   const spacingBetweenDots = Math.max(50, Math.hypot(velocity.x, velocity.y + gravity * end / 2) * end / 13)
   const dots: Point[] = []
   let previous = origin
@@ -87,13 +85,13 @@ export function aimGuide(target: Point, playerX = playerPosition.x) {
     }
     previous = point
   }
-  const start = dots[0]
+  const start = dots[0] ?? origin
   const controlDuration = (end - firstTime) / 2
-  const curve = start ? {
+  const curve = {
     start,
     control: { x: start.x + velocity.x * controlDuration, y: start.y + (velocity.y + gravity * firstTime) * controlDuration },
     finish: { x: origin.x + velocity.x * end, y: origin.y + velocity.y * end + gravity * end ** 2 / 2 },
-  } : null
+  }
   return { dots, curve }
 }
 

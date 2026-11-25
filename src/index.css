@@ -4,6 +4,7 @@
 @source "../wash-up/index.html";
 @source "../brush-teeth/index.html";
 @source "../dress-up/index.html";
+@source "../basketball/index.html";
 
 @keyframes quilt-cover {
   from { transform: translateY(105%); border-radius: 24% 18% 0 0; }
@@ -61,6 +62,16 @@
   25%, 75% { opacity: 1; transform: rotate(0); }
   100% { opacity: 0; }
 }
+
+@keyframes hoops-leaf-drift {
+    0% { opacity: 0; transform: translate(0, 0) rotate(-30deg); }
+    12% { opacity: .8; }
+    30% { transform: translate(var(--leaf-drift), 36cqh) rotate(48deg); }
+    55% { transform: translate(calc(var(--leaf-drift) * -.35), 66cqh) rotate(-23deg); }
+    80% { transform: translate(calc(var(--leaf-drift) * 1.2), 97cqh) rotate(55deg); }
+    90% { opacity: .8; }
+    100% { opacity: 0; transform: translate(var(--leaf-drift), 125cqh) rotate(-16deg); }
+  }
 
 @keyframes shampoo-bubble-in {
     from { opacity: 0; transform: translateY(var(--bubble-enter-offset, 0px)) scale(.55); }

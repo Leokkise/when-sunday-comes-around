@@ -191,6 +191,7 @@ function BrushTeeth() {
   const stepDone = complete || spitDone
   const rinsed = spitDone
   const finished = step === 9
+  const toolsDisabled = stepDone || finished || applyingPaste || spitting
   const total = amounts.reduce((sum, amount) => sum + amount, 0)
   const isLoadedBrush = step === 1 && total === 0
   const timePerTarget = toothRound ? timePerTooth : tongueRoundTime
@@ -274,6 +275,15 @@ function BrushTeeth() {
     else (spotButton.current ?? stepTitle.current)?.focus()
   }, [intro, step, stepDone])
 
+  useEffect(() => {
+    if (!stepDone) return
+    heldRef.current = null
+    setHeld(null)
+    setToolFeedback(null)
+    hideHeldTool()
+    stroke.current = null
+  }, [stepDone])
+
   async function prepare(images: readonly string[]) {
     if (loadingStage.current) return false
     loadingStage.current = true
@@ -342,6 +352,7 @@ function BrushTeeth() {
   }
 
   function showToolFeedback(tool: Tool | null) {
+    if (toolsDisabled) return
     heldRef.current = null
     setHeld(null)
     hideHeldTool()
@@ -349,6 +360,7 @@ function BrushTeeth() {
   }
 
   function grab(tool: Tool) {
+    if (toolsDisabled) return false
     if (tool !== requiredTool) {
       showToolFeedback(tool)
       return false
@@ -360,7 +372,7 @@ function BrushTeeth() {
   }
 
   function useTool(tool: Tool | null) {
-    if (applyingPaste || spitState !== 'ready' || (step !== 0 && step !== 8)) return
+    if (toolsDisabled || spitState !== 'ready' || (step !== 0 && step !== 8)) return
     if (tool !== requiredTool) { showToolFeedback(tool); return }
     if (step === 0) {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { go(1); return }
@@ -382,6 +394,7 @@ function BrushTeeth() {
   }
 
   function positionTool(event: PointerEvent<HTMLElement>) {
+    if (toolsDisabled) { hideHeldTool(); return }
     if (!stage.current) return
     const rect = stage.current.getBoundingClientRect()
     const point = { x: event.clientX - rect.left, y: event.clientY - rect.top }
@@ -399,18 +412,18 @@ function BrushTeeth() {
   const toothpasteTarget = step === 0 && !applyingPaste ? (held === 'paste' ? 'brush' : 'paste') : null
 
   function counterTool(tool: Tool) {
-    const wrongItem = toolFeedback?.tool === tool
+    const wrongItem = !toolsDisabled && toolFeedback?.tool === tool
     const guided = toothpasteTarget === tool
-    return <button className={ui(`brush-counter-tool brush-counter-${tool}`)} data-wrong={wrongItem} data-brush-target={step === 0 && tool === 'brush' ? '' : undefined} aria-label={step === 0 && tool === 'brush' && held === 'paste' ? 'Put toothpaste on the toothbrush' : `Pick up ${tool === 'brush' ? 'toothbrush' : tool === 'paste' ? 'toothpaste' : 'glass of water'}`} aria-pressed={held === tool} aria-disabled={applyingPaste || undefined} disabled={step === 9 || stepDone || spitting}
+    return <button className={ui(`brush-counter-tool brush-counter-${tool}`)} data-wrong={wrongItem} data-brush-target={step === 0 && tool === 'brush' ? '' : undefined} aria-label={step === 0 && tool === 'brush' && held === 'paste' ? 'Put toothpaste on the toothbrush' : `Pick up ${tool === 'brush' ? 'toothbrush' : tool === 'paste' ? 'toothpaste' : 'glass of water'}`} aria-pressed={held === tool} disabled={toolsDisabled}
       onClick={event => {
         const handled = skipPointerClick.current && event.detail > 0
         skipPointerClick.current = false
-        if (handled || applyingPaste) return
+        if (handled || toolsDisabled) return
         if (step === 0 && tool === 'brush' && held === 'paste') { useTool('paste'); return }
         if (grab(tool) && step === 8 && event.detail === 0) mouthTarget.current?.focus()
       }}
       onPointerDown={event => {
-        if (event.button !== 0 || !event.isPrimary || applyingPaste) return
+        if (event.button !== 0 || !event.isPrimary || toolsDisabled) return
         skipPointerClick.current = false
         if (step === 0 && tool === 'brush' && held === 'paste') {
           useTool('paste')
@@ -429,7 +442,7 @@ function BrushTeeth() {
         if (event.pointerType === 'mouse') positionTool(event)
         else hideHeldTool()
         const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-brush-target]')
-        if (target && heldRef.current === tool && !applyingPaste) {
+        if (target && heldRef.current === tool && !toolsDisabled) {
           useTool(tool)
           skipPointerClick.current = true
         }

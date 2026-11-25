@@ -113,7 +113,7 @@ const utilities: Record<string, string> = {
     `motion-safe:[transition:opacity_.28s_ease-out]`,
   ].join(" "),
   "brush-grip": [
-    `absolute [left:65%] [top:-10px] [width:30px] [height:30px] [background:url('/cursors/hand-grabbing.svg')_center_/_contain]`,
+    `absolute [left:65%] [top:-10px] size-[26px] [background:url('/cursors/hand-grabbing.svg')_center_/_contain]`,
   ].join(" "),
   "brush-held": [
     `absolute [left:0] [top:0] [width:200px] pointer-events-none [z-index:4]`,
@@ -228,10 +228,10 @@ const utilities: Record<string, string> = {
     `[&:has(.brush-held-water:not([hidden]))_.brush-counter-water_>_img]:invisible`,
     `[&[data-spitting='true']_.brush-counter-water_>_img]:invisible`,
     `[&:has(.brush-held-brush:not([hidden]))_.brush-counter-brush_>_:is(img,_.brush-bristle-tip)]:invisible`,
-    `[&_.brush-held_>_.brush-grip]:[left:0] [&_.brush-held_>_.brush-grip]:[top:0] [&_.brush-held_>_.brush-grip]:[translate:-50%_-50%] [&_.brush-held_>_.brush-grip]:[width:30px] [&_.brush-held_>_.brush-grip]:[height:30px]`,
+    `[&_.brush-held_>_.brush-grip]:[left:0] [&_.brush-held_>_.brush-grip]:[top:0] [&_.brush-held_>_.brush-grip]:[translate:-50%_-50%]`,
     `[&_.brush-held[data-pose='contact']]:[width:41%] [&_.brush-held[data-pose='contact']]:[aspect-ratio:3_/_1] [&_.brush-held[data-pose='contact']]:[translate:-10%_-50%]`,
     `[&_.brush-held[data-tongue="true"]]:[--held-angle:90deg] [&_.brush-held[data-tongue="true"]]:[transform-origin:10%_50%]`,
-    `[&_.brush-held[data-pose='contact']_>_.brush-grip]:[left:62%] [&_.brush-held[data-pose='contact']_>_.brush-grip]:[top:51%] [&_.brush-held[data-pose='contact']_>_.brush-grip]:[width:clamp(30px,_8%,_46px)] [&_.brush-held[data-pose='contact']_>_.brush-grip]:h-auto [&_.brush-held[data-pose='contact']_>_.brush-grip]:aspect-square`,
+    `[&_.brush-held[data-pose='contact']_>_.brush-grip]:[left:62%] [&_.brush-held[data-pose='contact']_>_.brush-grip]:[top:51%] [&_.brush-held[data-pose='contact']_>_.brush-grip]:[width:clamp(26px,_7%,_40px)] [&_.brush-held[data-pose='contact']_>_.brush-grip]:h-auto [&_.brush-held[data-pose='contact']_>_.brush-grip]:aspect-square`,
     `[&_.brush-held]:[z-index:10] [&_.brush-held]:[width:180px]`,
     `[&_.brush-held-paste]:[width:70px]`,
     `[&_.brush-held-water]:[width:var(--brush-water-width)]`,
@@ -312,7 +312,7 @@ const utilities: Record<string, string> = {
     `motion-safe:[animation:brush-squeeze-tube_var(--brush-squeeze-time)_ease-in-out_both]`,
   ].join(" "),
   "brush-stage": [
-    `relative [min-width:0] [border:0] [cursor:url('/cursors/hand-grab.svg')_17_16,_grab] [max-height:100%]`,
+    `relative [min-width:0] [border:0] [cursor:url('/cursors/hand-grab.svg')_15_14,_grab] [max-height:100%]`,
     `[&_button]:[cursor:inherit]`,
     `[@media(max-width:760px)]:[grid-row:1]`,
   ].join(" "),
@@ -575,7 +575,7 @@ const utilities: Record<string, string> = {
     `[&[data-bandage="true"]]:[width:11cqi]`,
     `[&[data-bandage="true"]_.wash-supply-art]:[translate:-50%_-50%] [&[data-bandage="true"]_.wash-supply-art]:[rotate:-18deg]`,
     `[&[data-bandage="true"]::after]:[translate:-18%_-24%]`,
-    `[&::after]:[content:''] [&::after]:absolute [&::after]:[left:0] [&::after]:[top:0] [&::after]:[width:30px] [&::after]:aspect-square [&::after]:[translate:-50%_-48%] [&::after]:[background:url('/cursors/hand-grabbing.svg')_center_/_contain_no-repeat]`,
+    `[&::after]:[content:''] [&::after]:absolute [&::after]:[left:0] [&::after]:[top:0] [&::after]:[width:26px] [&::after]:aspect-square [&::after]:[translate:-50%_-48%] [&::after]:[background:url('/cursors/hand-grabbing.svg')_center_/_contain_no-repeat]`,
   ].join(" "),
   "wash-shampoo-dab": [
     `[background:linear-gradient(105deg,_#b6c9bc,_#f5f2e7_55%,_#d6ded1)] absolute [left:46%] [top:10%] [width:8%] [height:1.5%] [border:1px_solid_#a5b3a4] [border-radius:62%_42%_55%_45%] pointer-events-none`,
@@ -613,13 +613,13 @@ const utilities: Record<string, string> = {
     `absolute [inset:auto_auto_80%_-2%] w-full [height:var(--spray-width)] overflow-hidden [translate:var(--spray-x)_var(--spray-y)] [will-change:translate] [z-index:1]`,
   ].join(" "),
   "wash-stage": [
-    `[grid-area:1_/_1] relative grid min-h-0 min-w-0 [place-items:end_center] overflow-hidden [border-radius:24px] [background:#e2e8dc_url('/shared/bathroom.webp')_center_/_cover_no-repeat] aspect-square [container-type:inline-size] touch-none select-none [cursor:url('/cursors/hand-grab.svg')_17_16,_grab]`,
+    `[grid-area:1_/_1] relative grid min-h-0 min-w-0 [place-items:end_center] overflow-hidden [border-radius:24px] [background:#e2e8dc_url('/shared/bathroom.webp')_center_/_cover_no-repeat] aspect-square [container-type:inline-size] touch-none select-none [cursor:url('/cursors/hand-grab.svg')_15_14,_grab]`,
     `[@media(min-width:761px)]:[max-height:var(--stage-height)]`,
     `[@media(max-width:760px)]:[grid-area:2_/_1] [@media(max-width:760px)]:[justify-self:center] [@media(max-width:760px)]:h-full [@media(max-width:760px)]:[max-width:100%]`,
-    `[&:has(.wash-spray)]:overflow-visible [&:has(.wash-spray)]:[cursor:url('/cursors/hand-grabbing.svg')_17_16,_grabbing]`,
+    `[&:has(.wash-spray)]:overflow-visible [&:has(.wash-spray)]:[cursor:url('/cursors/hand-grabbing.svg')_15_14,_grabbing]`,
     `[&[data-wetting-hair="true"]_.wash-target]:[width:26%] [&[data-wetting-hair="true"]_.wash-target]:[height:20%] [&[data-wetting-hair="true"]_.wash-target]:[border-color:transparent] [&[data-wetting-hair="true"]_.wash-target]:[background:transparent] [&[data-wetting-hair="true"]_.wash-target]:pointer-events-none`,
-    `[&[data-grabbing="true"]]:[cursor:url('/cursors/hand-grabbing.svg')_17_16,_grabbing]`,
-    `[&_button:active]:[cursor:url('/cursors/hand-grabbing.svg')_17_16,_grabbing]`,
+    `[&[data-grabbing="true"]]:[cursor:url('/cursors/hand-grabbing.svg')_15_14,_grabbing]`,
+    `[&_button:active]:[cursor:url('/cursors/hand-grabbing.svg')_15_14,_grabbing]`,
   ].join(" "),
   "wash-stage-controls": [
     `absolute [z-index:3] [inset:auto_12px_12px] flex items-center pointer-events-none`,

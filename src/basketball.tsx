@@ -19,7 +19,7 @@ const basketGoal = 10
 const retryTitle = 'Give it another shot!'
 const frontRim = hoopPoint(660, 390)
 const leaves = Array.from({ length: 7 }, (_, index) => {
-  const duration = 13 + index % 5
+  const duration = 11 + index % 5
   return {
     left: `${7 + index * 14}%`,
     animationDuration: `${duration}s`,
@@ -57,6 +57,7 @@ function Basketball() {
   const shotsLeft = shotLimit - round.shots
   const playerX = shootingSpots[round.spot]
   const { dots, curve } = useMemo(() => aimGuide(aim, playerX), [aim, playerX])
+  const aimPosition = position(aim.x, aim.y)
 
   useEffect(() => () => cancelAnimationFrame(frameId.current), [])
   useEffect(() => { if (complete) replay.current?.focus() }, [complete])
@@ -190,12 +191,13 @@ function Basketball() {
         </svg>
         {canShoot && <>
           {curve && <svg className={ui('hoops-aim-curve')}
-            viewBox={`0 0 ${courtSize.width} ${courtSize.height}`} aria-hidden="true">
+            viewBox={`0 0 ${courtSize.width} ${courtSize.height}`} aria-hidden="true"
+            style={{ maskImage: `radial-gradient(circle var(--aim-ring-radius) at ${aimPosition.left} ${aimPosition.top}, transparent calc(100% - 2px), #000 calc(100% - 1px))` }}>
             <path d={`M${curve.start.x} ${curve.start.y} Q${curve.control.x} ${curve.control.y} ${curve.finish.x} ${curve.finish.y}`}
               fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
           </svg>}
           {dots.map((dot, index) => <span key={index} className={ui('hoops-dot')} style={position(dot.x, dot.y, 18)} aria-hidden="true" />)}
-          <span className={ui('hoops-dot hoops-aim-ring')} style={position(aim.x, aim.y, 36)} aria-hidden="true" />
+          <span className={ui('hoops-dot hoops-aim-ring')} style={aimPosition} aria-hidden="true" />
         </>}
         {!round.shots && !flight && <span className={ui('hoops-hint')} aria-hidden="true">Aim high, then click to shoot</span>}
       </button>

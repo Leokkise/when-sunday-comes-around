@@ -26,7 +26,9 @@ assert.ok(Math.hypot(guide.at(-1).x - defaultAim.x, guide.at(-1).y - defaultAim.
 assert.ok(guide[0].y - guide[4].y > guide[4].y - guide[8].y, 'the guide bends as the ball rises')
 assert.ok(aimGuide({ x: 2190, y: 520 }).dots[0].x > releasePoint.x, 'the guide follows the pointer across the player')
 assert.deepEqual(curve.start, guide[0])
-assert.deepEqual(curve.finish, guide.at(-1))
+assert.ok(Math.hypot(curve.finish.x - defaultAim.x, curve.finish.y - defaultAim.y) < .001, 'the aiming line reaches the cursor')
+const lowGuide = aimGuide({ x: 2200, y: 800 }).curve
+assert.ok(Math.abs(lowGuide.finish.y - lowGuide.control.y) < .001 && lowGuide.finish.y < releasePoint.y, 'the line stops at the apex for low aim')
 const longGuide = aimGuide({ x: 105, y: 220 }).curve
 const riseAboveChord = ((longGuide.start.y + longGuide.finish.y) / 2 - longGuide.control.y) / 2
 assert.ok(riseAboveChord > 90, 'long shots have a visible arc rather than a nearly straight aim line')

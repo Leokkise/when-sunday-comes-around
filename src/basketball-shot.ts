@@ -71,7 +71,6 @@ export function aimGuide(target: Point, playerX = playerPosition.x) {
   let previous = origin
   let spacing = 34
   let firstTime = 0
-  let lastTime = 0
   for (let time = shotStep; time < end; time += shotStep) {
     const point = {
       x: origin.x + velocity.x * time,
@@ -84,18 +83,16 @@ export function aimGuide(target: Point, playerX = playerPosition.x) {
       if (distanceToEnd < 28) break
       dots.push(point)
       if (dots.length === 1) firstTime = time
-      lastTime = time
       spacing += spacingBetweenDots
     }
     previous = point
   }
   const start = dots[0]
-  const finish = dots.at(-1)
-  const controlDuration = (lastTime - firstTime) / 2
-  const curve = start && finish && controlDuration > 0 ? {
+  const controlDuration = (end - firstTime) / 2
+  const curve = start ? {
     start,
     control: { x: start.x + velocity.x * controlDuration, y: start.y + (velocity.y + gravity * firstTime) * controlDuration },
-    finish,
+    finish: { x: origin.x + velocity.x * end, y: origin.y + velocity.y * end + gravity * end ** 2 / 2 },
   } : null
   return { dots, curve }
 }

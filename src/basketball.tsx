@@ -15,17 +15,17 @@ import dryLeafArt from '../assets/basketball/dry-leaf.webp'
 
 const openingArt = [courtArt, hoopArt, ballArt, readyArt]
 const shotLimit = 15
-const accuracyGoal = 75
-const basketGoal = Math.ceil(shotLimit * accuracyGoal / 100)
+const basketGoal = 10
+const retryTitle = 'Give it another shot!'
 const frontRim = hoopPoint(660, 390)
-const leaves = Array.from({ length: 5 }, (_, index) => {
-  const duration = 13 + index
+const leaves = Array.from({ length: 7 }, (_, index) => {
+  const duration = 13 + index % 5
   return {
-    left: `${7 + index * 21}%`,
+    left: `${7 + index * 14}%`,
     animationDuration: `${duration}s`,
     animationDelay: `${-duration * ((index * 7 + 3) % 17) / 17}s`,
     '--leaf-drift': `${(index % 2 ? 1 : -1) * (3 + index % 4)}cqw`,
-    '--leaf-size': `${2.65 + (index % 3) * .45}cqw`,
+    '--leaf-size': `${3.1 + (index % 3) * .5}cqw`,
   } as CSSProperties
 })
 
@@ -52,6 +52,7 @@ function Basketball() {
   const court = useRef<HTMLButtonElement>(null)
   const replay = useRef<HTMLButtonElement>(null)
   const complete = roundIsOver(round.shots, round.baskets)
+  const won = round.baskets >= basketGoal
   const canShoot = phase === 'ready' && !complete
   const shotsLeft = shotLimit - round.shots
   const playerX = shootingSpots[round.spot]
@@ -93,7 +94,7 @@ function Basketball() {
       setFlight(null)
       setPhase('ready')
       setMessage(roundIsOver(shots, baskets)
-        ? `${baskets >= basketGoal ? 'Challenge complete.' : 'Goal missed. Play again to try for the goal.'} ${baskets} of ${shots} shots made.`
+        ? `${baskets >= basketGoal ? 'Challenge complete!' : retryTitle} ${baskets} of ${shots} shots made.`
         : `${made ? 'Basket!' : 'Miss.'} ${baskets} baskets, ${shotLimit - shots} shots left.`)
       busy.current = false
     }
@@ -199,9 +200,9 @@ function Basketball() {
         {!round.shots && !flight && <span className={ui('hoops-hint')} aria-hidden="true">Aim high, then click to shoot</span>}
       </button>
       {complete && <div className={ui('hoops-result')}>
-        <div className={ui('hoops-result-card')}>
-          <h2>{round.baskets >= basketGoal ? 'Challenge complete!' : 'Goal missed'}</h2>
-          <p>{round.baskets} of {round.shots} shots made</p>
+        <div className={ui('hoops-result-card')} data-won={won}>
+          <h2>{won ? 'Challenge complete!' : retryTitle}</h2>
+          <p>{won ? `${round.baskets} of ${round.shots} shots made` : `You made ${round.baskets}. Aim for ${basketGoal} baskets!`}</p>
           <button type="button" ref={replay} className={ui('cta')} onClick={restart}>Play again</button>
         </div>
       </div>}

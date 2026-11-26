@@ -77,7 +77,8 @@ function Basketball() {
   const busy = useRef(false)
   const frameId = useRef(0)
   const court = useRef<HTMLButtonElement>(null)
-  const replay = useRef<HTMLButtonElement>(null)
+  const completionTitle = useRef<HTMLHeadingElement>(null)
+  const tutorialTitle = useRef<HTMLHeadingElement>(null)
   const tutorial = useRef<HTMLDialogElement>(null)
   const complete = round.baskets >= basketGoal
   const canShoot = started && characterLoad !== 'loading' && dribbleTime === null && (phase === 'ready' || phase === 'aiming') && !complete
@@ -96,8 +97,11 @@ function Basketball() {
     window.addEventListener('resize', resize)
     return () => window.removeEventListener('resize', resize)
   }, [])
-  useEffect(() => { if (complete) replay.current?.focus() }, [complete])
-  useEffect(() => { tutorial.current?.showModal() }, [])
+  useEffect(() => { if (complete) completionTitle.current?.focus() }, [complete])
+  useEffect(() => {
+    tutorial.current?.showModal()
+    tutorialTitle.current?.focus()
+  }, [])
   useEffect(() => {
     if (!started) return
     court.current?.focus()
@@ -287,7 +291,7 @@ function Basketball() {
     <h1 className="sr-only">After-School Hoops</h1>
     <dialog ref={tutorial} className={ui('hoops-panel hoops-tutorial')} aria-labelledby="hoops-tutorial-title"
       onCancel={event => { if (!started) event.preventDefault() }} onClose={() => setStarted(true)}>
-      <h1 id="hoops-tutorial-title" className={ui('ink-wiggle hoops-panel-title')}>How to play</h1>
+      <h1 ref={tutorialTitle} tabIndex={-1} id="hoops-tutorial-title" className={ui('ink-wiggle hoops-panel-title')}>How to play</h1>
       <ol className={ui('hoops-tutorial-steps')}>
         {tutorialSteps.map(({ label, art }) => <li key={label} className={ui('hoops-tutorial-step')}>
           {art ? <img src={art} alt="" width="84" height="84" />
@@ -296,7 +300,7 @@ function Basketball() {
         </li>)}
       </ol>
       <form method="dialog" className={ui('hoops-panel-actions')}>
-        <button type="submit" className={ui('cta')} autoFocus>Let’s play</button>
+        <button type="submit" className={ui('cta')}>Let’s play</button>
       </form>
     </dialog>
     <div className={ui('hoops-challenge')}>
@@ -397,10 +401,10 @@ function Basketball() {
       </button>
       {complete && <div className={ui('hoops-result')}>
         <div className={ui('hoops-panel hoops-result-card')} aria-labelledby="hoops-complete-title">
-          <h2 id="hoops-complete-title" className={ui('ink-wiggle hoops-panel-title')}>Challenge complete!</h2>
+          <h2 ref={completionTitle} tabIndex={-1} id="hoops-complete-title" className={ui('ink-wiggle hoops-panel-title')}>Challenge complete!</h2>
           <p className={ui('hoops-panel-copy')}>You made all ten baskets!</p>
           <div className={ui('hoops-panel-actions')}>
-            <button type="button" ref={replay} className={ui('cta')} onClick={restart}>Play again</button>
+            <button type="button" className={ui('cta')} onClick={restart}>Play again</button>
           </div>
         </div>
       </div>}

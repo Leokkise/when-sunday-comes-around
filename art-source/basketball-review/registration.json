@@ -1,0 +1,78 @@
+{
+  "width": 640,
+  "height": 960,
+  "scale": 1.8181818181818181,
+  "ballCourtSize": 84,
+  "standingCourtHeight": 420.328125,
+  "ballImageSize": 97,
+  "balls": [
+    {
+      "name": "idle",
+      "x": 223,
+      "y": 207.5,
+      "radius": 44
+    },
+    {
+      "name": "dip",
+      "x": 674,
+      "y": 254.5,
+      "radius": 45
+    },
+    {
+      "name": "set",
+      "x": 1143,
+      "y": 117.5,
+      "radius": 46
+    }
+  ],
+  "poses": [
+    {
+      "name": "idle",
+      "left": 173,
+      "top": 7,
+      "right": 360,
+      "bottom": 493,
+      "footX": 286
+    },
+    {
+      "name": "dip",
+      "left": 624,
+      "top": 38,
+      "right": 838,
+      "bottom": 493,
+      "footX": 755.5
+    },
+    {
+      "name": "set",
+      "left": 1093,
+      "top": 8,
+      "right": 1334,
+      "bottom": 493,
+      "footX": 1256
+    },
+    {
+      "name": "release",
+      "left": 127,
+      "top": 513,
+      "right": 377,
+      "bottom": 1010,
+      "footX": 296.5
+    },
+    {
+      "name": "follow-through",
+      "left": 615,
+      "top": 514,
+      "right": 861,
+      "bottom": 1010,
+      "footX": 782
+    },
+    {
+      "name": "recovery",
+      "left": 1144,
+      "top": 514,
+      "right": 1327,
+      "bottom": 1013,
+      "footX": 1253
+    }
+  ]
+}

@@ -9,7 +9,8 @@ bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete()
 
 def painted(name):
-    image = bpy.data.images.load(str(root / 'art-source' / 'pantry-textures' / (name + '.webp')))
+    texture_dir = root / 'assets' / 'pantry' if name == 'tray-paper' else root / 'art-source' / 'pantry-textures'
+    image = bpy.data.images.load(str(texture_dir / (name + '.webp')))
     material = bpy.data.materials.new('Pencil on paper - ' + name)
     material.use_nodes = True
     shader = next(n for n in material.node_tree.nodes if n.type == 'BSDF_PRINCIPLED')

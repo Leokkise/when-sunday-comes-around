@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState, type PointerEvent } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
-import paper from '../art-source/pantry-textures/tray-paper.webp'
+import paper from '../assets/pantry/tray-paper.webp'
 import sign from '../assets/pantry/tray-sign.webp'
 import { createRoot } from 'react-dom/client'
 import { ui } from './ui-classes'

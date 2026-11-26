@@ -85,7 +85,7 @@
 
 @keyframes hoops-player-idle {
   0%, 100% { transform: scaleY(1); }
-  50% { transform: scaleY(.991); }
+  50% { transform: scaleY(.994); }
 }
 
 @keyframes hoops-swish {
@@ -243,4 +243,20 @@
 [data-serving] img {
   filter: drop-shadow(2px 0 0 #fff8df) drop-shadow(-2px 0 0 #fff8df)
           drop-shadow(0 2px 0 #fff8df) drop-shadow(0 -2px 0 #fff8df);
+}
+
+@keyframes hoops-progress-fill {
+  0% { transform: translateY(2px) scale(.85) rotate(-12deg); }
+  55% { transform: translateY(-2px) scale(1.08) rotate(5deg); }
+  100% { transform: translateY(0) scale(1) rotate(0); }
+}
+
+@keyframes hoops-progress-enter {
+  from { opacity: 0; transform: translateY(3px) scale(.92); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes hoops-progress-idle {
+  0%, 70%, 100% { transform: none; }
+  35% { transform: translateY(-1.5px) rotate(3deg); }
 }

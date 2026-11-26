@@ -50,8 +50,11 @@ export function aimFromPointer(x: number, y: number): Point {
   }
 }
 
-function launchVelocity(target: Point, playerX: number) {
-  const origin = { x: releasePoint.x + playerX - playerPosition.x, y: releasePoint.y }
+export function canAimForward(target: Point, playerX: number) {
+  return target.x < releasePoint.x + playerX - playerPosition.x
+}
+
+function launchVelocity(target: Point, playerX: number, origin = { x: releasePoint.x + playerX - playerPosition.x, y: releasePoint.y }) {
   const aim = aimFromPointer(target.x, target.y)
   const rise = origin.y - aim.y
   const across = aim.x - origin.x
@@ -61,14 +64,14 @@ function launchVelocity(target: Point, playerX: number) {
   return { origin, duration, x: across / duration, y: -rise / duration - gravity * duration / 2 }
 }
 
-export function aimGuide(target: Point, playerX = playerPosition.x) {
-  const velocity = launchVelocity(target, playerX)
+export function aimGuide(target: Point, playerX = playerPosition.x, heldBall?: Point) {
+  const velocity = launchVelocity(target, playerX, heldBall)
   const { origin, duration: end } = velocity
   const spacingBetweenDots = Math.max(50, Math.hypot(velocity.x, velocity.y + gravity * end / 2) * end / 13)
   const dots: Point[] = []
   let previous = origin
   let spacing = 34
-  let firstTime = 0
+  let firstDotTime = 0
   for (let time = shotStep; time < end; time += shotStep) {
     const point = {
       x: origin.x + velocity.x * time,
@@ -80,12 +83,13 @@ export function aimGuide(target: Point, playerX = playerPosition.x) {
       const distanceToEnd = Math.hypot(velocity.x * remaining, (velocity.y + gravity * (end + time) / 2) * remaining)
       if (distanceToEnd < 28) break
       dots.push(point)
-      if (dots.length === 1) firstTime = time
+      if (dots.length === 1) firstDotTime = time
       spacing += spacingBetweenDots
     }
     previous = point
   }
-  const start = dots[0] ?? origin
+  const start = heldBall ?? dots[0] ?? origin
+  const firstTime = heldBall ? 0 : firstDotTime
   const controlDuration = (end - firstTime) / 2
   const curve = {
     start,

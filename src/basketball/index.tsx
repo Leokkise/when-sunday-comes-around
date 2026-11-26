@@ -1,30 +1,28 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { createRoot } from 'react-dom/client'
-import { ActivityEntry } from './activity-loading'
-import { InkFilters } from './ink-filters'
-import { BasketballNet } from './basketball-net'
-import { loadImage } from './image-loading'
-import { aimFromPointer, aimGuide, ballRadius, courtSize, defaultAim, floorY, hoopPlacement, hoopPoint, playerPosition, releasePoint, rim, shootingSpots, shotStep, traceShot, type Point, type ShotFrame } from './basketball-shot'
-import { heldBallKeyframes, playerSpriteWidth, playerSpriteXOffset, playerSpriteYOffset, shotReleaseTick, shotRows, shotTicks, spriteColumns, walkFrameCount, walkRows } from './basketball-character-frames'
-import { ui } from './ui-classes'
-import courtArt from '../assets/basketball/court-soft.avif'
-import hoopArt from '../assets/basketball/hoop-soft.webp'
-import ballArt from '../assets/basketball/ball-soft.webp'
-import readyArt from '../assets/basketball/player-ready.webp'
-import loadedShotArt from '../assets/basketball/player-set.webp'
-import restingArt from '../assets/basketball/player-rest.webp'
-import shotAtlas from '../assets/basketball/player-shot-atlas.webp'
-import walkAtlas from '../assets/basketball/player-walk-atlas.webp'
-import dryLeafArt from '../assets/basketball/dry-leaf.webp'
-import swishArt from '../assets/basketball/rim-accent.webp'
+import { ActivityEntry } from '../activity-loading'
+import { InkFilters } from '../ink-filters'
+import { BasketballNet } from './net'
+import { BasketballPlayer, characterArt } from './player'
+import { BasketballProgress } from './progress'
+import { zoomOutLayout } from './viewport'
+import { loadImage } from '../image-loading'
+import { aimFromPointer, aimGuide, canAimForward, ballRadius, courtSize, defaultAim, floorY, hoopPlacement, hoopPoint, playerPosition, rim, shootingSpots, shotStep, traceShot, type Point, type ShotFrame } from './shot'
+import { heldBallKeyframes, playerSpriteWidth, playerSpriteXOffset, playerSpriteYOffset, shotReleaseTick, shotTicks, walkFrameCount } from './character-frames'
+import { ui } from '../ui-classes'
+import courtArt from '../../assets/basketball/scene/court-soft.avif'
+import hoopArt from '../../assets/basketball/scene/hoop-soft.webp'
+import ballArt from '../../assets/basketball/scene/ball-soft.webp'
+import dryLeafArt from '../../assets/basketball/scene/dry-leaf.webp'
+import swishArt from '../../assets/basketball/scene/rim-accent.webp'
 
-import releaseSound from '../assets/basketball/release.wav'
-import stepSound from '../assets/basketball/step.wav'
-import bounceSound from '../assets/basketball/bounce.wav'
-import basketSound from '../assets/basketball/basket.wav'
+import releaseSound from '../../assets/basketball/audio/release.wav'
+import stepSound from '../../assets/basketball/audio/step.wav'
+import bounceSound from '../../assets/basketball/audio/bounce.wav'
+import basketSound from '../../assets/basketball/audio/basket.wav'
 
-import boardSound from '../assets/basketball/board.wav'
-import rimSound from '../assets/basketball/rim.wav'
+import boardSound from '../../assets/basketball/audio/board.wav'
+import rimSound from '../../assets/basketball/audio/rim.wav'
 
 const sounds = { board: boardSound, rim: rimSound, release: releaseSound, step: stepSound, bounce: bounceSound, basket: basketSound }
 function playCue(name: keyof typeof sounds, volume = .42) {
@@ -33,21 +31,14 @@ function playCue(name: keyof typeof sounds, volume = .42) {
   void audio.play().catch(() => {})
 }
 
-const openingArt = [courtArt, hoopArt, ballArt, readyArt, loadedShotArt, restingArt]
-const animationArt = [shotAtlas, walkAtlas]
-const heldBallPositions = [
-  ...heldBallKeyframes,
-  [shotReleaseTick, releasePoint.x - playerPosition.x, releasePoint.y - playerPosition.y],
-] as const
-const [, idleBallX, idleBallY] = heldBallPositions[0]
-const shotLimit = 15
+const openingArt = [courtArt, hoopArt, ballArt, characterArt[0]]
+const [, idleBallX, idleBallY] = heldBallKeyframes[0]
 const basketGoal = 10
-const retryTitle = 'Give it another shot!'
 const frontRim = hoopPoint(660, 390)
-const tutorialCards = [
-  { title: 'Aim high', copy: 'Tap the ball to dribble. Aim the dotted arc above the hoop to shoot.', art: hoopArt },
-  { title: 'Take the shot', copy: 'Click or lift your finger to shoot. On a keyboard, use the arrows, then Enter or Space.', art: loadedShotArt },
-  { title: 'Make 10 baskets', copy: 'You get 15 shots. Aim again from each new spot.', art: ballArt },
+const tutorialSteps = [
+  { label: 'Aim above the hoop.', art: hoopArt },
+  { label: 'Tap or click to shoot.', art: null },
+  { label: 'Make 10 baskets. Keep trying!', art: ballArt },
 ]
 const leaves = Array.from({ length: 7 }, (_, index) => {
   const duration = 11 + index % 5
@@ -60,10 +51,6 @@ const leaves = Array.from({ length: 7 }, (_, index) => {
   } as CSSProperties
 })
 
-function roundIsOver(shots: number, baskets: number) {
-  return shots === shotLimit || baskets + shotLimit - shots < basketGoal
-}
-
 function position(x: number, y: number, width?: number) {
   return {
     left: (x / courtSize.width * 100) + '%',
@@ -72,29 +59,12 @@ function position(x: number, y: number, width?: number) {
   }
 }
 
-function atlasFrame(source: string, rows: number, frame: number) {
-  return {
-    backgroundImage: `url("${source}")`,
-    backgroundSize: `${spriteColumns * 100}% ${rows * 100}%`,
-    backgroundPosition: `${frame % spriteColumns / (spriteColumns - 1) * 100}% ${Math.floor(frame / spriteColumns) / Math.max(1, rows - 1) * 100}%`,
-  }
-}
-
-function heldBallAt(tick: number): readonly [number, number] {
-  const nextIndex = heldBallPositions.findIndex(([keyTick]) => keyTick > tick)
-  if (nextIndex < 0) return [releasePoint.x - playerPosition.x, releasePoint.y - playerPosition.y]
-  const [start, x, y] = heldBallPositions[nextIndex - 1]
-  const [end, nextX, nextY] = heldBallPositions[nextIndex]
-  const progress = (tick - start) / (end - start)
-  return [x + (nextX - x) * progress, y + (nextY - y) * progress]
-}
-
 function Basketball() {
+  const [viewport, setViewport] = useState(() => zoomOutLayout(window.innerWidth, window.innerHeight, window.outerWidth))
   const [aim, setAim] = useState(defaultAim)
   const [phase, setPhase] = useState<'ready' | 'aiming' | 'windup' | 'release' | 'watch' | 'moving'>('ready')
   const [started, setStarted] = useState(false)
   const [animationFrame, setAnimationFrame] = useState(0)
-  const [shotTick, setShotTick] = useState(1)
   const [walkingRight, setWalkingRight] = useState(false)
   const [characterLoad, setCharacterLoad] = useState<'loading' | 'error' | null>(null)
   const [message, setMessage] = useState('')
@@ -109,24 +79,30 @@ function Basketball() {
   const court = useRef<HTMLButtonElement>(null)
   const replay = useRef<HTMLButtonElement>(null)
   const tutorial = useRef<HTMLDialogElement>(null)
-  const complete = roundIsOver(round.shots, round.baskets)
-  const won = round.baskets >= basketGoal
+  const complete = round.baskets >= basketGoal
   const canShoot = started && characterLoad !== 'loading' && dribbleTime === null && (phase === 'ready' || phase === 'aiming') && !complete
   const shotInProgress = phase === 'windup' || phase === 'release' || phase === 'watch' || phase === 'moving'
-  const shotsLeft = shotLimit - round.shots - Number(shotInProgress)
   const basketsShown = round.baskets + Number(shotInProgress && madeBasket)
   const playerX = shootingSpots[round.spot]
-  const { dots, curve } = useMemo(() => aimGuide(aim, playerX), [aim, playerX])
+  const forwardAim = canAimForward(aim, playerX)
+  const { dots, curve } = useMemo(() => aimGuide(aim, playerX, {
+    x: playerX + idleBallX, y: playerPosition.y + idleBallY,
+  }), [aim, playerX])
   const aimPosition = position(aim.x, aim.y)
 
   useEffect(() => () => cancelAnimationFrame(frameId.current), [])
+  useEffect(() => {
+    const resize = () => setViewport(zoomOutLayout(window.innerWidth, window.innerHeight, window.outerWidth))
+    window.addEventListener('resize', resize)
+    return () => window.removeEventListener('resize', resize)
+  }, [])
   useEffect(() => { if (complete) replay.current?.focus() }, [complete])
   useEffect(() => { tutorial.current?.showModal() }, [])
   useEffect(() => {
     if (!started) return
     court.current?.focus()
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      void Promise.all(animationArt.map(loadImage)).catch(() => {})
+      void Promise.all(characterArt.map(loadImage)).catch(() => {})
     }
   }, [started])
 
@@ -160,11 +136,15 @@ function Basketball() {
 
   async function shoot(target: Point) {
     if (busy.current || !canShoot) return
+    if (!canAimForward(target, playerX)) {
+      setMessage('Aim toward the hoop to shoot.')
+      return
+    }
     busy.current = true
     setCharacterLoad('loading')
     try {
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        await Promise.all(animationArt.map(loadImage))
+        await Promise.all(characterArt.map(loadImage))
       }
     } catch {
       busy.current = false
@@ -179,7 +159,7 @@ function Basketball() {
     const { frames, impacts, made } = traceShot(target, playerX)
     const shots = round.shots + 1
     const baskets = round.baskets + Number(made)
-    const lastShot = roundIsOver(shots, baskets)
+    const lastShot = baskets >= basketGoal
     const offset = 1 + Math.floor(Math.random() * (shootingSpots.length - 1))
     const spot = lastShot ? round.spot : (round.spot + offset) % shootingSpots.length
     const nextX = shootingSpots[spot]
@@ -189,10 +169,7 @@ function Basketball() {
       setMovingX(null)
       setPhase('ready')
       setAnimationFrame(0)
-      setShotTick(1)
-      setMessage(lastShot
-        ? `${baskets >= basketGoal ? 'Challenge complete!' : retryTitle} ${baskets} of ${shots} shots made.`
-        : `${made ? 'Basket!' : 'Miss.'} ${baskets} baskets, ${shotLimit - shots} shots left.`)
+      setMessage(lastShot ? 'All ten baskets made! Challenge complete!' : `${made ? 'Basket!' : 'Try again.'} ${baskets} of ${basketGoal} baskets made.`)
       busy.current = false
     }
 
@@ -207,6 +184,7 @@ function Basketball() {
     const releaseMs = 125
     const moveMs = Math.min(820, 300 + Math.abs(nextX - playerX) * .33)
     const walkCycles = Math.max(1, Math.round(moveMs / 480))
+    setAnimationFrame(0)
     setPhase('windup')
     const start = performance.now()
     let movingSince: number | undefined
@@ -222,7 +200,6 @@ function Basketball() {
           : shotReleaseTick + elapsed * .12
         const nextFrame = shotTicks.findIndex(frame => frame > tick)
         setAnimationFrame(nextFrame < 0 ? shotTicks.length - 1 : nextFrame - 1)
-        if (elapsed < 0) setShotTick(tick)
       }
       if (elapsed < 0) {
         frameId.current = requestAnimationFrame(animate)
@@ -288,44 +265,44 @@ function Basketball() {
   }
 
   const drawX = movingX ?? playerX
-  const [holdX, holdY] = phase === 'windup' ? heldBallAt(shotTick) : [idleBallX, idleBallY]
-  const handY = playerPosition.y + holdY
+  const handY = playerPosition.y + idleBallY
   const bounce = dribbleTime === null ? 0 : Math.min(1, Math.min(dribbleTime, 1 - dribbleTime) / .46)
-  const ball = flight ?? { x: drawX + holdX, y: handY + (floorY - handY) * bounce ** 2 }
+  const ball = flight ?? { x: drawX + idleBallX, y: handY + (floorY - handY) * bounce ** 2 }
   const netFrame = flight && (flight.touchingNet || Math.abs(flight.netSway) >= .05 || Math.abs(flight.netStretch) >= .001) ? flight : null
   const holding = (phase === 'ready' || phase === 'aiming' || phase === 'windup') && dribbleTime === null
-  const spriteFrame = phase === 'moving' ? atlasFrame(walkAtlas, walkRows, animationFrame)
-    : phase === 'windup' || phase === 'release' || phase === 'watch' ? atlasFrame(shotAtlas, shotRows, animationFrame)
-    : undefined
+  const characterIndex = phase === 'moving' || phase === 'windup' || phase === 'release' || phase === 'watch'
+    ? animationFrame : dribbleTime === null ? 0 : shotTicks.length - 1
+  const breathing = started && dribbleTime === null && (phase === 'ready' || phase === 'aiming'
+    || (phase === 'watch' && characterIndex === shotTicks.length - 1))
 
-  return <main className={ui('hoops-page')}>
+  return <main className={ui('hoops-page')} style={viewport ? {
+    ...viewport,
+    '--hoops-vw': `${viewport.width / 100}px`,
+    '--hoops-vh': `${viewport.height / 100}px`,
+  } as CSSProperties : undefined}>
     <InkFilters />
-    <a className={ui('brush-back')} href="/" aria-label="Back to When Sunday Comes Around">
+    <a className={ui('brush-back hoops-back')} href="/" aria-label="Back to When Sunday Comes Around">
       <svg className={ui('ink-wiggle')} viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M29 18c-5 1-14 0-22 0m0 0 8-8m-8 8 8 8" /></svg>
     </a>
     <h1 className="sr-only">After-School Hoops</h1>
-    <dialog ref={tutorial} className={ui('hoops-tutorial')} aria-labelledby="hoops-tutorial-title"
+    <dialog ref={tutorial} className={ui('hoops-panel hoops-tutorial')} aria-labelledby="hoops-tutorial-title"
       onCancel={event => { if (!started) event.preventDefault() }} onClose={() => setStarted(true)}>
-      <h1 id="hoops-tutorial-title" className={ui('hoops-tutorial-title')}>How to play</h1>
-      <ol className={ui('hoops-tutorial-cards')}>
-        {tutorialCards.map(({ title, copy, art }) => <li key={title} className={ui('hoops-tutorial-card')}>
-          <img src={art} alt="" width="84" height="84" />
-          <div><h2>{title}</h2><p>{copy}</p></div>
+      <h1 id="hoops-tutorial-title" className={ui('ink-wiggle hoops-panel-title')}>How to play</h1>
+      <ol className={ui('hoops-tutorial-steps')}>
+        {tutorialSteps.map(({ label, art }) => <li key={label} className={ui('hoops-tutorial-step')}>
+          {art ? <img src={art} alt="" width="84" height="84" />
+            : <span className={ui('hoops-tutorial-player')}><BasketballPlayer walking={false} frame={2} started={false} /></span>}
+          <p className={ui('hoops-panel-copy')}>{label}</p>
         </li>)}
       </ol>
-      <form method="dialog" className={ui('hoops-tutorial-actions')}>
-        <button type="submit" className={ui('cta')} autoFocus>I understand</button>
-        <a href="/">Back to games</a>
+      <form method="dialog" className={ui('hoops-panel-actions')}>
+        <button type="submit" className={ui('cta')} autoFocus>Let’s play</button>
       </form>
     </dialog>
     <div className={ui('hoops-challenge')}>
-      <div className={ui('hoops-score')} data-complete={complete} role="group" aria-label="Round score">
-        <strong>{basketGoal} to win</strong>
-        <span>{basketsShown} {basketsShown === 1 ? 'basket' : 'baskets'} made</span>
-        <span>{shotsLeft} {shotsLeft === 1 ? 'shot' : 'shots'} left</span>
-      </div>
+      <BasketballProgress baskets={Math.min(basketGoal, basketsShown)} goal={basketGoal} idle={canShoot} />
       <button ref={court} type="button" className={ui('hoops-stage')} aria-label="Aim and shoot the basketball"
-        aria-describedby="hoops-hint" aria-disabled={!canShoot} tabIndex={complete ? -1 : 0} data-phase={phase}
+        aria-describedby="hoops-hint" aria-disabled={!canShoot || !forwardAim} tabIndex={complete ? -1 : 0} data-phase={phase}
         onPointerMove={event => {
           if (!canShoot) return
           setPhase('aiming')
@@ -381,10 +358,8 @@ function Basketball() {
           ...position(drawX + playerSpriteXOffset, playerPosition.y + playerSpriteYOffset, playerSpriteWidth),
           scale: phase === 'moving' && walkingRight ? '-1 1' : undefined,
           transformOrigin: '50% 100%',
-        }} data-pose={phase}>
-          {spriteFrame
-            ? <span aria-hidden="true" className={ui('hoops-player-body')} style={spriteFrame} data-character-frame={animationFrame} />
-            : <img src={dribbleTime === null ? readyArt : restingArt} alt="" className={ui('hoops-player-body')} draggable={false} />}
+        }} data-pose={phase} data-breathing={breathing}>
+          <BasketballPlayer walking={phase === 'moving'} frame={characterIndex} started={started} />
         </span>
         {(flight || dribbleTime !== null) && <span className={ui('hoops-shadow')} style={{ ...position(ball.x, floorY + 35, 82), opacity: .08 + .14 * Math.max(0, 1 - (floorY - ball.y) / 500) }} aria-hidden="true" />}
         {!holding && phase !== 'moving' && <span className={ui('hoops-sprite hoops-ball')} data-ball style={{ ...position(ball.x, ball.y, 84),
@@ -409,7 +384,11 @@ function Basketball() {
               fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
           </svg>
           {dots.map((dot, index) => <span key={index} className={ui('hoops-dot')} style={position(dot.x, dot.y, 18)} aria-hidden="true" />)}
-          <span className={ui('hoops-dot hoops-aim-ring')} style={aimPosition} aria-hidden="true" />
+          <span className={ui('hoops-dot hoops-aim-ring')} data-invalid={!forwardAim} style={aimPosition} aria-hidden="true">
+            {!forwardAim && <svg className={ui('hoops-aim-block')} viewBox="0 0 20 20" fill="none">
+              <path d="M5 10h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+            </svg>}
+          </span>
         </>}
         {characterLoad && <span className={ui('hoops-hint')} role="status">
           {characterLoad === 'loading' ? 'Getting your shot ready…' : 'Tap or click to retry loading the character'}
@@ -417,14 +396,16 @@ function Basketball() {
         {!characterLoad && !round.shots && canShoot && <span className={ui('hoops-hint')} aria-hidden="true">Aim high, then tap or click</span>}
       </button>
       {complete && <div className={ui('hoops-result')}>
-        <div className={ui('hoops-result-card')} data-won={won}>
-          <h2>{won ? 'Challenge complete!' : retryTitle}</h2>
-          <p>{won ? `${round.baskets} of ${round.shots} shots made` : `You made ${round.baskets}. Aim for ${basketGoal} baskets!`}</p>
-          <button type="button" ref={replay} className={ui('cta')} onClick={restart}>Play again</button>
+        <div className={ui('hoops-panel hoops-result-card')} aria-labelledby="hoops-complete-title">
+          <h2 id="hoops-complete-title" className={ui('ink-wiggle hoops-panel-title')}>Challenge complete!</h2>
+          <p className={ui('hoops-panel-copy')}>You made all ten baskets!</p>
+          <div className={ui('hoops-panel-actions')}>
+            <button type="button" ref={replay} className={ui('cta')} onClick={restart}>Play again</button>
+          </div>
         </div>
       </div>}
     </div>
-    <p id="hoops-hint" className="sr-only">Tap the ball or press D to dribble. Aim the circle above the basket, then click or tap to shoot. Use the arrow keys to aim and Enter or Space to shoot.</p>
+    <p id="hoops-hint" className="sr-only">Tap the ball or press D to dribble. Aim the circle above the basket, then click or tap to shoot. A red aim circle means that direction is blocked. Use the arrow keys to aim and Enter or Space to shoot.</p>
     <p className="sr-only" role="status">{message}</p>
   </main>
 }

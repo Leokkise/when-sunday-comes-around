@@ -1,6 +1,6 @@
 import { memo } from 'react'
-import { ballRadius, courtSize, netLength, netRadius, rim, type ShotFrame } from './basketball-shot'
-import { ui } from './ui-classes'
+import { ballRadius, courtSize, netLength, netRadius, rim, type ShotFrame } from './shot'
+import { ui } from '../ui-classes'
 
 export const BasketballNet = memo(function BasketballNet({ frame, front }: { frame: ShotFrame | null; front: boolean }) {
   const strands = 12

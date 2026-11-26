@@ -4,4 +4,4 @@ dist/
 
 __pycache__/
 *.py[cod]
-art-source/basketball/renders/
+.cache/

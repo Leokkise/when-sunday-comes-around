@@ -2,12 +2,13 @@
 from pathlib import Path
 import json
 import subprocess
+import shutil
 import bpy
 
-root = Path(__file__).resolve().parents[1]
-source = root / 'art-source/basketball-review'
-output = root / 'art-source/basketball/renders'
-subprocess.run(['node', 'scripts/prepare-basketball-frames.mjs'], cwd=root, check=True)
+root = Path(__file__).resolve().parents[2]
+source = root / 'art-source/basketball'
+output = root / '.cache/basketball'
+subprocess.run(['node', 'scripts/basketball/prepare-frames.mjs'], cwd=root, check=True)
 poses = json.loads((output / 'poses.json').read_text())
 bpy.ops.wm.read_factory_settings(use_empty=True)
 shot = bpy.context.scene
@@ -71,17 +72,15 @@ shot_ticks = [1, 9, 19, 26, 32, 49]
 walk_ticks = list(range(1, 30, 4))
 build_scene(shot, poses['shot'], shot_ticks, 120)
 build_scene(walk, poses['walk'], walk_ticks, 60)
-bpy.context.preferences.filepaths.save_version = 0
-bpy.ops.wm.save_as_mainfile(filepath=str(source / 'basketball-character.blend'))
 for scene, label, ticks in [(shot, 'shot', shot_ticks), (walk, 'walk', walk_ticks)]:
     bpy.context.window.scene = scene
     for index, tick in enumerate(ticks):
         scene.frame_set(tick)
         scene.render.filepath = str(output / f'{label}-{index}.png')
         bpy.ops.render.render(write_still=True)
-subprocess.run(['node', 'scripts/export-basketball-sprites.mjs',
+subprocess.run(['node', 'scripts/basketball/export-sprites.mjs',
                 json.dumps({'shot': shot_ticks, 'walk': walk_ticks, 'keys': shot_ticks})],
                cwd=root, check=True)
-for pose in poses['shot']:
-    (source / 'drawings' / (pose['name'] + '.png')).unlink()
-(source / 'drawings').rmdir()
+# Render files are reproducible intermediates, never retained as source copies.
+if output.resolve() == (root / '.cache/basketball').resolve():
+    shutil.rmtree(output)

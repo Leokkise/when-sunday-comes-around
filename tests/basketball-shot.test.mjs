@@ -1,9 +1,26 @@
 import assert from 'node:assert/strict'
-import { aimFromPointer, aimGuide, ballRadius, courtSize, defaultAim, floorY, playerPosition, releasePoint, rim, shootingSpots, shotStep, traceShot } from '../src/basketball-shot.ts'
+import { aimFromPointer, aimGuide, canAimForward, ballRadius, courtSize, defaultAim, floorY, playerPosition, releasePoint, rim, shootingSpots, shotStep, traceShot } from '../src/basketball/shot.ts'
 
 assert.deepEqual(aimFromPointer(600, 400), { x: 600, y: 400 })
 assert.deepEqual(aimFromPointer(-100, -100), { x: 0, y: -100 })
 assert.deepEqual(aimFromPointer(4000, 2000), { x: courtSize.width, y: courtSize.height })
+
+for (const playerX of shootingSpots) {
+  assert.equal(canAimForward({ x: playerX - 100, y: 200 }, playerX), true)
+  assert.equal(canAimForward({ x: playerX + 100, y: 200 }, playerX), false)
+  const held = { x: playerX + 98.61, y: playerPosition.y + 142.78 }
+  for (const target of [{ x: playerX - 150, y: 1040 }, { x: playerX - 200, y: 300 }]) {
+    const { curve, dots } = aimGuide(target, playerX, held)
+    assert.deepEqual(curve.start, held)
+    assert.ok(Math.hypot(curve.finish.x - target.x, curve.finish.y - target.y) < .001)
+    for (const dot of dots) {
+      const t = (dot.x - held.x) / (target.x - held.x)
+      const y = (1 - t) ** 2 * held.y + 2 * (1 - t) * t * curve.control.y + t ** 2 * target.y
+      assert.ok(Math.abs(y - dot.y) < .001, 'every dot lies on the same continuous guide curve')
+    }
+    assert.ok(Math.hypot(dots[0].x - held.x, dots[0].y - held.y) < 50, 'dots begin at the held ball')
+  }
+}
 
 const swish = traceShot(defaultAim)
 assert.equal(swish.made, true)

@@ -16,6 +16,7 @@ React and TypeScript power the interactions. Vite builds four HTML entry points.
 | `/wash-up/` | `src/wash-up.tsx` | Nine guided bath steps, followed by a link to brushing |
 | `/brush-teeth/` | `src/brush-teeth.tsx` | Bath-to-brushing intro and five guided brushing steps |
 | `/dress-up/` | `src/dress-up.tsx` | Bedtime outfit choices and live bedroom preview |
+| `/basketball/` | `src/basketball/index.tsx` | Aim toward the rim and fill ten basketballs, with unlimited attempts |
 
 ## Current game design
 
@@ -68,6 +69,12 @@ For compression, compare bytes and decoded image quality across all games. Prese
 The November 23, 2026 compression pass reduced 16 images from 2,067,780 to 1,396,064 bytes (671,716 bytes saved). Candidates retained identical decoded alpha and dimensions, with visible RGB RMS error below 2/255 when composited on white. The lossless mouth crop and already-efficient images were retained. Shared CSS fell from 99.95 KB to 99.35 KB after narrowing Tailwind scanning. Future passes should measure from the current assets and avoid stacking lossy conversions for small gains.
 
 ## Asset folder layout
+
+Basketball code is grouped in `src/basketball`: the route, player, progress row, net, shot physics and generated frame metadata. Its runtime artwork is grouped under `assets/basketball/character`, `scene` and `audio`. Idle, shooting, recovery and the tutorial reuse the shooting atlas; walking uses one separate atlas. The shared ball image supplies the baked holding poses, flight, dribbling and filled progress icons. Backward aim keeps its curve and dots visible with a red endpoint and horizontal bar, while the shot guard blocks release. The tutorial uses three short illustrated steps with motion only on its heading. Holding and the final after-shot recovery pose share subtle breathing, disabled during shooting, walking, dribbling and reduced motion.
+
+Only two approved lossless drawing sheets, ball anchors and current documentation remain in `art-source/basketball`. See its README for the Blender regeneration command. Scripts live in `scripts/basketball`; intermediate PNGs and registration data go to `.cache/basketball` and are removed after a successful export. Do not retain contact sheets, comparison images, packed duplicate drawings or numbered backup assets. The source conversion preserved every visible pixel and alpha; the reorganized pipeline reproduced both runtime atlases and coordinates byte-for-byte. The tutorial no longer downloads a separate 25,240-byte character preview.
+
+Across the basketball tutorial, play and completion states, `src/basketball/viewport.ts` compensates for desktop browser zoom-out when the layout viewport becomes wider than the outer window. The page uses normalized viewport units so the court, progress icons and back control retain their on-screen scale. The tutorial and completion panel share the same 520-pixel frame, typography and action sizing; both headings use the shared ink-wiggle animation. Normal zoom, zoom-in and narrow layouts keep the original sizing rules. Pointer aiming continues to use the rendered court bounds. `tests/basketball-viewport.test.mjs` checks the sizing math; Chromium viewport checks covered 80% and 50% zoom-equivalent geometry, a scored pointer shot and the unchanged 390-pixel layout.
 
 `public/shared` holds shared bathroom and character artwork; `public/bath`, `public/brush`, and `public/bedtime` hold game-specific static artwork. `public/cursors` holds pointer graphics, and `public/fonts` holds the full Schoolbell WOFF2 font and its license. Imported home previews live in `assets/home`; imported wardrobe artwork and the quilt live in `assets/bedtime`. Its generated `previews` subfolder contains small picker and category images, which prevent downloading full-size wardrobe art merely to browse. Skill fitting references remain inside the skill.
 

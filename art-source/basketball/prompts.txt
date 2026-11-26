@@ -1,0 +1,15 @@
+Approved basketball art direction
+
+Use shooting.webp and walking.webp as the visual authority. Preserve the dark curved hair locks with light pencil-paper breaks, narrow dark eyes, slightly lifted gaze toward the left rim, pale ivory skin and left-facing three-quarter view. Keep both eyes visible. White T-shirt, plain muted red jersey with cream trim, charcoal shorts, white socks and cream/slate sneakers. No jersey numeral. Keep the approved head unchanged. Body, jersey, shorts and shoes carry fine colored-pencil texture and soft warm graphite contours.
+
+The six shooting poses are idle hold, dip, set, release, follow-through and recovery. Keep the lower face behind the near upper arm and sleeve in the two extended poses. Walking has eight alternating contact, down, passing and up drawings with the same standing-height calibration and foot line. Natural knee bends remain. Keep complete torsos and connected hands; never cut a circular hole in the body to remove a ball. The generator layers scene/ball-soft.webp in front of the complete torso, with the gripping fingers above it, using ball-anchors.json. Ball diameter is 84 court units. Draw that same ball separately during flight and dribbling.
+
+Court: preserve the 1672 by 941 composition, court lines, fence, trees, rooflines and horizon. Pale blue-gray pavement, warm cream sky, muted sage foliage, broad even color, restrained paper grain and occasional fine pencil accents. No people, hoop, ball, text or logos baked into the background.
+
+Hoop: preserve the 1024 by 1536 transparent canvas, exact support, board and rim geometry. Broad pale sage-gray pole, warm eggshell board, restrained terracotta rim and gentle brown contours. Keep transparency through the rim. The net is animated geometry in src/basketball/net.tsx. Sprite placement and collision anchors are in src/basketball/shot.ts.
+
+Ball: preserve the 320 by 320 transparent canvas, circular silhouette and curved seam layout. Warm muted apricot-terracotta, broad even fill, soft spherical shading, simple brown seams and faint fine paper grain. No glossy highlights, harsh grain or cast shadow.
+
+Progress: ten brown-outline basketballs on a translucent cream strip. Each made basket fills the next icon using the shared ball. Attempts continue until ten baskets are made. Idle movement is subtle and pauses during shots; reduced motion keeps the icons still. Backward aiming remains visible with a red endpoint and horizontal bar, and cannot launch a shot.
+
+Interface motion: the How to play and Challenge complete headings move, using the shared ink-wiggle animation from the other game pages. The tutorial has three short, child-friendly instructions in large dark lettering, evenly aligned illustrations and a single centered Let’s play button. The completion panel shares its frame, text sizes and action styling. Zoom-out compensation applies from the opening tutorial through completion. Holding and the final after-shot recovery pose share a subtle three-second breathing cycle with a fixed foot baseline. Keep shooting and walking frames free of breathing transforms. Reduced motion keeps the heading and character still.

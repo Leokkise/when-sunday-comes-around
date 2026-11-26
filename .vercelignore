@@ -7,3 +7,5 @@ tests/
 scripts/
 *.md
 art-source/
+
+.cache/

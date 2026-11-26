@@ -687,6 +687,8 @@ const utilities: Record<string, string> = {
     `motion-safe:[&[data-soap-guide]_path]:[animation:wash-arm-arrow_1.6s_ease-in-out_infinite]`,
     `[border:2px_dashed_#74563d] [border-radius:50%] [background:#fff6d955]`,
   ].join(" "),
+  "pantry-tag": "rounded-full border border-[#ad9878] bg-[#fff4df] px-3 py-1 text-[clamp(14px,2.2vmin,21px)]",
+  "pantry-food": "relative grid cursor-grab touch-none select-none justify-items-center rounded-xl active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#495c40]",
   "wash-wet-hair": [
     `absolute [inset:8%_37%_auto] [height:8%] pointer-events-none`,
   ].join(" "),

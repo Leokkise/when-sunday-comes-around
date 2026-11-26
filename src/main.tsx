@@ -4,12 +4,14 @@ import washArt from '../assets/home/home-wash.webp'
 import brushArt from '../assets/home/home-brush.webp'
 import dressArt from '../assets/home/home-dress.webp'
 import basketballArt from '../assets/home/home-basketball.webp'
+import pantryArt from '../assets/pantry/preview.webp'
 import { BedtimeLink } from './bedtime-transition'
 const games = [
   { name: 'Wash up', href: '/wash-up/', art: washArt },
   { name: 'Brush teeth', href: '/brush-teeth/', art: brushArt },
   { name: 'Pick pajamas', href: '/dress-up/', art: dressArt },
   { name: 'After-School Hoops', href: '/basketball/', art: basketballArt },
+  { name: 'Pantry Pals', href: '/pantry/', art: pantryArt },
 ]
 function Home() {
   return <main className={ui('home-page')}>

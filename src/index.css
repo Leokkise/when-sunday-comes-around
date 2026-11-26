@@ -223,3 +223,36 @@
 @keyframes loading-lettering { 0%, 100% { rotate: -.15deg; } 50% { rotate: .15deg; } }
 
 @keyframes loading-wait { from { transform: translateX(-100%); } to { transform: translateX(285%); } }
+
+.pantry-particle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(17px, 2.6vmin, 28px);
+  aspect-ratio: 1;
+  background: center / contain no-repeat;
+  animation: pantry-burst 540ms ease-out both;
+}
+@keyframes pantry-burst {
+  from { transform: translate(-50%,-50%) scale(.55); opacity: 0; }
+  18% { opacity: 1; }
+  to { transform: translate(var(--dx),var(--dy)) rotate(var(--turn)) scale(.8); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pantry-particle { animation: pantry-still 350ms linear both; }
+  @keyframes pantry-still { from { opacity: 1; } to { opacity: 0; } }
+}
+[data-clue-card] {
+  position: relative;
+  border: 1px solid #8c765c;
+  border-radius: 2px;
+  box-shadow: 3px 4px 3px #5c432638;
+  rotate: 1deg;
+}
+[data-clue-card]::after {
+  content: "";
+  position: absolute;
+  inset: 3px -7px -1px 100%;
+  background: #c7b494;
+  clip-path: polygon(0 0, 100% 98%, 0 100%);
+}

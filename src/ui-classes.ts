@@ -47,7 +47,7 @@ const utilities: Record<string, string> = {
   "hoops-progress-idle": `block motion-safe:[animation:hoops-progress-idle_3.6s_ease-in-out_infinite] data-[idle=false]:[animation-play-state:paused]`,
   "hoops-progress-ball": `motion-safe:[animation:hoops-progress-enter_.35s_ease-out_both] block size-[clamp(17px,calc(var(--hoops-vw,1vw)*2.3),32px)] [&_svg]:size-full [&_img]:size-full data-[filled=true]:[animation:hoops-progress-fill_.45s_ease-out] motion-reduce:data-[filled=true]:animate-none`,
   "hoops-result": `absolute inset-0 z-10 grid place-items-center overflow-auto rounded-[20px] bg-[#4b382b]/20 p-2 sm:p-5`,
-  "hoops-result-card": `grid content-center text-center sm:min-h-[27rem]`,
+  "hoops-result-card": `grid max-w-[420px] content-center text-center [&_.hoops-panel-title]:mb-3 [&_.hoops-panel-actions]:mt-5`,
   "hoops-stage": `focus-visible:outline-none! relative isolate mx-auto block aspect-[61/30] w-full overflow-hidden rounded-[20px] border-0 bg-[#eee6d6] p-0 text-left select-none touch-none aria-[disabled=false]:cursor-none [container-type:inline-size] [--aim-ring-radius:max(6px,_.738cqw)]`,
   "hoops-court-art": `pointer-events-none absolute inset-0 h-full w-full rounded-[inherit]`,
   "hoops-leaves": `pointer-events-none absolute inset-0 z-[1] [container-type:size] motion-reduce:hidden`,

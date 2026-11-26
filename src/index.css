@@ -242,6 +242,11 @@
   .pantry-particle { animation: pantry-still 350ms linear both; }
   @keyframes pantry-still { from { opacity: 1; } to { opacity: 0; } }
 }
+@media (orientation: landscape) and (max-height: 540px) {
+  main[data-dimensional] header + div { padding-top: 0; gap: 2px; }
+  main[data-dimensional] [data-clue-card] { font-size: 16px; padding: 15px 22px !important; }
+  main[data-dimensional] section[aria-label="Food on the table"] { grid-template-columns: 1fr 1fr 1.35fr; }
+}
 [data-clue-card] {
   position: relative;
   border: 1px solid #8c765c;
@@ -255,4 +260,9 @@
   inset: 3px -7px -1px 100%;
   background: #c7b494;
   clip-path: polygon(0 0, 100% 98%, 0 100%);
+}
+
+[data-serving] img {
+  filter: drop-shadow(2px 0 0 #fff8df) drop-shadow(-2px 0 0 #fff8df)
+          drop-shadow(0 2px 0 #fff8df) drop-shadow(0 -2px 0 #fff8df);
 }

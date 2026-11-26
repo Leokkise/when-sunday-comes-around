@@ -1,5 +1,5 @@
 export type Point = { x: number; y: number }
-export type ShotFrame = Point & { inNet: boolean; touchingNet: boolean; rotation: number; netStretch: number; netSway: number }
+export type ShotFrame = Point & { inNet: boolean; touchingNet: boolean; rotation: number; netStretch: number; netSway: number; squash?: number }
 
 export const courtSize = { width: 2440, height: 1200 }
 export const playerPosition = { x: 1850, y: 670 }
@@ -95,9 +95,10 @@ export function aimGuide(target: Point, playerX = playerPosition.x) {
   return { dots, curve }
 }
 
-type Impact = { fraction: number; normalX: number; normalY: number; restitution: number }
+type Surface = 'board' | 'rim'
+type Impact = { surface: Surface; fraction: number; normalX: number; normalY: number; restitution: number }
 
-function sweepPost(x: number, y: number, dx: number, dy: number, post: Point, radius: number, restitution: number): Impact | undefined {
+function sweepPost(x: number, y: number, dx: number, dy: number, post: Point, radius: number, restitution: number, surface: Surface): Impact | undefined {
   const offsetX = x - post.x
   const offsetY = y - post.y
   const toward = offsetX * dx + offsetY * dy
@@ -107,7 +108,7 @@ function sweepPost(x: number, y: number, dx: number, dy: number, post: Point, ra
   if (discriminant <= 0) return
   const fraction = (-toward - Math.sqrt(discriminant)) / speedSquared
   if (fraction < 0 || fraction > 1) return
-  return { fraction, normalX: (offsetX + dx * fraction) / radius, normalY: (offsetY + dy * fraction) / radius, restitution }
+  return { surface, fraction, normalX: (offsetX + dx * fraction) / radius, normalY: (offsetY + dy * fraction) / radius, restitution }
 }
 
 function sweepHoop(x: number, y: number, dx: number, dy: number) {
@@ -123,15 +124,15 @@ function sweepHoop(x: number, y: number, dx: number, dy: number) {
         const fraction = (ballRadius - distance) / toward
         const along = (x - start.x + dx * fraction) * tangent.x + (y - start.y + dy * fraction) * tangent.y
         if (fraction >= 0 && fraction <= (nearest?.fraction ?? 1) && along >= 0 && along <= length) {
-          nearest = { fraction, normalX, normalY, restitution: .76 }
+          nearest = { surface: 'board', fraction, normalX, normalY, restitution: .76 }
         }
       }
-      const corner = sweepPost(x, y, dx, dy, start, ballRadius, .76)
+      const corner = sweepPost(x, y, dx, dy, start, ballRadius, .76, 'board')
       if (corner && corner.fraction < (nearest?.fraction ?? 1)) nearest = corner
     }
   }
   for (const post of rimPosts) {
-    const impact = sweepPost(x, y, dx, dy, post, ballRadius + 4, .73)
+    const impact = sweepPost(x, y, dx, dy, post, ballRadius + 4, .73, 'rim')
     if (impact && impact.fraction < (nearest?.fraction ?? 1)) nearest = impact
   }
   return nearest
@@ -143,8 +144,10 @@ export function traceShot(target: Point, playerX = playerPosition.x) {
   let vy = velocity.y
   let { x, y } = velocity.origin
   let made = false
+  const impacts: { step: number; surface: Surface; volume: number }[] = []
   let firstContact = Infinity
   let rotation = 0
+  let squash = 0
   let netStretch = 0
   let netSway = 0
   let stretchSpeed = 0
@@ -164,9 +167,10 @@ export function traceShot(target: Point, playerX = playerPosition.x) {
     spin -= tangentImpulse * 1.5 / ballRadius
   }
 
-  function rebound({ normalX, normalY, restitution }: Impact, step: number) {
+  function rebound({ surface, normalX, normalY, restitution }: Impact, step: number) {
     const approach = vx * normalX + vy * normalY
     if (approach >= 0) return
+    if (approach < -45) impacts.push({ step, surface, volume: Math.min(.65, -approach / 1900) })
     x += normalX * .01
     y += normalY * .01
     const impulse = -(1 + restitution) * approach
@@ -247,10 +251,12 @@ export function traceShot(target: Point, playerX = playerPosition.x) {
     netSway += swaySpeed * shotStep
     netStretch = Math.max(-.2, Math.min(.44, netStretch + stretchSpeed * shotStep))
 
+    squash = Math.max(0, squash - shotStep * 2.2)
     if (y >= floorY && vy > 0) {
       const speedBefore = vy - gravity * shotStep
       const fall = Math.max(0, floorY - oldY)
       const impactSpeed = Math.sqrt(speedBefore ** 2 + 2 * gravity * fall)
+      squash = Math.min(.20, impactSpeed / 6500)
       y = floorY
       const restitution = .29 + .355 * Math.min(1, impactSpeed / 1400)
       vy = -impactSpeed * restitution
@@ -263,9 +269,9 @@ export function traceShot(target: Point, playerX = playerPosition.x) {
     }
 
     if (rolling) spin = vx / ballRadius
-    frames.push({ x, y, inNet, touchingNet: inNet || brushingNet, rotation, netStretch, netSway })
+    frames.push({ x, y, inNet, touchingNet: inNet || brushingNet, rotation, netStretch, netSway, squash })
     if (rolling > .8 || (rolling > .16 && Math.abs(vx) < 24)) break
   }
 
-  return { frames, made, aimEnd: Math.min(firstContact, frames.length - 1) }
+  return { frames, impacts, made, aimEnd: Math.min(firstContact, frames.length - 1) }
 }

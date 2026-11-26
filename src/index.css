@@ -83,6 +83,40 @@
   50% { opacity: 1; transform: translate(5px, -3px) scale(1.08); }
 }
 
+@keyframes hoops-player-idle {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(.982); }
+}
+
+@keyframes hoops-player-windup {
+  from { transform: scaleY(.985); }
+  42% { transform: rotate(-2deg) scaleY(.96); }
+  to { transform: none; }
+}
+
+@keyframes hoops-player-release {
+  0% { transform: scaleY(1); }
+  32% { transform: translateY(-3%) rotate(-2deg); }
+  100% { transform: scaleY(.99); }
+}
+
+@keyframes hoops-player-stride {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3%); }
+}
+
+@keyframes hoops-player-step {
+  from { transform: rotate(-11deg); }
+  to { transform: rotate(11deg); }
+}
+
+@keyframes hoops-swish {
+  0% { opacity: 0; scale: .68; }
+  22% { opacity: 1; scale: 1.07; }
+  65% { opacity: 1; }
+  100% { opacity: 0; scale: 1; translate: -50% -65%; }
+}
+
 @keyframes brush-breath-flow {
   to { stroke-dashoffset: -1; }
 }

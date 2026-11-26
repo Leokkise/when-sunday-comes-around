@@ -3,7 +3,7 @@ import { ballRadius, courtSize, netLength, netRadius, rim, type ShotFrame } from
 import { ui } from './ui-classes'
 
 export const BasketballNet = memo(function BasketballNet({ frame, front }: { frame: ShotFrame | null; front: boolean }) {
-  const strands = 16
+  const strands = 12
   const rows = 6
   const center = (rim.left + rim.right) / 2
   const stretch = frame?.netStretch ?? 0
@@ -41,8 +41,8 @@ export const BasketballNet = memo(function BasketballNet({ frame, front }: { fra
   return <svg className={ui(front ? 'hoops-net hoops-net-front' : 'hoops-net hoops-net-back')}
     viewBox={`0 0 ${courtSize.width} ${courtSize.height}`} aria-hidden="true" data-net-front={front}
     data-stretch={stretch} data-sway={sway} fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <path d={paths} stroke="#897e68" strokeWidth="3" opacity=".65" />
-    <path d={paths} stroke="#eee7ce" strokeWidth="1.6" />
+    <path d={paths} stroke={front ? '#76634f' : '#92826c'} strokeWidth={front ? 5 : 3.4} />
+    <path d={paths} stroke={front ? '#fff1d6' : '#dfd3b9'} strokeWidth={front ? 2.6 : 1.6} />
     {knots.slice(1).flatMap((ring, row) => ring.filter(knot => knot.front === front).map((knot, index) =>
       <circle key={`${row}-${index}`} cx={knot.x} cy={knot.y} r="1.5" fill="#e9dfc3" stroke="#92846a" strokeWidth=".6" />))}
   </svg>

@@ -17,6 +17,7 @@ React and TypeScript power the interactions. Vite builds four HTML entry points.
 | `/brush-teeth/` | `src/brush-teeth.tsx` | Bath-to-brushing intro and five guided brushing steps |
 | `/dress-up/` | `src/dress-up.tsx` | Bedtime outfit choices and live bedroom preview |
 | `/basketball/` | `src/basketball/index.tsx` | Aim toward the rim and fill ten basketballs, with unlimited attempts |
+| `/go-grow-glow/` | `src/pantry/index.tsx` | Match 15 different foods to Go, Grow and Glow trays. The old `/pantry/` link redirects here. |
 
 ## Current game design
 
@@ -81,6 +82,12 @@ Across the basketball tutorial, play and completion states, `src/basketball/view
 `dist` is generated deployment output and intentionally contains copies of public files plus hashed imported assets. It is ignored by Git and rebuilt by Vite. These are expected build copies, not redundant source files. Remove replaced source artwork automatically after all consumers are migrated and other states checked. Keep candidates, reviews, and backups outside shipped folders. The latest compression pass already retained only candidates that reduced bytes while preserving dimensions, alpha and pencil quality; avoid repeated lossy compression for marginal savings.
 
 ## Why these retained assets exist
+
+Go, Grow, Glow! uses the Bedtime colored-pencil style for its food sprites, honey-oak trays and red-and-cream gingham cloth. The shared tray has rounded corners and transparent handle cutouts. `assets/pantry/food`, `scene` and `audio` hold the foods, tray, cloth, and feedback art and sounds. The lace-edged cloth spans the game area, with a compact image selected at narrow widths. The trays have slight offsets and rotations and shadows at their bases. Their labels are rendered in HTML. `assets/home/home-pantry.webp` previews the game art. Artwork prompts and export details are in `art-source/pantry`.
+
+The game shuffles 15 distinct foods once per round. Each tray holds five foods across two staggered rows. Incorrect placements use the same animated X as Brush Teeth and Wash Up.
+
+The tabletop uses a pair of trays above a centered third tray, with the food below them. The note gives one tip for the current food. Narrow screens put the note below the tabletop. Native browser animations handle the food entrance, idle motion, placement and tray feedback. The reusable roster and group definitions live in `src/pantry/foods.ts`. Entry decodes the cloth, paper, tray, success mark and first shuffled food. Picking up a food prepares the next sprite. After a correct match the next food appears as soon as it decodes, while tray feedback can finish independently. A failed decode offers a retry and keeps the match. Audio cues load on first use. The first correct placement hides the play instructions on this browser using the existing `when-sunday-comes-around.go-grow-glow.completed` flag. Individual rounds remain visit-local.
 
 | Location | Purpose |
 | --- | --- |

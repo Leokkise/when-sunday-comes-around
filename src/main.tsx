@@ -5,7 +5,7 @@ import washArt from '../assets/home/home-wash.webp'
 import brushArt from '../assets/home/home-brush.webp'
 import dressArt from '../assets/home/home-dress.webp'
 import basketballArt from '../assets/home/home-basketball.webp'
-import pantryArt from '../assets/pantry/preview.webp'
+import pantryArt from '../assets/home/home-pantry.webp'
 import titleWide from '../assets/home/title-court-wide.webp'
 import titlePortrait from '../assets/home/title-court-portrait.webp'
 import titleCharacter from '../assets/home/title-character.webp'
@@ -18,7 +18,7 @@ const games = [
   { name: 'Brush teeth', href: '/brush-teeth/', art: brushArt },
   { name: 'Pick pajamas', href: '/dress-up/', art: dressArt },
   { name: 'After-School Hoops', href: '/basketball/', art: basketballArt },
-  { name: 'Pantry Pals', href: '/pantry/', art: pantryArt },
+  { name: 'Go, Grow, Glow!', href: '/go-grow-glow/', art: pantryArt },
 ]
 
 function playCue(source: string, volume: number) {

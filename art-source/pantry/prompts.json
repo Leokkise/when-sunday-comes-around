@@ -1,0 +1,139 @@
+{
+  "tool": "Built-in ImageGen",
+  "styleReferences": [
+    "assets/bedtime/cherry-gingham.webp",
+    "assets/bedtime/mushroom-gingham.webp",
+    "public/bedtime/pajama-bedroom.webp",
+    "assets/bedtime/moonlight-plaid.webp"
+  ],
+  "approvedProps": [
+    {
+      "asset": "tray",
+      "prompt": "Create one game sprite, an empty shallow rectangular wooden serving tray with cutout carrying handles on the raised left and right sides. Reference 1 is our own Pantry artwork and is the exact visual medium to preserve: soft graphite contours, fine warm matte colored-pencil strokes and paper tooth, pale honey oak, quiet tonal shading, hand-drawn depth. Use the rounded rectangle silhouette, open interior, smooth corner radii, small integral handle cutouts and gently beveled lip of reference 2 only for shape. Keep the same directly centered head-on slight top-down view as the diagrams. Material is natural light honey-colored wood with subtle horizontal grain, a somewhat darker inside back wall, gently shaded warm brown sides, no intense orange. Balance the first drawing’s slightly trapezoidal perspective with the second tray’s rounded modernized profile. A broad flat visible interior with plenty of room for the game to draw food. Keep handles distinctly open with true transparency through the holes. No compartments, no label, no food, no lettering, no cast shadow beneath, no shine, no vector art, no 3D render, no background. One complete tray only, as a wide horizontal sprite with comfortable transparent margin, actual RGBA transparency."
+    },
+    {
+      "asset": "rice",
+      "prompt": "Use case: illustration-story. Asset type: transparent food sprite preview. Input 1 is the OLD SUBJECT/GEOMETRY reference only, not the desired rendering style. Inputs 2 and 3, the approved Bedtime pajamas Cherry Checks and Mushroom Checks, are the PRIMARY STRICT STYLE REFERENCES: match their tangible short irregular colored-pencil strokes, strongly visible paper tooth, softly layered matte pigment, deliberate broken charcoal/graphite contours, and muted yet distinct colors. Input 4, the Bedtime bedroom, is a supporting environment-rendering reference. Match the SAME artist and hand, not merely a generic pencil filter. Do not imitate fabric motifs on nonfabric objects. Keep contours and midtones as readable as the pajama pieces; do not wash out the art or cover it in a pale white veil. No smooth vector outlines, glossy 3D, photorealism, airbrushing, uniformly dense digital noise, or heavy orange saturation. Draw one complete round cream ceramic bowl filled with cooked white rice at a slightly elevated frontal view as input 1, centered on a 6:5 canvas with comfortable transparent margins. Simple broad bowl with two muted sage bands, visually distinct cream rice grains rendered economically using short imperfect gray-pencil marks and subtle shadows. Give bowl rim and silhouette clear delicate charcoal edges like the pajama garments. Maintain depth and recognizability at small display size without dense realistic microdetail. Ivory highlights, pale warm gray shadows, muted sage band. Genuinely transparent background with clean antialiased edges. No utensils, steam, ground shadow, plate, extra food, gingham, fabric, face, text, background paper or white fringe."
+    },
+    {
+      "asset": "apple",
+      "prompt": "Use case: illustration-story. Asset type: transparent food sprite preview. Input 1 is the OLD SUBJECT/GEOMETRY reference only, not the desired rendering style. Inputs 2 and 3, the approved Bedtime pajamas Cherry Checks and Mushroom Checks, are the PRIMARY STRICT STYLE REFERENCES: match their tangible short irregular colored-pencil strokes, strongly visible paper tooth, softly layered matte pigment, deliberate broken charcoal/graphite contours, and muted yet distinct colors. Input 4, the Bedtime bedroom, is a supporting environment-rendering reference. Match the SAME artist and hand, not merely a generic pencil filter. Do not imitate fabric motifs on nonfabric objects. Keep contours and midtones as readable as the pajama pieces; do not wash out the art or cover it in a pale white veil. No smooth vector outlines, glossy 3D, photorealism, airbrushing, uniformly dense digital noise, or heavy orange saturation. Draw two complete apples grouped like input 1, a dusty brick-red apple in front-left and a muted yellow-green apple just behind-right, small warm brown stems. Center with transparent margins on approximately 6:5 canvas. Friendly simple rounded silhouettes, slightly irregular hand-drawn proportions. Clear soft charcoal edges matching pajama rendering, visible individual short crosshatched pencil strokes, layered muted red and sage-yellow pigment, controlled darker pencil shading near stems and contact. Keep both fruit colors readable and well separated, no washout, no polished shine. Genuinely transparent background, clean antialiased alpha. No ground shadow, plate, face, leaves, extra objects, cut fruit, text, gingham pattern, fabric, paper background or white fringe."
+    }
+  ],
+  "remainingArt": [
+    {
+      "asset": "pandesal",
+      "prompt": "Use case: illustration-story. Asset type: isolated transparent food sprite for Go, Grow, Glow!. Input 1 defines the food subject and grouping only; inputs 2 and 3 are PRIMARY approved Bedtime pajama style references; input 4 is the already approved Pantry rice sprite, defining food pencil finish and edge treatment. The approved Bedtime game pajamas and bedroom supplied as references define the exact traditional colored-pencil rendering: visible short irregular strokes and crosshatching, tactile paper tooth inside each silhouette, layered matte muted pigment, delicate imperfect graphite/charcoal edges with varied weight. Match that same artist, not a generic digital pencil effect. Keep midtones and edges as legible as Cherry Checks and Mushroom Checks. Avoid photorealism, 3D, polished gloss, vector-flat fills, airbrushed shading, uniform computer outlines, white fringes and pale washout. Draw two plump small Filipino pandesal bread rolls grouped together, muted golden-tan crust, cream cut edges, economical tiny bread-crumb pencil marks. Keep recognizable bread rolls without a photographic sesame crust. Preserve the reference grouping and recognizable subject while matching the approved rice illustration. Fully visible centered food group on a 6:5 canvas with 7 percent transparent margins. Simple shapes legible at a small 384x320 game-sprite size, clear graphite silhouette and visible restrained pencil hatching. Actual clean antialiased transparency, pigment grain contained within the subject. No added objects, hands, faces, text, paper rectangle, white fringe, cast shadow outside the object, glossy highlights, or motifs copied from the pajamas."
+    },
+    {
+      "asset": "eggs",
+      "prompt": "Use case: illustration-story. Asset type: isolated transparent food sprite for Go, Grow, Glow!. Input 1 defines the food subject and grouping only; inputs 2 and 3 are PRIMARY approved Bedtime pajama style references; input 4 is the already approved Pantry rice sprite, defining food pencil finish and edge treatment. The approved Bedtime game pajamas and bedroom supplied as references define the exact traditional colored-pencil rendering: visible short irregular strokes and crosshatching, tactile paper tooth inside each silhouette, layered matte muted pigment, delicate imperfect graphite/charcoal edges with varied weight. Match that same artist, not a generic digital pencil effect. Keep midtones and edges as legible as Cherry Checks and Mushroom Checks. Avoid photorealism, 3D, polished gloss, vector-flat fills, airbrushed shading, uniform computer outlines, white fringes and pale washout. Draw three whole uncracked eggs grouped together, one pale ivory, one cream and one muted warm brown; rounded natural egg silhouettes with simple soft pencil shadows. Preserve the reference grouping and recognizable subject while matching the approved rice illustration. Fully visible centered food group on a 6:5 canvas with 7 percent transparent margins. Simple shapes legible at a small 384x320 game-sprite size, clear graphite silhouette and visible restrained pencil hatching. Actual clean antialiased transparency, pigment grain contained within the subject. No added objects, hands, faces, text, paper rectangle, white fringe, cast shadow outside the object, glossy highlights, or motifs copied from the pajamas."
+    },
+    {
+      "asset": "fish",
+      "prompt": "Use case: illustration-story. Asset type: isolated transparent food sprite for Go, Grow, Glow!. Input 1 defines the food subject and grouping only; inputs 2 and 3 are PRIMARY approved Bedtime pajama style references; input 4 is the already approved Pantry rice sprite, defining food pencil finish and edge treatment. The approved Bedtime game pajamas and bedroom supplied as references define the exact traditional colored-pencil rendering: visible short irregular strokes and crosshatching, tactile paper tooth inside each silhouette, layered matte muted pigment, delicate imperfect graphite/charcoal edges with varied weight. Match that same artist, not a generic digital pencil effect. Keep midtones and edges as legible as Cherry Checks and Mushroom Checks. Avoid photorealism, 3D, polished gloss, vector-flat fills, airbrushed shading, uniform computer outlines, white fringes and pale washout. Draw two small whole fresh fish lying horizontally together, heads left tails right; muted slate-blue backs, pale gray cream bellies, simple fins and a few clear scale marks, friendly natural eyes. No plate or ground shadow. Preserve the reference grouping and recognizable subject while matching the approved rice illustration. Fully visible centered food group on a 6:5 canvas with 7 percent transparent margins. Simple shapes legible at a small 384x320 game-sprite size, clear graphite silhouette and visible restrained pencil hatching. Actual clean antialiased transparency, pigment grain contained within the subject. No added objects, hands, faces, text, paper rectangle, white fringe, cast shadow outside the object, glossy highlights, or motifs copied from the pajamas."
+    },
+    {
+      "asset": "carrot",
+      "prompt": "Use case: illustration-story. Asset type: isolated transparent food sprite for Go, Grow, Glow!. Input 1 defines the food subject and grouping only; inputs 2 and 3 are PRIMARY approved Bedtime pajama style references; input 4 is the already approved Pantry rice sprite, defining food pencil finish and edge treatment. The approved Bedtime game pajamas and bedroom supplied as references define the exact traditional colored-pencil rendering: visible short irregular strokes and crosshatching, tactile paper tooth inside each silhouette, layered matte muted pigment, delicate imperfect graphite/charcoal edges with varied weight. Match that same artist, not a generic digital pencil effect. Keep midtones and edges as legible as Cherry Checks and Mushroom Checks. Avoid photorealism, 3D, polished gloss, vector-flat fills, airbrushed shading, uniform computer outlines, white fringes and pale washout. Draw two whole carrots with short leafy green tops, leaning diagonally like the subject reference; muted ochre-orange roots with a few short natural graphite creases, simple sage-green leaves. Preserve the reference grouping and recognizable subject while matching the approved rice illustration. Fully visible centered food group on a 6:5 canvas with 7 percent transparent margins. Simple shapes legible at a small 384x320 game-sprite size, clear graphite silhouette and visible restrained pencil hatching. Actual clean antialiased transparency, pigment grain contained within the subject. No added objects, hands, faces, text, paper rectangle, white fringe, cast shadow outside the object, glossy highlights, or motifs copied from the pajamas."
+    }
+  ],
+  "tablecloth": "Precisely recolor INPUT 1, the new Bedroom Time–styled Go, Grow, Glow! table cover. Preserve the approved high-resolution drawing as closely as possible: same shape, same gingham square size and placement, same exact lace scallops and stitching, same artist’s subtle diagonal pencil grain, same shading, folds and perspective, same 3:2 framing and clean transparency outside the trim. Make ONE palette change: replace the blue dyed threads and every blue check with the original red gingham palette in INPUT 2. INPUT 2 is a color swatch reference only. The darkest interwoven checks become warm brick red (#b94640), the single thread checks become muted strawberry red (#d28377), and the ivory undyed checks and lace stay soft warm cream. Retain each individual pencil stroke, the stitched cotton edges and quiet soft shading in INPUT 1, so the result feels like exactly the same illustration in a warm red coloring. Keep the lace ivory with transparent surroundings and preserve the fine colored-pencil art style. Absolutely no new objects, fringing, frame, blur, lettering or changes to the design, perspective, or layout. High-resolution true transparent RGBA image, wide 3:2.",
+  "notePaper": "Create a plain warm cream paper texture for a small readable handwritten note in our illustrated Go, Grow, Glow! website game. Use the supplied example solely as a reference for the subtle paper surface behind the writing. Fill the entire 1:1 square edge to edge with only a flat cream sheet, between #f6eed8 and #f7efd9. Draw very delicate nearly invisible short colored-pencil and horizontal paper fibers, with a faint natural warm beige variation, very light and consistent across the whole square so dark body copy can be placed over it. The texture is gently handmade and matte, like the cream paper note from the reference. Keep it extremely low contrast and pale. No writing, lines, symbols, foreground objects, wood, tablecloth, physical sheet borders, torn edges, manufactured graphic pattern, vignette, cast shadow, stain or decorations. This will be cropped as a background. Return a single full-bleed flat raster texture.",
+  "foodExpansion": {
+    "styleReferences": [
+      "assets/pantry/food/rice.webp",
+      "assets/pantry/food/eggs.webp",
+      "assets/pantry/food/carrot.webp"
+    ],
+    "sharedPrompt": "Use case: illustration-story. Make a new, single transparent food sprite for the kids’ web game Go, Grow, Glow! Inputs 1 (Pantry rice), 2 (Pantry eggs) and 3 (Pantry carrots) are approved style and viewpoint references only. Match those exact materials and the same illustrator’s hand: quiet matte colored-pencil, tangible individual short strokes and layered paper tooth, softly shaded volumes, fine slightly broken warm charcoal contours, muted natural pigment. The sprite needs to read when downscaled to 384 by 320 pixels and at small sizes inside a tray. Use soft warm daylight from the upper left and a slightly elevated frontal view. One compact grouping, fully visible and centered with a small safe margin on every side. Use genuine transparent alpha around the subject and keep all paper tooth inside the silhouette. No hard black vector outlines, white fringe, paper rectangle, backdrop, cast shadow, text, watermark, face, or extra props.",
+    "foodPrompts": {
+      "corn": "One small golden yellow corn cob with a little muted olive husk peeled back along the base. Three-quarter view, angled gently up right, individually suggested kernels with loose graphite detailing.",
+      "kamote": "One whole red-violet kamote (sweet potato) behind one thick diagonal cut piece showing warm buttery golden flesh. Make the irregular tapered root shape and dusky purple skin easy to distinguish from a carrot. Group the two closely.",
+      "noodles": "One small shallow stoneware plate with a soft dusty blue rim and a tidy serving of plain pale golden wheat noodles. Slightly elevated frontal three-quarter view with a clear plate ellipse. A few simple curling pencil lines mark the strands. No garnish or utensils.",
+      "chicken": "One fully cooked golden-brown chicken drumstick, with the short cream bone end clearly visible, turned at a shallow diagonal. Economical warm ochre pencil shading and a few tiny pencil marks suggest skin. The whole drumstick is fully visible.",
+      "tofu": "Three soft ivory firm tofu cubes grouped in an irregular compact cluster, one slightly behind the other two. Show subtle pores with fine pencil and softly shaded creamy sides with clear graphite edges. Raw plain tofu with no garnish, plate, or wrapping.",
+      "milk": "One short, gently tapered drinking glass three-quarters full of ivory white milk, with a clear oval at the top and a muted blue-gray penciled rim and base. Slightly elevated frontal view. No straw, label, carton, shiny reflections, or table.",
+      "pechay": "Two small baby pechay (bok choy) heads close together, each with recognizable pale jade-white spoon-shaped stems that lead into broad softly crinkled sage-green leaves, gentle diagonal angle. No roots or other produce.",
+      "bananas": "A compact cluster of three ripe short curved yellow bananas with a shared ochre-brown stem. All three skins intact, muted honey yellow, a few tiny brown pencil flecks near the ends. Keep the silhouettes clean and recognizable.",
+      "tomatoes": "Two whole ripe round tomatoes close together, muted tomato-red in front with clear green pointed calyx leaves, and a slightly smaller warm red-orange tomato just behind it. A natural slightly flattened tomato silhouette and subtle shading, distinct from the apple references."
+    },
+    "styleRevision": {
+      "sharedPrompt": "Use case: style-transfer. Redraw the food sprite in image 1 to match the established children's colored-pencil game art in images 2–4. Image 1 defines the food, grouping, viewpoint, and silhouette only. Images 2–4 are the exact approved house style. The test is whether the redraw could sit beside those sprites in the same tray and look like the same illustrator drew them in the same sitting. Replace the strong orange/red saturation, thick continuous contour, and even grain of image 1 with the quieter palette and finer contour in the approved samples. Use soft worn earth pigments, thin grey-brown graphite with uneven pressure and occasional broken edges, subtle crosshatching that follows the form, matte layered tones, and gentle transitions from warm light to soft shadow. Keep an identifiable silhouette at small size. Keep the food, scale, number of pieces, arrangement, angle, and approximately the same transparent margins. Render just the food, fully visible and centered at the same roughly 6:5 aspect ratio. Output true RGBA alpha with transparent surroundings, no external shadow. Keep paper tooth inside the food. No bold or dark outer stroke, heavy grain, high-gloss highlights, new objects, text, labels, tabletop, paper rectangle, or white fringe.",
+      "foods": {
+        "chicken": {
+          "referenceImages": [
+            "assets/pantry/food/pandesal.webp",
+            "assets/pantry/food/eggs.webp",
+            "assets/pantry/food/fish.webp"
+          ],
+          "direction": "The cooked drumstick should use the mellow baked tan and toasted brown of the bread crust, with subdued golden-ochre at the top and a soft ivory bone. Reduce the orange and the hard boundary substantially. Use small irregular strokes only in portions of the skin, with quiet matte midtones elsewhere."
+        },
+        "tomatoes": {
+          "referenceImages": [
+            "assets/pantry/food/apple.webp",
+            "assets/pantry/food/carrot.webp",
+            "assets/pantry/food/pandesal.webp"
+          ],
+          "direction": "Match the dusty brick-red of the approved apple with a slightly warmer tomato undertone rather than the bright orange-red in image 1. Keep the little leaves a subdued olive, and make the highlight warm, wide, and subtle. Retain both whole tomatoes and the star-shaped calyxes."
+        },
+        "corn": {
+          "referenceImages": [
+            "assets/pantry/food/carrot.webp",
+            "assets/pantry/food/pandesal.webp",
+            "assets/pantry/food/apple.webp"
+          ],
+          "direction": "Use creamy straw yellow and restrained pale ochre for the kernels instead of bright yellow-orange. Warm, faint pencil marks between rows, fewer outlined seams, and shorter, barely-visible pencil strokes. Keep the husk olive-sage with a soft, subdued shape."
+        },
+        "kamote": {
+          "referenceImages": [
+            "assets/pantry/food/apple.webp",
+            "assets/pantry/food/pandesal.webp",
+            "assets/pantry/food/carrot.webp"
+          ],
+          "direction": "Use a mellow dusty mauve-brown skin, earthy faded blush texture, and pale ochre flesh like a softly shaded bread crumb. Keep both the whole sweet potato and cut piece, and keep their silhouettes clearly distinct."
+        },
+        "noodles": {
+          "referenceImages": [
+            "assets/pantry/food/rice.webp",
+            "assets/pantry/food/pandesal.webp",
+            "assets/pantry/food/fish.webp"
+          ],
+          "direction": "Use the soft cream ceramics and restrained pencil shading of the rice bowl. The plate's rim is pale slate, the noodles straw cream with restrained overlapping strands and gentle tan shadows. Avoid thick strand outlines or dense coiled highlights."
+        },
+        "tofu": {
+          "referenceImages": [
+            "assets/pantry/food/eggs.webp",
+            "assets/pantry/food/rice.webp",
+            "assets/pantry/food/pandesal.webp"
+          ],
+          "direction": "Use the cool creamy ivory and quiet warm grey shadows in the egg and rice sprites. Three firm tofu cubes with very few soft pore marks and slim imperfect pencil edges, broad soft plains, and an identifiable compact cluster."
+        },
+        "milk": {
+          "referenceImages": [
+            "assets/pantry/food/rice.webp",
+            "assets/pantry/food/fish.webp",
+            "assets/pantry/food/eggs.webp"
+          ],
+          "direction": "Use the rice bowl's warm shades and the fish's muted cool slate for subtle edges. Keep the thin glass lip delicate and slightly irregular, and the white milk a soft ivory with very subtle pencil grain. Retain the characteristically tapered glass, with no glare. Preserve the shape and clean transparency of input 1 exactly, including the empty space surrounding the glass. Only the cutout glass and milk may have pixels with alpha greater than zero. The top, sides and base of the cutout must end at the original outline. Remove all semitransparent tinted haze, paper, fade and shadow behind or around the glass. Do not simulate transparency with pale pigment. No detached pixels or glow. The output should be a ready-to-use cutout sprite."
+        },
+        "pechay": {
+          "referenceImages": [
+            "assets/pantry/food/carrot.webp",
+            "assets/pantry/food/apple.webp",
+            "assets/pantry/food/fish.webp"
+          ],
+          "direction": "Use the carrot leaves' dusty greyish olive and the soft pale jade and warm cream recognizable in stems of baby pechay. Render only a few important veins with fine quiet pencil. Use the same shoreline of light, soft, confident pencil marks as the carrot leaves."
+        },
+        "bananas": {
+          "referenceImages": [
+            "assets/pantry/food/apple.webp",
+            "assets/pantry/food/pandesal.webp",
+            "assets/pantry/food/eggs.webp"
+          ],
+          "direction": "Use faded honey cream and a restrained grey-yellow ochre, like the approved green apple's yellow edge and warm highlights on the bread. Keep three whole bananas in a cluster. Subtle chalky highlights and a little variation on the stem, with very few dark tiny specks."
+        }
+      }
+    }
+  }
+}

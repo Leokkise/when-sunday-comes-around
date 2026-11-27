@@ -5,6 +5,7 @@
 @source "../brush-teeth/index.html";
 @source "../dress-up/index.html";
 @source "../basketball/index.html";
+@source "../go-grow-glow/index.html";
 
 @keyframes quilt-cover {
   from { transform: translateY(105%); border-radius: 24% 18% 0 0; }
@@ -202,49 +203,29 @@
 
 @keyframes loading-wait { from { transform: translateX(-100%); } to { transform: translateX(285%); } }
 
+@keyframes pantry-food-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
 .pantry-particle {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: clamp(17px, 2.6vmin, 28px);
+  width: clamp(18px, 3vmin, 32px);
   aspect-ratio: 1;
   background: center / contain no-repeat;
-  animation: pantry-burst 540ms ease-out both;
+  animation: pantry-burst 550ms 300ms ease-out both;
 }
 @keyframes pantry-burst {
-  from { transform: translate(-50%,-50%) scale(.55); opacity: 0; }
-  18% { opacity: 1; }
-  to { transform: translate(var(--dx),var(--dy)) rotate(var(--turn)) scale(.8); opacity: 0; }
+  from { transform: translate(-50%,-50%) scale(.5); opacity: 0; }
+  22%, 42% { opacity: 1; }
+  to { transform: translate(var(--dx),var(--dy)) rotate(var(--turn)) scale(.7); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .pantry-particle { animation: pantry-still 350ms linear both; }
   @keyframes pantry-still { from { opacity: 1; } to { opacity: 0; } }
 }
-@media (orientation: landscape) and (max-height: 540px) {
-  main[data-dimensional] header + div { padding-top: 0; gap: 2px; }
-  main[data-dimensional] [data-clue-card] { font-size: 16px; padding: 15px 22px !important; }
-  main[data-dimensional] section[aria-label="Food on the table"] { grid-template-columns: 1fr 1fr 1.35fr; }
-}
-[data-clue-card] {
-  position: relative;
-  border: 1px solid #8c765c;
-  border-radius: 2px;
-  box-shadow: 3px 4px 3px #5c432638;
-  rotate: 1deg;
-}
-[data-clue-card]::after {
-  content: "";
-  position: absolute;
-  inset: 3px -7px -1px 100%;
-  background: #c7b494;
-  clip-path: polygon(0 0, 100% 98%, 0 100%);
-}
-
-[data-serving] img {
-  filter: drop-shadow(2px 0 0 #fff8df) drop-shadow(-2px 0 0 #fff8df)
-          drop-shadow(0 2px 0 #fff8df) drop-shadow(0 -2px 0 #fff8df);
-}
-
 @keyframes hoops-progress-fill {
   0% { transform: translateY(2px) scale(.85) rotate(-12deg); }
   55% { transform: translateY(-2px) scale(1.08) rotate(5deg); }

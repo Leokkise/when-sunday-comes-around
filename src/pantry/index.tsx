@@ -21,8 +21,6 @@ const cueSources = {
   complete: completeSound,
 }
 
-// Keep the existing key so returning players still skip the directions.
-const instructionsSeenKey = 'when-sunday-comes-around.go-grow-glow.completed'
 const particles = [-72, -40, -12, 22, 48, 76].map((angle, index) => {
   const radians = angle * Math.PI / 180
   return {
@@ -41,10 +39,6 @@ const openingCloth = matchMedia(compactClothMedia).matches ? compactTablecloth :
 const openingArt = [openingCloth, notePaper, tray, goodMark, initialOrder[0].image]
 function Pantry() {
   const [order, setOrder] = useState(initialOrder)
-  const [showInstructions, setShowInstructions] = useState(() => {
-    try { return localStorage.getItem(instructionsSeenKey) !== '1' }
-    catch { return true }
-  })
   const [nextLoad, setNextLoad] = useState<'loading' | 'error' | null>(null)
   const loadingNext = useRef(false)
   const [sortedCount, setSortedCount] = useState(0)
@@ -142,11 +136,6 @@ function Pantry() {
     }
     const finalMatch = sortedCount === order.length - 1
     playCue(finalMatch ? 'complete' : 'correct')
-    if (showInstructions) {
-      setShowInstructions(false)
-      try { localStorage.setItem(instructionsSeenKey, '1') }
-      catch { /* Keep the preference in this visit if storage is unavailable. */ }
-    }
     placementStart.current = start
     keyboardPlacement.current = keyboard
     setSortedCount(sortedCount + 1)
@@ -181,12 +170,12 @@ function Pantry() {
     <h1 className={ui('pantry-game-title')}>Go, Grow, Glow!</h1>
     <div className={ui('pantry-layout')}>
       <div className={ui('pantry-frame')}>
-        <section ref={stageRoot} className={ui('pantry-stage')} aria-label="Food matching game" data-complete={done || undefined}>
+        <section ref={stageRoot} className={ui('pantry-stage')} aria-label="Food matching game">
           <picture className={ui('pantry-tablecloth')}>
             <source media={compactClothMedia} srcSet={compactTablecloth}/>
             <img src={tablecloth} alt="" width={1536} height={1024} className="block size-full object-fill" draggable={false}/>
           </picture>
-          <section aria-label="Food on the table" className={ui('pantry-serving')}>
+          <section aria-label="Food on the table" aria-hidden={!serving} className={ui('pantry-serving')}>
             {serving && <div data-bundle-entry key={serving.id}>
               <button aria-label={serving.name} aria-describedby="food-clue" aria-pressed={selected?.id === serving.id} className={ui('pantry-food')}
                 onClick={e => {
@@ -262,7 +251,7 @@ function Pantry() {
           {waitingForFood && <p>Getting the next food…</p>}
           {nextLoad === 'error' && <p className={ui('activity-feedback')} data-wrong="true">The food didn’t load. Try again.</p>}
         </div>
-        {!done && showInstructions && <div className={ui('pantry-instruction')}>
+        {sortedCount === 0 && <div className={ui('pantry-instruction')}>
           <h3 className="font-bold">How to play</h3>
           <p>Find the matching tray. Drag the food there, or tap the food and then the tray.</p>
         </div>}

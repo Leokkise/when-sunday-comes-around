@@ -746,7 +746,7 @@ const utilities: Record<string, string> = {
     `data-[food=apple]:[--food-contact-x:46%]`,
     `data-[food=carrot]:[--food-contact-x:34%] data-[food=carrot]:[--food-contact-y:93%] data-[food=carrot]:[--food-contact-width:43%]`,
     `data-[food=fish]:[--food-contact-y:82%] data-[food=fish]:[--food-contact-width:79%]`,
-    `data-[food=bread]:[--food-contact-x:39%] data-[food=bread]:[--food-contact-y:83%] data-[food=bread]:[--food-contact-width:56%]`,
+    `data-[food=bread]:[--food-contact-x:57%] data-[food=bread]:[--food-contact-y:85%] data-[food=bread]:[--food-contact-width:56%]`,
     `data-[food=rice]:[--food-contact-y:86%] data-[food=rice]:[--food-contact-width:51%]`,
     `data-[food=corn]:[--food-contact-x:35%] data-[food=corn]:[--food-contact-width:36%] data-[food=chicken]:[--food-contact-x:28%] data-[food=chicken]:[--food-contact-width:38%]`,
     `data-[food=tomatoes]:[--food-contact-y:85%] data-[food=tomatoes]:[--food-contact-x:42%] data-[food=milk]:[--food-contact-y:88%] data-[food=milk]:[--food-contact-width:48%]`,

@@ -22,7 +22,7 @@
   ],
   "remainingArt": [
     {
-      "asset": "pandesal",
+      "asset": "bread",
       "prompt": "Use case: illustration-story. Asset type: isolated transparent food sprite for Go, Grow, Glow!. Input 1 defines the food subject and grouping only; inputs 2 and 3 are PRIMARY approved Bedtime pajama style references; input 4 is the already approved Pantry rice sprite, defining food pencil finish and edge treatment. The approved Bedtime game pajamas and bedroom supplied as references define the exact traditional colored-pencil rendering: visible short irregular strokes and crosshatching, tactile paper tooth inside each silhouette, layered matte muted pigment, delicate imperfect graphite/charcoal edges with varied weight. Match that same artist, not a generic digital pencil effect. Keep midtones and edges as legible as Cherry Checks and Mushroom Checks. Avoid photorealism, 3D, polished gloss, vector-flat fills, airbrushed shading, uniform computer outlines, white fringes and pale washout. Draw two plump small Filipino pandesal bread rolls grouped together, muted golden-tan crust, cream cut edges, economical tiny bread-crumb pencil marks. Keep recognizable bread rolls without a photographic sesame crust. Preserve the reference grouping and recognizable subject while matching the approved rice illustration. Fully visible centered food group on a 6:5 canvas with 7 percent transparent margins. Simple shapes legible at a small 384x320 game-sprite size, clear graphite silhouette and visible restrained pencil hatching. Actual clean antialiased transparency, pigment grain contained within the subject. No added objects, hands, faces, text, paper rectangle, white fringe, cast shadow outside the object, glossy highlights, or motifs copied from the pajamas."
     },
     {
@@ -49,12 +49,8 @@
     "sharedPrompt": "Use case: illustration-story. Make a new, single transparent food sprite for the kids’ web game Go, Grow, Glow! Inputs 1 (Pantry rice), 2 (Pantry eggs) and 3 (Pantry carrots) are approved style and viewpoint references only. Match those exact materials and the same illustrator’s hand: quiet matte colored-pencil, tangible individual short strokes and layered paper tooth, softly shaded volumes, fine slightly broken warm charcoal contours, muted natural pigment. The sprite needs to read when downscaled to 384 by 320 pixels and at small sizes inside a tray. Use soft warm daylight from the upper left and a slightly elevated frontal view. One compact grouping, fully visible and centered with a small safe margin on every side. Use genuine transparent alpha around the subject and keep all paper tooth inside the silhouette. No hard black vector outlines, white fringe, paper rectangle, backdrop, cast shadow, text, watermark, face, or extra props.",
     "foodPrompts": {
       "corn": "One small golden yellow corn cob with a little muted olive husk peeled back along the base. Three-quarter view, angled gently up right, individually suggested kernels with loose graphite detailing.",
-      "kamote": "One whole red-violet kamote (sweet potato) behind one thick diagonal cut piece showing warm buttery golden flesh. Make the irregular tapered root shape and dusky purple skin easy to distinguish from a carrot. Group the two closely.",
-      "noodles": "One small shallow stoneware plate with a soft dusty blue rim and a tidy serving of plain pale golden wheat noodles. Slightly elevated frontal three-quarter view with a clear plate ellipse. A few simple curling pencil lines mark the strands. No garnish or utensils.",
       "chicken": "One fully cooked golden-brown chicken drumstick, with the short cream bone end clearly visible, turned at a shallow diagonal. Economical warm ochre pencil shading and a few tiny pencil marks suggest skin. The whole drumstick is fully visible.",
-      "tofu": "Three soft ivory firm tofu cubes grouped in an irregular compact cluster, one slightly behind the other two. Show subtle pores with fine pencil and softly shaded creamy sides with clear graphite edges. Raw plain tofu with no garnish, plate, or wrapping.",
       "milk": "One short, gently tapered drinking glass three-quarters full of ivory white milk, with a clear oval at the top and a muted blue-gray penciled rim and base. Slightly elevated frontal view. No straw, label, carton, shiny reflections, or table.",
-      "pechay": "Two small baby pechay (bok choy) heads close together, each with recognizable pale jade-white spoon-shaped stems that lead into broad softly crinkled sage-green leaves, gentle diagonal angle. No roots or other produce.",
       "bananas": "A compact cluster of three ripe short curved yellow bananas with a shared ochre-brown stem. All three skins intact, muted honey yellow, a few tiny brown pencil flecks near the ends. Keep the silhouettes clean and recognizable.",
       "tomatoes": "Two whole ripe round tomatoes close together, muted tomato-red in front with clear green pointed calyx leaves, and a slightly smaller warm red-orange tomato just behind it. A natural slightly flattened tomato silhouette and subtle shading, distinct from the apple references."
     },
@@ -63,7 +59,7 @@
       "foods": {
         "chicken": {
           "referenceImages": [
-            "assets/pantry/food/pandesal.webp",
+            "assets/pantry/food/bread.webp",
             "assets/pantry/food/eggs.webp",
             "assets/pantry/food/fish.webp"
           ],
@@ -73,41 +69,17 @@
           "referenceImages": [
             "assets/pantry/food/apple.webp",
             "assets/pantry/food/carrot.webp",
-            "assets/pantry/food/pandesal.webp"
+            "assets/pantry/food/bread.webp"
           ],
           "direction": "Match the dusty brick-red of the approved apple with a slightly warmer tomato undertone rather than the bright orange-red in image 1. Keep the little leaves a subdued olive, and make the highlight warm, wide, and subtle. Retain both whole tomatoes and the star-shaped calyxes."
         },
         "corn": {
           "referenceImages": [
             "assets/pantry/food/carrot.webp",
-            "assets/pantry/food/pandesal.webp",
+            "assets/pantry/food/bread.webp",
             "assets/pantry/food/apple.webp"
           ],
           "direction": "Use creamy straw yellow and restrained pale ochre for the kernels instead of bright yellow-orange. Warm, faint pencil marks between rows, fewer outlined seams, and shorter, barely-visible pencil strokes. Keep the husk olive-sage with a soft, subdued shape."
-        },
-        "kamote": {
-          "referenceImages": [
-            "assets/pantry/food/apple.webp",
-            "assets/pantry/food/pandesal.webp",
-            "assets/pantry/food/carrot.webp"
-          ],
-          "direction": "Use a mellow dusty mauve-brown skin, earthy faded blush texture, and pale ochre flesh like a softly shaded bread crumb. Keep both the whole sweet potato and cut piece, and keep their silhouettes clearly distinct."
-        },
-        "noodles": {
-          "referenceImages": [
-            "assets/pantry/food/rice.webp",
-            "assets/pantry/food/pandesal.webp",
-            "assets/pantry/food/fish.webp"
-          ],
-          "direction": "Use the soft cream ceramics and restrained pencil shading of the rice bowl. The plate's rim is pale slate, the noodles straw cream with restrained overlapping strands and gentle tan shadows. Avoid thick strand outlines or dense coiled highlights."
-        },
-        "tofu": {
-          "referenceImages": [
-            "assets/pantry/food/eggs.webp",
-            "assets/pantry/food/rice.webp",
-            "assets/pantry/food/pandesal.webp"
-          ],
-          "direction": "Use the cool creamy ivory and quiet warm grey shadows in the egg and rice sprites. Three firm tofu cubes with very few soft pore marks and slim imperfect pencil edges, broad soft plains, and an identifiable compact cluster."
         },
         "milk": {
           "referenceImages": [
@@ -117,23 +89,29 @@
           ],
           "direction": "Use the rice bowl's warm shades and the fish's muted cool slate for subtle edges. Keep the thin glass lip delicate and slightly irregular, and the white milk a soft ivory with very subtle pencil grain. Retain the characteristically tapered glass, with no glare. Preserve the shape and clean transparency of input 1 exactly, including the empty space surrounding the glass. Only the cutout glass and milk may have pixels with alpha greater than zero. The top, sides and base of the cutout must end at the original outline. Remove all semitransparent tinted haze, paper, fade and shadow behind or around the glass. Do not simulate transparency with pale pigment. No detached pixels or glow. The output should be a ready-to-use cutout sprite."
         },
-        "pechay": {
-          "referenceImages": [
-            "assets/pantry/food/carrot.webp",
-            "assets/pantry/food/apple.webp",
-            "assets/pantry/food/fish.webp"
-          ],
-          "direction": "Use the carrot leaves' dusty greyish olive and the soft pale jade and warm cream recognizable in stems of baby pechay. Render only a few important veins with fine quiet pencil. Use the same shoreline of light, soft, confident pencil marks as the carrot leaves."
-        },
         "bananas": {
           "referenceImages": [
             "assets/pantry/food/apple.webp",
-            "assets/pantry/food/pandesal.webp",
+            "assets/pantry/food/bread.webp",
             "assets/pantry/food/eggs.webp"
           ],
           "direction": "Use faded honey cream and a restrained grey-yellow ochre, like the approved green apple's yellow edge and warm highlights on the bread. Keep three whole bananas in a cluster. Subtle chalky highlights and a little variation on the stem, with very few dark tiny specks."
         }
       }
+    }
+  },
+  "foodReplacements": {
+    "sharedPrompt": "Use case illustration-story. Draw one isolated transparent food sprite for an illustrated kids’ web game. Attached assets are existing approved game sprites for style and viewpoint only. Make this feel like the same illustrator’s hand: softly layered traditional colored pencil on fine paper, visible short irregular pencil marks and light crosshatching following the form, quiet matte natural pigments, subtle soft shading, slightly imperfect thin grey-brown graphite contours, delicate edges with clear readable silhouette. Upper-left diffused daylight, eye in slightly elevated frontal three-quarter view, gentle perspective like the attached reference. Centered, whole subject entirely visible, with clear space around all edges. Food must be instantly recognizable scaled to 75 pixels. Genuine transparent RGBA around the food, paper tooth contained inside the silhouette. No background, surface, cast shadow, white fringe, props, text, borders, glossy photographic texture, vector-flat fills, high saturation, 3D, or digital airbrush finish.",
+    "styleReferences": [
+      "assets/pantry/food/eggs.webp",
+      "assets/pantry/food/carrot.webp",
+      "assets/pantry/food/bread.webp"
+    ],
+    "foodPrompts": {
+      "potatoes": "Two ordinary tan potatoes, one whole irregular round russet potato overlapping slightly with one halved potato that shows the pale creamy cut face. Draw subtle eyes and tiny light freckles in the tan skin. Reinforce the unmistakable difference between fibrous tan potato skin and a baked bread crust. Neither sprouted nor purple.",
+      "pancakes": "One small stack of three round golden pancakes, visibly layered, seen from a slightly elevated angle. Soft edges and a golden speckled top, toasted sepia rim and creamy edges, finished with one small muted pale yellow pat of butter. No plate, syrup, fruit or utensils.",
+      "beef": "One small cooked boneless beef steak tilted gently diagonally with one short slice alongside, a compact grouping. Warm umber seared edge and softly shaded subdued warm rose center on the cut surface; a few restrained pencil marks on the sear. Make the broad flat shape and cut edge read as recognizable beef steak at a glance. No raw meat, blood, bone, garnish or plate.",
+      "broccoli": "One recognizable compact head of broccoli with 3 major lobes and a short visible branching pale sage stalk, angled slightly and centered. Dusty olive and muted forest green crown, softly grouped tiny florets through delicate pencil marks. Rounded broccoli silhouette, clear stalk. No other produce."
     }
   }
 }

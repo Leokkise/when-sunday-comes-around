@@ -11,18 +11,18 @@ type FoodEntry = [id: string, name: string, group: FoodGroup, tip: string]
 
 const entries: FoodEntry[] = [
   ['rice', 'Rice', 'Go', 'Think about what helps you keep running at recess.'],
-  ['pandesal', 'Pandesal', 'Go', 'What helps you keep moving when you play?'],
+  ['bread', 'Bread', 'Go', 'What helps you keep moving when you play?'],
   ['corn', 'Corn', 'Go', 'Think about what fuels your legs on a long walk.'],
-  ['kamote', 'Kamote', 'Go', 'This sweet potato can fill you up before a game.'],
-  ['noodles', 'Noodles', 'Go', 'Think about what keeps you going through a busy afternoon.'],
+  ['potatoes', 'Potatoes', 'Go', 'Think about what helps you keep playing after lunch.'],
+  ['pancakes', 'Pancakes', 'Go', 'What helps you get moving after breakfast?'],
   ['eggs', 'Eggs', 'Grow', 'Think about what helps you build strong arms.'],
   ['fish', 'Fish', 'Grow', 'What helps your body fix tired muscles after play?'],
   ['chicken', 'Chicken', 'Grow', 'What helps your body get stronger as you get bigger?'],
-  ['tofu', 'Tofu', 'Grow', 'These cubes come from soybeans. Think about what helps build strong muscles.'],
+  ['beef', 'Beef', 'Grow', 'Think about what helps your muscles when you climb.'],
   ['milk', 'Milk', 'Grow', 'Think about what helps your bones get stronger.'],
   ['carrot', 'Carrots', 'Glow', 'Think about what helps your eyes do their job.'],
   ['apple', 'Apples', 'Glow', 'Think about what helps your tummy do its job.'],
-  ['pechay', 'Pechay', 'Glow', 'Think about what these green leaves add to your meals.'],
+  ['broccoli', 'Broccoli', 'Glow', 'Think about what this green veggie does to help you stay well.'],
   ['bananas', 'Bananas', 'Glow', 'Think about what this fruit does for your tummy.'],
   ['tomatoes', 'Tomatoes', 'Glow', 'Think about what helps your body stay well.'],
 ]

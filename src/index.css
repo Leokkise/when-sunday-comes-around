@@ -6,6 +6,54 @@
 @source "../dress-up/index.html";
 @source "../basketball/index.html";
 @source "../go-grow-glow/index.html";
+@source "../fried-rice/index.html";
+
+@keyframes rice-stir {
+  50% { transform: translateY(-6%) rotate(-7deg); }
+}
+
+@keyframes rice-chop {
+  0%, 100% { scale: 1; }
+  43%, 52% { scale: .91; }
+}
+
+@keyframes rice-cut-before {
+  from { opacity: 1; }
+  45%, to { opacity: 0; }
+}
+
+@keyframes rice-cut-after {
+  from { opacity: 0; }
+  45%, to { opacity: 1; }
+}
+
+@keyframes rice-clear-counter {
+  to { opacity: 0; visibility: hidden; }
+}
+
+@keyframes rice-oil-bottle {
+  0% { rotate: -25deg; opacity: 0; }
+  18% { opacity: 1; }
+  28%, 72% { rotate: -112deg; opacity: 1; }
+  100% { rotate: -25deg; opacity: 0; }
+}
+
+@keyframes rice-oil-stream {
+  0%, 24% { scale: 1 0; opacity: 0; }
+  34%, 68% { scale: 1 1; opacity: .85; }
+  80%, 100% { scale: 1 0; opacity: 0; }
+}
+
+@keyframes rice-oil-pool {
+  0%, 30% { scale: .08; opacity: 0; }
+  40% { opacity: 1; }
+  78%, 100% { scale: 1; opacity: 1; }
+}
+
+@keyframes rice-carrot-drop {
+  from { translate: 0 -58%; opacity: .4; }
+  to { translate: 0 0; opacity: 1; }
+}
 
 @keyframes quilt-cover {
   from { transform: translateY(105%); border-radius: 24% 18% 0 0; }

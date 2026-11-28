@@ -6,6 +6,7 @@ import brushArt from '../assets/home/home-brush.webp'
 import dressArt from '../assets/home/home-dress.webp'
 import basketballArt from '../assets/home/home-basketball.webp'
 import pantryArt from '../assets/home/home-pantry.webp'
+import friedRiceArt from '../assets/home/home-fried-rice.webp'
 import titleWide from '../assets/home/title-court-wide.webp'
 import titlePortrait from '../assets/home/title-court-portrait.webp'
 import titleCharacter from '../assets/home/title-character.webp'
@@ -19,6 +20,7 @@ const games = [
   { name: 'Pick pajamas', href: '/dress-up/', art: dressArt },
   { name: 'After-School Hoops', href: '/basketball/', art: basketballArt },
   { name: 'Go, Grow, Glow!', href: '/go-grow-glow/', art: pantryArt },
+  { name: 'Egg & Carrot Fried Rice', href: '/fried-rice/', art: friedRiceArt },
 ]
 
 function playCue(source: string, volume: number) {

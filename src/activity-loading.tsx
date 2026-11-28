@@ -5,12 +5,16 @@ import { loadImage } from './image-loading'
 
 const activityCursors = ['/cursors/bath-pointer.svg', '/cursors/bath-pointer-hover.svg', '/cursors/hand-grab.svg', '/cursors/hand-grabbing.svg']
 
-export function ActivityEntry({ assets, label, errorMessage, children, night = false }: {
+type LoadingCancel = { label: string; onClick: () => void }
+
+export function ActivityEntry({ assets, label, errorMessage, children, night = false, onReady, cancel }: {
   assets: readonly string[]
   label: string
   errorMessage: string
   children: ReactNode
   night?: boolean
+  onReady?: () => void
+  cancel?: LoadingCancel
 }) {
   const [phase, setPhase] = useState<'loading' | 'rendering' | 'ready' | 'error'>('loading')
   const [attempt, setAttempt] = useState(0)
@@ -18,6 +22,7 @@ export function ActivityEntry({ assets, label, errorMessage, children, night = f
   const [revealed, setRevealed] = useState(false)
   const scene = useRef<HTMLDivElement>(null)
   const ready = phase === 'ready'
+  useEffect(() => { if (ready) onReady?.() }, [ready, onReady])
   const sources = useMemo(() => [...new Set([...activityCursors, ...assets, ...(night ? [nightQuilt] : [])])], [assets, night])
   useEffect(() => {
     if (!night || !ready) return
@@ -59,7 +64,7 @@ export function ActivityEntry({ assets, label, errorMessage, children, night = f
 
   return <>
     {(phase === 'rendering' || ready) && <div ref={scene} className="contents" inert={!ready}>{children}</div>}
-    {(!ready || (night && !revealed)) && <ActivityLoading label={label} loaded={loaded} total={sources.length + 1}
+    {(!ready || (night && !revealed)) && <ActivityLoading label={label} loaded={loaded} total={sources.length + 1} cancel={cancel}
       night={night} revealing={ready}
       error={phase === 'error' ? errorMessage : undefined} onRetry={() => {
         setLoaded(0)
@@ -75,11 +80,12 @@ type LoadingProps = {
   total: number
   error?: string
   onRetry: () => void
+  cancel?: LoadingCancel
   night?: boolean
   revealing?: boolean
 }
 
-function ActivityLoading({ label, loaded, total, error, onRetry, night, revealing }: LoadingProps) {
+function ActivityLoading({ label, loaded, total, error, onRetry, night, revealing, cancel }: LoadingProps) {
   return <main className={ui(`activity-loading fixed inset-0 z-[110] grid place-content-center justify-items-center gap-5 p-6 text-center ${night ? 'night-loading' : ''}`)}
     data-revealing={revealing || undefined}>
     {night && <BedtimeQuilt />}
@@ -89,6 +95,7 @@ function ActivityLoading({ label, loaded, total, error, onRetry, night, revealin
       <span className={ui("activity-loading-fill block h-full origin-left")} style={{ transform: `scaleX(${loaded / total})` }} />
     </div>}
     {error && <button className={ui("cta")} onClick={onRetry}>Try again</button>}
-    <a className={ui("activity-loading-back underline underline-offset-4")} href="/">Back to home</a>
+    {cancel ? <button type="button" className={ui("activity-loading-back cursor-pointer underline underline-offset-4")} onClick={cancel.onClick}>{cancel.label}</button> :
+      <a className={ui("activity-loading-back underline underline-offset-4")} href="/">Back to home</a>}
   </main>
 }

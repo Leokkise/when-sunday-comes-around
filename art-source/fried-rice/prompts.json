@@ -1,0 +1,170 @@
+{
+  "tool": "Built-in ImageGen",
+  "softenedCarrot": {
+    "references": [
+      "assets/fried-rice/food/diced-carrot.webp"
+    ],
+    "prompt": "Edit the supplied transparent diced-carrot game sprite, which is the exact registration template; make a second frame of the very same cluster after a brief gentle sauté. Keep the canvas aspect close to 240:149 landscape, the identical crop and full extents, the same count and exact placement, scale, separation, 3D perspective, outlines, overlap order and outer silhouette of every carrot cube. It will crossfade over the reference and use the same existing cutouts, so do not move, merge, remove or add even one cube. Change only the interior surface rendering: lively orange still, lightly oiled satin highlights in fine pencil strokes on a few upper edges, warmer softer midtones, less chalky/more moist-looking fine grain, lightly softened value transitions at the edges without changing cutout geometry. Subtle cooked-texture difference visible at small display sizes. Keep the original warm matte children's colored-pencil illustration style. No dark or browned spots, char, caramelization, pooling oil, haze, steam, pan, background, or text. Maintain genuine transparency between and outside all pieces. The leftmost isolated cube and near-bottom-right separate cube must remain at exactly the same positions and scale.",
+    "exported": [
+      "assets/fried-rice/food/softened-carrot.webp"
+    ],
+    "exportNote": "Built-in ImageGen transparent PNG exported at the original 240 × 149 registration for blending over the raw cubes during each sweep. The source and softened sprite silhouettes overlap by 97.6% (opaque alpha masks)."
+  },
+  "leafyCarrot": {
+    "references": [
+      "assets/fried-rice/food/whole-carrot.webp",
+      "assets/pantry/food/carrot.webp"
+    ],
+    "prompt": "Create a new transparent sprite of ONE fresh whole carrot with its green leafy top attached for the refrigerator shelf of a children's cooking game. The first reference is the game's trimmed single carrot: closely match its slender, lightly tapered orange root, warm colored-pencil shading, paper tooth and fine graphite edges. The second reference shows the palette and leafy foliage style only. Draw exactly one continuous orange root and one small attached cluster of 3–4 soft muted olive-green carrot fronds. Do not duplicate the root or use a second carrot. Use the same diagonal orientation as a carrot laid on the fridge shelf: narrow tip points diagonally down-left at about 45 degrees, wide shoulder and leaves point up-right. Keep the silhouette recognizable at 24 pixels and make the leaves about a quarter of the total diagonal length. Matte warm hand-drawn colored pencil, subtle contours, no cartoon outline, no background, no table, no detached leaves, no text, no cast shadow, true alpha transparency outside the carrot. Center and snugly frame the full sprite, preserving each leaf tip and the root tip.",
+    "exported": [
+      "assets/fried-rice/food/leafy-carrot.webp"
+    ],
+    "exportNote": "Built-in ImageGen transparent PNG trimmed and exported as 200 × 160 WebP. Use on the fridge shelf and while carrying the carrot. The cutting board retains the existing trimmed carrot so the cut guides stay aligned."
+  },
+  "electricCooker": {
+    "prompt": "Create ONE isolated portable single-burner ELECTRIC HOTPLATE game asset on true transparent alpha, with no pan or food. Gentle realistic hand-drawn colored-pencil illustration for a children's warm honey-colored kitchen game: muted warm ivory enamel body, dark charcoal circular solid cast-iron electric heating plate, one small simple brown power dial centered on the front lip and one tiny amber indicator light beside it. Fine soft pencil grain, subtle broken graphite outlines, natural matte shading, restrained highlights, warm soft upper-left illumination, no photorealism, no vector cartoon. Camera elevated front view looking downward approximately 40 degrees, level and symmetric, all horizontal edges level, see full elliptical burner top and short front face. Compact low rectangular body with softly rounded corners and slightly converging side edges, width about 1.35 times total visible height; the circular heating plate appears as an ellipse with height 0.58 times its width centered on the top surface. No tall back panel, no exposed flame, no glowing red coil, no visible text, no digital display, no power cord, no extra equipment, no hands, no background or table. Tight soft brown contact shadow immediately below the body, all remaining area transparent. Object fills most of canvas with a small clear margin on every side, crisp enough for 500px-wide game artwork.",
+    "exported": [
+      "assets/fried-rice/tools/electric-cooker.webp"
+    ],
+    "exportNote": "Built-in ImageGen transparent PNG exported as 560 × 415 WebP with alpha retained. Required opening artwork while parked on the rear cabinet counter; automatically moves to the table when the pan is picked up. The existing pan and all ingredient overlays sit above it."
+  },
+  "choppingBoard": {
+    "references": [
+      "Previous cutting board artwork",
+      "assets/fried-rice/scene/table.webp"
+    ],
+    "prompt": "Use the first reference, our original small warm oak chopping board, as the source for its style, color, wood texture and simplicity. Make a new asset drawn accurately in a fixed elevated FRONT-facing camera, looking down at the counter around 32 degrees so the top face and thin FRONT edge are visible. Exact horizontal centered wide landscape orientation: the long front and rear edges both perfectly horizontal across the canvas, rear edge visibly shorter than front edge due to perspective, the two sides gently converge toward the back. Front face sits perfectly flat against a level surface, just a low thickness lip, rounded corners. Overall board silhouette aspect ratio about 2.35:1. Rich matte light honey oak, thin colored-pencil sketch contour and soft fine wood grain with long horizontal strokes, slight rim, subtle soft upper-left illumination. Tiny hole near far upper-right corner. Include an integral TIGHT warm brown contact shadow immediately tangent UNDER the board's bottom edge and beneath the sides, narrow dense line softening outward only a few pixels, all of it on alpha. No wide floating drop shadow, no wall, no floor, no hands, no knife, no food, no markings, no backdrop, NO white card; genuine transparency worldwide outside board and tight shadow. Crop roomy around the board, large crisp artwork for children's colored-pencil cooking game.",
+    "exported": [
+      "assets/fried-rice/tools/cutting-board.webp"
+    ]
+  },
+  "choppingKnife": {
+    "references": [
+      "User knife screenshot",
+      "Previous kitchen knife artwork"
+    ],
+    "prompt": "Create ONE isolated culinary KNIFE game sprite on real transparent alpha. Image 1 is the user's visual reference for the silhouette: modest slender tapered silver steel blade and slim plain dark chocolate-charcoal elongated handle. Image 2 is the project's prior asset and guides the warm soft colored-pencil texture, fine strokes, matte paper grain and natural illustration. Render a narrow realistic kitchen prep knife, blade straight and slender and wider at bolster, subtle steel bevel, one very subtle handle rivet and round handle end. Exactly VERTICAL, straight along the same x-axis, tip CENTERED at TOP of the image and handle straight directly below it, object facing flat toward the viewer (its broad cutting face clearly visible rather than edge-on), no perspective roll or diagonal tilt. Entire sprite visible, ample alpha around all edges. Intended to be small on a kitchen board. Neutral soft ink definition, warm muted steel/graphite, no dramatic reflections. NO hand, no person or anatomy, no countertop, no cast shadow, no scene, no background, no lettering, no embellishments, no duplicate objects.",
+    "exported": [
+      "assets/fried-rice/tools/knife.webp"
+    ]
+  },
+  "kitchen": {
+    "references": [
+      "Previous kitchen composition",
+      "User lower-counter detail screenshot",
+      "assets/fried-rice/scene/cupboard-door.webp",
+      "assets/pantry/scene/tray.webp"
+    ],
+    "prompt": "Precisely edit the first image, our own original 3:2 game backdrop. Keep the EXACT layout, crop and all general furnishing positions, text-free scene, front-on eye level perspective, and table top seam at exactly y=68.65% full image. Keep the amber/honey/cream and walnut palette. Make only TWO changes. First, reduce the width and height of both upper walnut cupboards by about 12% around their existing centers, keeping same single mid-shelf inside each. Approximate new bounding boxes: left x=8.25% to 33.45%, right x=38.9% to 63.6%, both y=7.4% to 35.95% from canvas top. Bring the plaster wall texture into the newly exposed space around them. Preserve the depth of the empty two-tier storage, cabinet wood matched to Input 2 (current door). Keep their edges straight, both identical in apparent size and baseline, no distortions or doors on these openings. Second, tune the rendered material of the LOWER COUNTER and honey tile backsplash, using the lower-counter detail Input 3 for context and Input 4 for project pencil character. Keep painterly matte warm fill and gentle tonal shading, give just a trace of fine colored-pencil grain and broken graphite edges, blend it into the original smooth washes, NO coarse pencil scratching, excessive hatching, or blur. Keep all objects in existing positions: compact cream microwave at right and actual fixed sink/faucet and built-in oven, NO additional countertop items; the towel, bottles, jars and utensils in input 3 are not requested. The wall to the right of the rear lower cabinets must stay plain amber plaster to receive a separate fridge sprite, and the entire foreground golden-wood table stays plain, its crisp straight horizontal seam from edge to edge unchanged. Preserve palette and exact proportions elsewhere. No text, outlines of a fridge, ingredients or figures.",
+    "exported": [
+      "assets/fried-rice/scene/kitchen-upper.webp"
+    ]
+  },
+  "cookware": {
+    "references": [
+      "public/bedtime/pajama-bedroom.webp",
+      "assets/pantry/food/eggs.webp",
+      "assets/pantry/food/carrot.webp"
+    ],
+    "prompt": "Draw ONE production spritesheet of four SEPARATE interactive cookware props for an original illustrated cooking game. Exact 2-by-2 regular quadrant grid on a square true transparent canvas. Place each item entirely within its own quadrant with at least 10% transparent margins on every side, and generous empty center cross. Top left only: an empty clean round muted slate-blue frying skillet, slightly elevated front view showing the entire roomy dark slate interior and with a short handle pointing to the right. Top right only: one wooden spatula flat and diagonally tilted. Bottom left only: one small glass cooking oil bottle with a dusty beige cap and mellow gold oil, no label. Bottom right only: one empty light ivory ceramic dinner plate with narrow dusty blue rim, slightly elevated frontal view, softly elongated ellipse. Pencil texture like the supplied game art: soft traditional colored pencil, matte muted pigment, gentle warm light, thin irregular graphite edge, fine paper grain inside each silhouette. Keep all four props separate, centered in their respective cells, fully visible, and clean cut out. No flat backgrounds, paper fill, shadow, labels, text, flourishes, photo, or additional objects.",
+    "exported": [
+      "assets/fried-rice/tools/pan.webp",
+      "assets/fried-rice/tools/spatula.webp",
+      "assets/fried-rice/tools/oil.webp",
+      "assets/fried-rice/tools/plate.webp"
+    ]
+  },
+  "cookingFood": {
+    "references": [
+      "public/bedtime/pajama-bedroom.webp",
+      "assets/pantry/food/eggs.webp",
+      "assets/pantry/food/carrot.webp"
+    ],
+    "prompt": "Draw a single four-cell separate sprite sheet of food cooking states for an original children's cooking game. Exactly regular two-by-two grid on a square true transparent canvas. Put one small cozy matte illustration in each quadrant with wide safe margins, generous empty cross in the middle. Top left: a small scattered cluster of recognizable finely diced matte orange carrot cubes in shallow perspective, no leafy tops. Top right: a small loose cluster of softly cooked yellow scrambled egg curds, no plate. Bottom left: a neatly pooled low oval mound of cooked egg-and-carrot fried rice with clearly visible short ivory grains, tiny orange carrot cubes, and yellow egg pieces, no plate. Bottom right: a whole egg cracked into two separated jagged pale-brown empty shell halves with a small raw golden yolk with a little transparent cream egg white beneath, no bowl. Use the game reference eggs and carrots for house style: soft quiet layered hand-colored-pencil shading, thin irregular warm graphite edges, soft visible paper tooth only inside isolated objects, no cast shadows or halo. Slightly elevated front perspective. Each quadrant contains only its specific food. No backgrounds, no overt grid lines, no text, no dish, no garnishes, no extra objects.",
+    "exported": [
+      "assets/fried-rice/food/diced-carrot.webp",
+      "assets/fried-rice/food/scrambled-egg.webp",
+      "assets/fried-rice/food/fried-rice.webp",
+      "assets/fried-rice/food/cracked-egg.webp"
+    ]
+  },
+  "doors": {
+    "references": [
+      "Original walnut cupboard door",
+      "User annotation for the right-side vertical handle"
+    ],
+    "prompt": "Precisely edit the input art, the original transparent walnut cupboard door. The only change should be to the brass handle. Completely remove the horizontal handle from the lower center and restore the walnut grain underneath. Paint one narrow VERTICAL warm aged-brass handle on the far right inside edge of the recessed panel, centered at exactly x=87.7% of the outer door width and y=49.1% of its height. The slender bar extends vertically from y=38% to y=60% of the entire door height, with thickness about 2.4% of its width. It stays inset inside the right edge of the recessed panel like a classic right-side cupboard pull. Its position and orientation follow the vertical red annotation shown by the user, with the brass metal color and softly shaded pencil finish of the original hardware. No red mark or any other marking in the artwork. Do not add a centered lower handle, horizontal handles or hinges. Preserve the EXACT door dimensions, aspect ratio 428:330, straight-on perspective, original color, existing corners, beveled border, wood grain and transparency outside. Full frame edge-to-edge isolated original door with one clean localized adjustment.",
+    "exported": [
+      "assets/fried-rice/scene/cupboard-door.webp"
+    ]
+  },
+  "prepAndSeasoning": {
+    "references": [
+      "assets/fried-rice/tools/spatula.webp",
+      "assets/fried-rice/tools/oil.webp",
+      "assets/pantry/food/carrot.webp"
+    ],
+    "prompt": "One production transparent sprite sheet for an illustrated children's kitchen game, exactly four DISTINCT cooking objects on a regular two-by-two square grid, with generous transparent margins (at least 12 percent of each quadrant) and a wide blank center cross. Soft, traditional, matte colored pencil with layered natural pigments, paper tooth within the outlines, delicate gray-brown hand-drawn edges; match the three supplied house-style game sprites. Upper left ONLY: a simple small warm honey-oak rectangular cutting board with softly rounded corners and a tiny hole near its corner, low slightly elevated view, wide silhouette and a clear usable plain surface. Upper right ONLY: a small everyday culinary knife, rounded dark walnut handle and simple steel kitchen blade resting diagonally, matte with no shine or extra attachments, instantly recognizable even at 40 pixels. Bottom left ONLY: one squat warm ivory glass salt shaker with only matte white salt visible through glass and a small soft steel perforated cap, compact silhouette. Bottom right ONLY: one similarly sized clear glass pepper shaker with muted dark brown ground pepper and brushed soft bronze perforated cap. Both shakers visually distinct by contents and cap, no lettering. Soft daylight, fully visible silhouettes. Genuine transparency outside the props, no cast shadow, no tabletop, no background, no props besides the four specified. No human hands or text.",
+    "exported": [
+      "assets/fried-rice/tools/salt.webp",
+      "assets/fried-rice/tools/pepper.webp"
+    ]
+  },
+  "hingedDoorFaces": {
+    "references": [
+      "Previous fridge door (superseded)",
+      "assets/fried-rice/scene/cupboard-door.webp",
+      "User-provided cabinet and fridge screenshots (interior faces)"
+    ],
+    "prompt": "Draw ONE transparent 2 by 2 square spritesheet with THREE independent, isolated, straight-on kitchen door face sprites. Allow at least ten percent transparent safe margins in each quadrant and clearly empty divider lanes. Soft matte colored-pencil with fine paper tooth, fine warm graphite edging, diffuse neutral-warm interior light. Match house style and exact ivory & walnut palettes of inputs 1 and 2. Inputs 3 and 4 describe utility hinge and inner surfaces, not their flat style. TOP LEFT only: front face of ONE single-door ivory retro refrigerator, narrow vertical rectangle 0.62 width to 1 height, rounded top corners and a softly beveled rim, one short horizontal aged-brass handle near its left edge about a quarter of the way down, completely uninterrupted enamel with absolutely NO horizontal door seam or separate freezer. TOP RIGHT only: inside back face of the SAME SINGLE door, same rectangular shape, gently rounded corners, deep cream inner plastic lining and two short molded empty door bins in its lower half, with broad recessed upper interior and soft cool-neutral shade for depth. Frontal straight-on. BOTTOM LEFT only: back face of an open rectangular walnut cupboard door, wide landscape rectangle 1.27 width to 1 height, drawn straight-on to animate later. Simple flat darker warm walnut panel, bevel showing thickness in a narrow inner border, two small satin-brass hinge plates on the right edge, no outer handle on this inner face. BOTTOM RIGHT quadrant MUST BE completely empty. Keep all three complete, straight and uncropped. Genuine transparent RGBA outside each sprite, paper tooth restricted to surfaces, no cast shadow, background, text, watermarks, extra controls, ingredients, characters or perspective tilt.",
+    "exported": [
+      "assets/fried-rice/scene/cupboard-inside.webp"
+    ]
+  },
+  "fridgeDoorFit": {
+    "references": [
+      "User closed and open fridge screenshots",
+      "Previous fridge artwork (superseded)",
+      "assets/pantry/scene/tray.webp"
+    ],
+    "prompt": "Produce one image with three matched-layer sprite assets for our original kid-friendly illustrated kitchen, inspired by the refrigerator furnishing designs of input 1 (closed) and input 2 (open). Adapt only the refrigerator's form and shelf arrangement from inputs 1 and 2, do not reproduce game GUI, text, proprietary graphics, or stock food depictions. Match warm matte cream-gray enamel, aged nickel-gray details, gentle graphite contour and FINE soft colored-pencil tooth like the house style of inputs 3 to 5. Soft warm-lit muted ivory with a tiny bit of neutral cool silver hardware and grey-beige recesses. Render visually clean and smoothly shaded, no coarse grain, scribble, shine or outlines. Absolutely no objects in the fridge.\n\nTHREE exactly aligned upright rectangular narrow mildly rounded silhouettes side-by-side, true transparent RGBA margins, with generous gaps and all outlines fitting inside frame. Each shape about 0.61 times as wide as tall, matching outline exactly on all THREE panels, same gently squared vintage corners with restrained curve, same baseline and top, perfectly straight on and no sides sticking out.\nLeft third: empty OPEN single-door fridge BODY. Match the design intent and finish of input 2. Gently rounded off-white body frame. Cool silvery grey-beige recess with deep shaded side walls, a small shallow closed freezer drawer or simple compartment panel across the very top. Below the drawer two open horizontal wire racks placed about 41% and 63% of the full sprite height (true slender grey wire with no thick glass), creating exactly three generous open ingredient compartments with solid floor near 91%. Discreet perspective only within the cavity and on wire shelves, with real softly drawn depth.\nMiddle third: CLOSED single-door fridge outside. Slim clean matte cream enamel with subtle rounded edges and warm grey shadow to suggest convex shape. Take design cue from input 1: one small vertical dusky brushed silver handle toward the upper LEFT side (center at roughly 19% down from top, attached to the LEFT free edge because fridge hinges on the RIGHT). Shallow curved bevel, not thick or too dark. No horizontal handle, no top-bottom door seam. Exact same width and height as open body.\nRight third: the same door's inside face. Recessed warm off-white lining, two short creamy molded bins, subtle grey-side modeling, visible side cheeks, and painted soft shadow beneath each projecting lip. Exact same match of silhouette and top corners. All surfaces warm matte fine pencil, never pixel art or a rendered 3D look. No racks of food, text, logo, shadows outside sprites, detached hardware, or decorative elements.",
+    "exported": [
+      "assets/fried-rice/scene/fridge-body.webp",
+      "assets/fried-rice/scene/fridge-inside.webp"
+    ]
+  },
+  "lowerCounter": {
+    "references": [
+      "Current kitchen scene (composition and palette)",
+      "User lower-counter detail screenshot",
+      "public/bedtime/pajama-bedroom.webp",
+      "assets/pantry/scene/tray.webp"
+    ],
+    "prompt": "Edit the first image, the existing original kitchen game artwork. Produce a 1536-by-1024 equivalent full-bleed 3:2 composition with precisely the existing camera and crop. The ONLY change is the rendering technique of the lower counter section shown in input 2, which runs from y=37.5% to y=68.65% across this frame. Match the genuine soft dry colored-pencil execution of inputs 3 (Bedroom Time background) and 4 (Go Grow Glow tray), while retaining this kitchen's warm colors and furnishings. Add fine matte paper tooth, lightly varied overlapping pencil strokes that follow the wood grain, a touch of graphite around panel joints and edges, and quiet, softly mottled pigment in the honey and pale amber tiles. Make the sink, stove face, microwave and worn brass hardware feel hand shaded with soft diffuse highlights and pencil contact shadows. A modest visible step toward natural hand-colored pencil, with smooth readable forms and gentle tonal changes. No coarse scrawls, stipple fields, or heavy outlines. \n\nPreserve the existing warm light, every object position and size, straight-on perspective, tile rows and grout grid, walnut lower drawer/panel design, built-in oven, sink and brass faucet and small microwave. Keep the rear countertop bare as in inputs 1 and 2. Do not add anything. Keep the background plaster around the right side EXACTLY the same color and texture as input 1 so it will blend with the game's other image band. The tile starts at the exact same y=37.5% on the left, ends around x=70%. The rear worktop and oven stay put. The horizontal foreground table edge stays across y=68.65% from left to right. The two upper cupboards and the foreground golden-oak table stay visibly identical to the reference, as they are unaffected scene layers. No text, ingredients, utensils, extra items, characters, new lighting, layout changes, or refrigerator.",
+    "exported": [
+      "assets/fried-rice/scene/lower-counter.webp"
+    ]
+  },
+  "fridgeHandle": {
+    "references": [
+      "Original fridge door",
+      "Lowered handle preview"
+    ],
+    "prompt": "Make a precise localized edit of this exact existing original game fridge door sprite. The only modification is to move the entire existing vertical tapered brushed-silver handle downward by FIVE percent of the door height, without changing its horizontal coordinate, angle, original size, shape, highlights, age, or short cast shadow. The existing handle occupies about y 7–26%; it should now occupy y 12–31% of the complete door. Its center stays around x 13% from the left. Restore the bare warm ivory enamel smoothly at the old handle position. Preserve the original true transparency, full 340:544 framing, soft silver trim, rounded outer shape, exact original matte cream color, fine quiet colored pencil texture and left/right shading. The entire door is visible in the identical position and proportions, front on. One vertical handle only. No new paneling, line, hinge, text, alternate hardware or objects.",
+    "exported": [
+      "assets/fried-rice/scene/fridge-door.webp"
+    ]
+  },
+  "choppingCarrot": {
+    "references": [
+      "assets/pantry/food/carrot.webp",
+      "assets/fried-rice/food/diced-carrot.webp",
+      "assets/fried-rice/tools/cutting-board.webp"
+    ],
+    "prompt": "Create an original transparent sprite sheet for an animated carrot-chopping vignette in the project’s own children's colored-pencil kitchen game. Reference 1 establishes the exact shaded warm orange fine pencil tooth and irregular muted linework of the existing carrots, reference 2 is the precision and color of their clean freshly cut faces. Reference 3 is the board the carrot will sit on, for palette only. Draw only carrot artwork with real alpha around it. No board, knife, hands, ground shadow, plate, text, guidelines, repeated entire carrots or decoration.\n\nSheet composition: a landscape canvas with exactly FOUR horizontal rows. ONE registered animation pose in each row. Every row has the SAME fixed scale, left/right position, orientation, width, and y relative to its row; leave a clear transparent divider between rows. In all four frames draw the same single carrot laying strictly HORIZONTAL from the slender tapered tip on the LEFT to the thicker trimmed shoulder on the RIGHT. No leaves on this prep carrot; its top was trimmed. Long shallow profile about 4:1, viewed from slightly above with a tiny bit of dimension. Each frame spans x=16% to 84% of the overall canvas, center aligned. Keep the far left tip and uncut sections in the same place in all frames. Row 1: intact carrot, no cuts. Row 2: one clean slice separated near the right/shoulder end, with a tiny transparent gap and warm yellow-orange flesh; the rest is still one connected horizontal carrot. Row 3: two slices visibly separated at the right end with small transparent gaps, the left part still one longer piece. Row 4: three clean short cuts separate four snug chunks, the original thin end still visibly tapered. Cut spacing at about 35%, 55%, 75% from the carrot tip. Gentle color values and softly imperfect thin graphite contours, matte dry colored pencil with fine paper tooth as in supplied sprites. No exaggerated flying pieces. A crisp, clean transparent PNG.",
+    "exported": [
+      "assets/fried-rice/food/whole-carrot.webp"
+    ],
+    "exportNote": "The first row supplies the whole carrot. In the game, clipped pieces reveal the cuts progressively."
+  }
+}

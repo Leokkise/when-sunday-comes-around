@@ -2,15 +2,19 @@ import type { CSSProperties } from 'react'
 import { ui } from '../ui-classes'
 
 export const carrotCuts = [
-  { axis: 'along', position: 37 },
-  { axis: 'along', position: 66 },
-  { axis: 'across', position: 81 },
-  { axis: 'across', position: 63 },
-  { axis: 'across', position: 44 },
-  { axis: 'across', position: 25 },
+  { axis: 'along', position: 52 },
+  { axis: 'along', position: 27 },
+  { axis: 'along', position: 76 },
+  { axis: 'across', position: 88 },
+  { axis: 'across', position: 76 },
+  { axis: 'across', position: 64 },
+  { axis: 'across', position: 52 },
+  { axis: 'across', position: 40 },
+  { axis: 'across', position: 28 },
+  { axis: 'across', position: 16 },
 ] as const
 
-const carrotFrames = Array.from({ length: carrotCuts.length }, (_, taps) => {
+const carrotFrames = Array.from({ length: carrotCuts.length + 1 }, (_, taps) => {
   const cuts = carrotCuts.slice(0, taps)
   const edges = (axis: 'along' | 'across') =>
     [0, ...cuts.filter(cut => cut.axis === axis).map(cut => cut.position).sort((a, b) => a - b), 100]
@@ -19,7 +23,7 @@ const carrotFrames = Array.from({ length: carrotCuts.length }, (_, taps) => {
 
   return rows.slice(0, -1).flatMap((top, row) => columns.slice(0, -1).map((left, column) => ({
     clipPath: `inset(${top}% ${100 - columns[column + 1]}% ${100 - rows[row + 1]}% ${left}%)`,
-    translate: `${(column - (columns.length - 2) / 2) * 1.6}px ${(row - (rows.length - 2) / 2) * 1.8}px`,
+    translate: `${(column - (columns.length - 2) / 2) * 0.9}% ${(row - (rows.length - 2) / 2) * 4}%`,
   })))
 })
 

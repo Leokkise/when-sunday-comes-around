@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ActivityEntry } from '../activity-loading'
+import { ActivityBackLink } from '../activity-back-link'
 import { InkFilters } from '../ink-filters'
 import { BasketballNet } from './net'
 import { BasketballPlayer, characterArt } from './player'
@@ -43,9 +44,9 @@ const tutorialSteps = [
 const leaves = Array.from({ length: 7 }, (_, index) => {
   const duration = 11 + index % 5
   return {
-    left: `${7 + index * 14}%`,
-    animationDuration: `${duration}s`,
-    animationDelay: `${-duration * ((index * 7 + 3) % 17) / 17}s`,
+    '--leaf-x': `${7 + index * 14}%`,
+    '--leaf-duration': `${duration}s`,
+    '--leaf-delay': `${-duration * ((index * 7 + 3) % 17) / 17}s`,
     '--leaf-drift': `${(index % 2 ? 1 : -1) * (3 + index % 4)}cqw`,
     '--leaf-size': `${3.1 + (index % 3) * .5}cqw`,
   } as CSSProperties
@@ -279,15 +280,13 @@ function Basketball() {
   const breathing = started && dribbleTime === null && (phase === 'ready' || phase === 'aiming'
     || (phase === 'watch' && characterIndex === shotTicks.length - 1))
 
-  return <main className={ui('hoops-page')} style={viewport ? {
-    ...viewport,
+  return <main className={ui('hoops-page')} data-zoomed={Boolean(viewport) || undefined} style={viewport ? {
+    '--hoops-zoom': viewport.zoom,
     '--hoops-vw': `${viewport.width / 100}px`,
     '--hoops-vh': `${viewport.height / 100}px`,
   } as CSSProperties : undefined}>
     <InkFilters />
-    <a className={ui('brush-back hoops-back')} href="/" aria-label="Back to When Sunday Comes Around">
-      <svg className={ui('ink-wiggle')} viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M29 18c-5 1-14 0-22 0m0 0 8-8m-8 8 8 8" /></svg>
-    </a>
+    <ActivityBackLink />
     <h1 className="sr-only">After-School Hoops</h1>
     <dialog ref={tutorial} className={ui('hoops-panel hoops-tutorial')} aria-labelledby="hoops-tutorial-title"
       onCancel={event => { if (!started) event.preventDefault() }} onClose={() => setStarted(true)}>
@@ -358,17 +357,16 @@ function Basketball() {
           height: (hoopPlacement.height / courtSize.height * 100) + '%',
         }} draggable={false} />
         <BasketballNet frame={netFrame} front={false} />
-        <span className={ui('hoops-player')} style={{
-          ...position(drawX + playerSpriteXOffset, playerPosition.y + playerSpriteYOffset, playerSpriteWidth),
-          scale: phase === 'moving' && walkingRight ? '-1 1' : undefined,
-          transformOrigin: '50% 100%',
-        }} data-pose={phase} data-breathing={breathing}>
+        <span className={ui('hoops-player')}
+          style={position(drawX + playerSpriteXOffset, playerPosition.y + playerSpriteYOffset, playerSpriteWidth)}
+          data-pose={phase} data-breathing={breathing} data-facing-right={(phase === 'moving' && walkingRight) || undefined}>
           <BasketballPlayer walking={phase === 'moving'} frame={characterIndex} started={started} />
         </span>
         {(flight || dribbleTime !== null) && <span className={ui('hoops-shadow')} style={{ ...position(ball.x, floorY + 35, 82), opacity: .08 + .14 * Math.max(0, 1 - (floorY - ball.y) / 500) }} aria-hidden="true" />}
-        {!holding && phase !== 'moving' && <span className={ui('hoops-sprite hoops-ball')} data-ball style={{ ...position(ball.x, ball.y, 84),
-          zIndex: flight?.inNet ? 3 : 6,
-        }}><img src={ballArt} alt="" className="block size-full" style={{ rotate: (flight?.rotation ?? bounce * 60) + 'deg' }} draggable={false} /></span>}
+        {!holding && phase !== 'moving' && <span className={ui('hoops-sprite hoops-ball')} data-ball data-in-net={flight?.inNet || undefined}
+          style={position(ball.x, ball.y, 84)}>
+          <img src={ballArt} alt="" className="block size-full" style={{ rotate: (flight?.rotation ?? bounce * 60) + 'deg' }} draggable={false} />
+        </span>}
         <BasketballNet frame={netFrame} front />
         {madeBasket && <span className={ui('hoops-swish')} style={position((rim.left + rim.right) / 2, rim.y, 250)} aria-hidden="true">
           <img src={swishArt} alt="" draggable={false} />
@@ -383,7 +381,7 @@ function Basketball() {
         {canShoot && <>
           <svg className={ui('hoops-aim-curve')}
             viewBox={`0 0 ${courtSize.width} ${courtSize.height}`} aria-hidden="true"
-            style={{ maskImage: `radial-gradient(circle var(--aim-ring-radius) at ${aimPosition.left} ${aimPosition.top}, transparent calc(100% - 2px), #000 calc(100% - 1px))` }}>
+            style={{ '--hoops-aim-x': aimPosition.left, '--hoops-aim-y': aimPosition.top } as CSSProperties}>
             <path d={`M${curve.start.x} ${curve.start.y} Q${curve.control.x} ${curve.control.y} ${curve.finish.x} ${curve.finish.y}`}
               fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
           </svg>

@@ -13,7 +13,7 @@ export function EnamelMask({ id, width, height }: { id: string; width: number; h
       <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 8 2 0 -7.05" />
       <feComposite in2="SourceGraphic" operator="in" />
     </filter>
-    <mask id={id} maskUnits="userSpaceOnUse" width={width} height={height} x="0" y="0" style={{ maskType: 'alpha' }}>
+    <mask id={id} maskUnits="userSpaceOnUse" width={width} height={height} x="0" y="0" className="[mask-type:alpha]">
       <image href={frontArt} width={width} height={height} preserveAspectRatio="none" filter={`url(#${filterId})`} />
     </mask>
   </>

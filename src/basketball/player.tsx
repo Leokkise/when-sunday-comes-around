@@ -20,9 +20,9 @@ function frameStyle(frame: number, rows: number): CSSProperties {
 export function BasketballPlayer({ walking, frame, started }: { walking: boolean; frame: number; started: boolean }) {
   const index = characterFrame(frame, walking)
   return <span className={ui('hoops-player-body')} data-character-frame={index}>
-    <img src={shotAtlas} alt="" draggable={false} className={ui('hoops-player-atlas')}
-      style={{ ...frameStyle(walking ? 5 : index, shotRows), visibility: walking ? 'hidden' : 'visible' }} />
-    {started && <img src={walkAtlas} alt="" draggable={false} className={ui('hoops-player-atlas')}
-      style={{ ...frameStyle(walking ? index : 0, walkRows), visibility: walking ? 'visible' : 'hidden' }} />}
+    <img src={shotAtlas} alt="" draggable={false} className={ui('hoops-player-atlas')} data-atlas-hidden={walking || undefined}
+      style={frameStyle(walking ? 5 : index, shotRows)} />
+    {started && <img src={walkAtlas} alt="" draggable={false} className={ui('hoops-player-atlas')} data-atlas-hidden={!walking || undefined}
+      style={frameStyle(walking ? index : 0, walkRows)} />}
   </span>
 }

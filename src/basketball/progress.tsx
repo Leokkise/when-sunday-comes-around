@@ -1,12 +1,13 @@
+import type { CSSProperties } from 'react'
 import { ui } from '../ui-classes'
 import ballArt from '../../assets/basketball/scene/ball-soft.webp'
 
 export function BasketballProgress({ baskets, goal, idle }: { baskets: number; goal: number; idle: boolean }) {
   return <div className={ui('hoops-score')} role="img" aria-label={`${baskets} of ${goal} baskets made`}>
     {Array.from({ length: goal }, (_, index) => <span key={index} className={ui('hoops-progress-idle')} data-idle={idle}
-      style={{ animationDelay: `${index * -.18}s` }}>
+      style={{ '--hoops-idle-delay': `${index * -.18}s` } as CSSProperties}>
       <span className={ui('hoops-progress-ball')} data-filled={index < baskets}
-        style={{ animationDelay: index < baskets ? '0s' : `${index * 35}ms` }}>
+        style={{ '--hoops-progress-delay': `${index * 35}ms` } as CSSProperties}>
       {index < baskets ? <img src={ballArt} alt="" draggable={false} />
         : <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
           <circle cx="16" cy="16" r="13.2" fill="#faf7f0" />

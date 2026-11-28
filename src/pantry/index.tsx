@@ -29,7 +29,7 @@ const particles = [-72, -40, -12, 22, 48, 76].map((angle, index) => {
       '--dx': `${Math.sin(radians) * (45 + index % 2 * 18)}px`,
       '--dy': `${-28 - Math.cos(radians) * 40}px`,
       '--turn': `${angle}deg`,
-      backgroundImage: `url(${goodMark})`,
+      '--pantry-particle-art': `url(${goodMark})`,
     } as CSSProperties,
   }
 })
@@ -224,7 +224,7 @@ function Pantry() {
                       {justPlaced && feedback?.correct && <span aria-hidden="true" className="absolute inset-0 z-10" onAnimationEnd={e => {
                         if (e.target === e.currentTarget.lastElementChild) setFeedback(current => current?.serial === feedback.serial ? null : current)
                       }}>
-                        {particles.map(({ angle, style }) => <i key={angle} className="pantry-particle" style={style}/>)}
+                        {particles.map(({ angle, style }) => <i key={angle} className={ui('pantry-particle')} style={style}/>)}
                       </span>}
                     </span>
                   })}

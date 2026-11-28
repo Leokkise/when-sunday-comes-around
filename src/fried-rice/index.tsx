@@ -7,6 +7,8 @@ import { InkFilters } from '../ink-filters'
 import { ui } from '../ui-classes'
 import { carrotCuts, CarrotPieces } from './carrot-cuts'
 import { CarrotSweep } from './carrot-sweep'
+import { DicedCarrot, dicedCarrotArt } from './diced-carrot'
+import { EggArt } from './egg-art'
 import { recipe, recipeGroups, stepKey, storage, supplies, type CookingAction, type RecipeGroup, type Storage, type Supply } from './recipe'
 import kitchenUpper from '../../assets/fried-rice/scene/kitchen-upper.webp'
 import lowerCounter from '../../assets/fried-rice/scene/lower-counter.webp'
@@ -16,8 +18,6 @@ import cupboardInterior from '../../assets/fried-rice/scene/cupboard-inside.webp
 import fridgeBody from '../../assets/fried-rice/scene/fridge-body.webp'
 import fridgeDoor from '../../assets/fried-rice/scene/fridge-door.webp'
 import fridgeInterior from '../../assets/fried-rice/scene/fridge-inside.webp'
-import dicedCarrot from '../../assets/fried-rice/food/diced-carrot.webp'
-import softenedCarrot from '../../assets/fried-rice/food/softened-carrot.webp'
 import choppingCarrot from '../../assets/fried-rice/food/whole-carrot.webp'
 import crackedEgg from '../../assets/fried-rice/food/cracked-egg.webp'
 import scrambledEgg from '../../assets/fried-rice/food/scrambled-egg.webp'
@@ -27,7 +27,7 @@ import electricCooker from '../../assets/fried-rice/tools/electric-cooker.webp'
 
 const areas = Object.keys(storage) as Storage[]
 const openingArt = [kitchenUpper, lowerCounter, table, cupboardDoor, fridgeBody, fridgeDoor, notePaper, electricCooker]
-const carrotPrepArt = [choppingCarrot, dicedCarrot, supplies.plate.image]
+const carrotPrepArt = [choppingCarrot, dicedCarrotArt.raw, supplies.plate.image]
 const knifeLength = { min: 82, max: 269, cqw: 26.5 }
 const bladeAnchor = 39
 const handleAnchor = 65
@@ -56,6 +56,8 @@ const chopAnimationMs = 330
 const carrotSlideMs = 480
 const oilPourMs = 1200
 const oilWarmMs = 1800
+const eggCrackMs = 1050
+const eggCrackStyle = { '--fried-rice-egg-crack-time': `${eggCrackMs}ms` } as CSSProperties
 type HeldItem = { item: Supply; x: number; y: number }
 type KnifeInput = 'pointer' | 'touch' | 'keyboard'
 type KnifeAim = { x: number; y: number; input: KnifeInput; touchCut?: number; gripOffset?: { x: number; y: number } }
@@ -68,7 +70,9 @@ function readProgress(): Progress {
   try {
     const saved = JSON.parse(localStorage.getItem(progressKey) ?? 'null')
     if (saved?.step === 'finished') return { stepIndex: recipe.length, taps: 0 }
-    const stepIndex = recipe.findIndex(step => stepKey(step) === saved?.step)
+    // An intact egg returns to the fridge when a game is restored.
+    const savedStep = saved?.step === 'cook:egg' ? 'get:eggs' : saved?.step
+    const stepIndex = recipe.findIndex(step => stepKey(step) === savedStep)
     if (stepIndex < 0 || saved?.step === 'cook:oil') return fresh
     const step = recipe[stepIndex]
     const taps = 'taps' in step && Number.isInteger(saved.taps) && saved.taps >= 0 && saved.taps < step.taps ? saved.taps : 0
@@ -85,13 +89,12 @@ function saveProgress(stepIndex: number, taps: number) {
   } catch { /* Storage can be unavailable. */ }
 }
 
-function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice, onReturn }: {
+function FriedRice({ checkpoint, practice, onProgress, onPractice, onReturn }: {
   checkpoint: Progress
   practice: RecipeGroup | null
-  announcement: string
   onProgress: (stepIndex: number, taps: number) => void
   onPractice: (group: RecipeGroup) => void
-  onReturn: (finished?: boolean) => void
+  onReturn: () => void
 }) {
   const [stepIndex, setStepIndex] = useState(checkpoint.stepIndex)
   const [openStorage, setOpenStorage] = useState<Storage | null>(null)
@@ -101,29 +104,35 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
   const [supplyArt, setSupplyArt] = useState<'loading' | 'error' | null>(null)
   const [pouringOil, setPouringOil] = useState(false)
   const [warmingOil, setWarmingOil] = useState(false)
+  const [crackingEgg, setCrackingEgg] = useState(false)
   const [cutting, setCutting] = useState(false)
   const [knifeAim, setKnifeAim] = useState<KnifeAim | null>(null)
   const [mistake, setMistake] = useState<{ item: Supply; attempt: number } | null>(null)
   const page = useRef<HTMLElement>(null)
   const kitchen = useRef<HTMLElement>(null)
-  const heldArt = useRef<HTMLImageElement>(null)
+  const heldArt = useRef<HTMLElement>(null)
+  const restingSpatula = useRef<HTMLImageElement>(null)
   const spatulaPanTarget = useRef<HTMLButtonElement>(null)
   const choppingArea = useRef<HTMLDivElement>(null)
   const chopTimer = useRef<number | undefined>(undefined)
   const pourTimer = useRef<number | undefined>(undefined)
   const warmTimer = useRef<number | undefined>(undefined)
+  const eggTimer = useRef<number | undefined>(undefined)
   const runVersion = useRef(0)
   useEffect(() => () => {
     runVersion.current += 1
     window.clearTimeout(chopTimer.current)
     window.clearTimeout(pourTimer.current)
     window.clearTimeout(warmTimer.current)
+    window.clearTimeout(eggTimer.current)
   }, [])
   const step = recipe[stepIndex]
-  const gathering = step && 'item' in step ? step : null
-  const cooking = step && 'action' in step ? step : null
+  const practiceComplete = practice !== null && stepIndex === practice.end
+  const gathering = !practiceComplete && step && 'item' in step ? step : null
+  const cooking = !practiceComplete && step && 'action' in step ? step : null
   const complete = !step
   const holdingSpatula = held?.item === 'spatula'
+  const holdingEgg = held?.item === 'eggs'
   const target = cooking && cooking.action !== 'heat' ? cookingTargets[cooking.action] : null
   const tapGoal = cooking && 'taps' in cooking ? cooking.taps : 1
   const slidingCarrot = cooking?.action === 'chop' && taps === carrotCuts.length
@@ -144,12 +153,17 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
   }
   const aligned = !!knifeAim && isAligned(knifeAim)
   let instruction = 'Rice for Go, egg for Grow, and carrot for Glow. Time to eat!'
-  if (pouringOil) {
+  if (practiceComplete) {
+    instruction = 'Try this group again or go back to your recipe.'
+  } else if (pouringOil) {
     instruction = 'A little oil goes into the pan.'
   } else if (warmingOil) {
     instruction = 'Wait a moment for the oil to warm up.'
+  } else if (crackingEgg) {
+    instruction = 'The egg drops into the pan.'
   } else if (held) {
     instruction = held.item === 'oil' ? 'Tap the pan to pour a little oil.' :
+      holdingEgg ? 'Tap the pan to crack the egg.' :
       holdingSpatula ? 'Tap the pan to start stirring.' :
       cooking?.action === 'carrots' ? 'Tap the pan to add the carrot.' :
       held.item === 'pan' ? 'Tap the shadow to put the pan on the cooker.' : 'Tap the shadow to put it down.'
@@ -182,11 +196,8 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
   }
 
   function advance() {
+    if (practiceComplete) return
     const next = stepIndex + 1
-    if (practice && next === practice.end) {
-      onReturn(true)
-      return
-    }
     if (!practice) onProgress(next, 0)
     setStepIndex(next)
     setTaps(0)
@@ -223,7 +234,8 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
       ? kitchenPosition(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2, item)
       : kitchenPosition(event.clientX, event.clientY, item)
     const version = runVersion.current
-    const pickupArt = item === 'carrots' ? carrotPrepArt : item === 'spatula' ? [softenedCarrot] : null
+    const pickupArt = item === 'carrots' ? carrotPrepArt : item === 'spatula' ? [dicedCarrotArt.softened] :
+      item === 'eggs' ? [crackedEgg] : null
     if (pickupArt) {
       setSupplyArt('loading')
       try {
@@ -240,9 +252,9 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
     setHeld({ item, ...position })
     setMistake(null)
     if (item === 'spatula') setOpenStorage(null)
-    if (item === 'oil') {
+    if (item === 'oil' || item === 'eggs') {
       setOpenStorage(null)
-      // The bottle is held only for this visit. Save after pouring it.
+      // Save once the held ingredient goes into the pan.
       setStepIndex(stepIndex + 1)
     }
     if (keyboard) focusNext()
@@ -312,6 +324,18 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
     }, oilWarmMs)
   }
 
+  function crackEgg(keyboard: boolean) {
+    if (cooking?.action !== 'egg' || !holdingEgg || eggTimer.current !== undefined) return
+    setHeld(null)
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return cook(keyboard)
+    setCrackingEgg(true)
+    eggTimer.current = window.setTimeout(() => {
+      eggTimer.current = undefined
+      setCrackingEgg(false)
+      cook(keyboard)
+    }, eggCrackMs)
+  }
+
   function aimAt(event: MouseEvent<HTMLElement>, input: KnifeInput): KnifeAim {
     const bounds = choppingArea.current!.getBoundingClientRect()
     const aim = {
@@ -375,9 +399,11 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
     window.clearTimeout(chopTimer.current)
     window.clearTimeout(pourTimer.current)
     window.clearTimeout(warmTimer.current)
+    window.clearTimeout(eggTimer.current)
     chopTimer.current = undefined
     pourTimer.current = undefined
     warmTimer.current = undefined
+    eggTimer.current = undefined
     setStepIndex(0)
     setOpenStorage(null)
     setVisitedStorage({})
@@ -387,6 +413,7 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
     setSupplyArt(null)
     setPouringOil(false)
     setWarmingOil(false)
+    setCrackingEgg(false)
     setCutting(false)
     setKnifeAim(null)
   }
@@ -398,11 +425,12 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
   const canAddCarrot = cooking?.action === 'carrots'
   const holdingDicedCarrot = canAddCarrot && held?.item === 'carrots'
   const sweepingCarrot = cooking?.action === 'soften'
-  const counterItem = complete ? 'plate' : preparingCarrot || canAddCarrot || sweepingCarrot || holdingSpatula || held?.item === 'pan' || cooking?.action === 'oil' ? null : held?.item ?? target
+  const counterItem = complete ? 'plate' : preparingCarrot || canAddCarrot || sweepingCarrot || holdingSpatula || held?.item === 'pan' || cooking?.action === 'oil' || cooking?.action === 'egg' ? null : held?.item ?? target
   const keepSpatula = gathered('spatula') && !finished('mix') && target !== 'spatula'
+  const heldStyle = held ? { '--fried-rice-held-x': `${held.x}%`, '--fried-rice-held-y': `${held.y}%` } as CSSProperties : undefined
   const previous = completedSteps.at(-1)
   const previousAction = previous && 'action' in previous ? previous.action : null
-  const outgoing = previousAction === 'egg' || previousAction === 'rice' ||
+  const outgoing = previousAction === 'rice' ||
     previousAction === 'salt' || previousAction === 'pepper' || previousAction === 'mix'
     ? cookingTargets[previousAction] : null
 
@@ -426,10 +454,11 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
   }
 
   return <main className={ui('activity-type pantry-page')} ref={page} onKeyDown={event => {
+    if (event.repeat && (event.key === 'Enter' || event.key === ' ')) event.preventDefault()
     if (event.key !== 'Escape' || chopTimer.current !== undefined || pourTimer.current !== undefined || (!held && !knifeAim) || supplyArt === 'loading') return
     event.preventDefault()
     setKnifeAim(null)
-    if (held?.item === 'oil' && cooking?.action === 'oil') setStepIndex(stepIndex - 1)
+    if (held?.item === 'oil' || holdingEgg) setStepIndex(stepIndex - 1)
     setHeld(null)
     setSupplyArt(null)
     focusNext()
@@ -439,8 +468,8 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
     <h1 className={ui('pantry-game-title fried-rice-title')}>Egg &amp; Carrot Fried Rice</h1>
     <div className={ui('pantry-layout')}>
       <div className={ui('pantry-frame')}>
-        <section ref={kitchen} aria-label="Kitchen" className={ui('fried-rice-stage')} style={kitchenStyle}
-          data-grabbing-tool={held?.item === 'knife' || holdingSpatula || undefined}
+        <section ref={kitchen} aria-label="Kitchen" className={ui('fried-rice-stage')} style={kitchenStyle} inert={practiceComplete}
+          data-grabbing-tool={held?.item === 'knife' || holdingSpatula || holdingEgg || undefined}
           onClick={holdingSpatula ? tapWithSpatula : undefined}
           onPointerMove={held ? moveHeld : undefined}>
           <div className={ui('fried-rice-rear')}>
@@ -477,7 +506,8 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
                     aria-label={shelfName(row, shelves.length)} data-count={items.length}
                     className={ui(area === 'fridge' && row === shelves.length - 1 ? 'fried-rice-shelf-row fried-rice-fridge-floor' : 'fried-rice-shelf-row')}>
                     {items.map(item => <div key={item} className="relative min-h-0 min-w-0">
-                      {(item === 'plate' ? platesLeft > 0 : !gathered(item) && held?.item !== item) && <button type="button" className={ui('fried-rice-supply group/item')} aria-label={supplies[item].label}
+                      {item === 'eggs' && gathered(item) ? <EggArt variant="shelf-pair" className={ui('fried-rice-shelf-eggs')} /> :
+                      (item === 'plate' ? platesLeft > 0 : !gathered(item) && held?.item !== item) && <button type="button" className={ui('fried-rice-supply group/item')} aria-label={supplies[item].label}
                         data-item={item} data-next={isOpen && isNext && gathering?.item === item || undefined}
                         onClick={event => void pickUp(item, event)} disabled={!gathering || !!held || gathered(item) || supplyArt === 'loading'}>
                         {Array.from({ length: item === 'plate' ? platesLeft : 1 }, (_, layer) => <img key={layer}
@@ -528,12 +558,12 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
                 {!holdingDicedCarrot && previousAction !== 'carrots' && <div className={ui('absolute inset-0 fried-rice-carrot-set-aside')}>
                   <div className={ui('fried-rice-chop-carrot')} role={canAddCarrot ? undefined : 'img'}
                     aria-label={canAddCarrot ? undefined : carrotSetAside ? 'Diced carrot on a plate' : taps ? 'Partly cut carrot' : 'Carrot on the cutting board'}>
-                    {carrotSetAside ? <img src={dicedCarrot} alt="" className={ui('fried-rice-diced-carrot')} /> : <>
+                    {carrotSetAside ? <DicedCarrot className="fried-rice-diced-carrot" /> : <>
                       <span className={ui('fried-rice-carrot-frame')} data-frame={cutting ? 'before' : undefined}>
                         <CarrotPieces taps={taps} />
                       </span>
                       {cutting && <span className={ui('fried-rice-carrot-frame')} data-frame="after">
-                        {taps + 1 === tapGoal ? <img src={dicedCarrot} alt="" className={ui('fried-rice-diced-carrot')} /> : <CarrotPieces taps={taps + 1} />}
+                        <CarrotPieces taps={taps + 1} />
                       </span>}
                     </>}
                   </div>
@@ -565,10 +595,10 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
               {cooking?.action === 'heat' && <button type="button" className={ui('fried-rice-cooker-dial')}
                 data-next="true" aria-label="Turn on the cooker" aria-disabled={warmingOil || undefined}
                 aria-busy={warmingOil || undefined} onClick={event => warmOil(event.detail === 0)} />}
-              <div className={ui('fried-rice-pan-vessel')}>
+              <div className={ui('fried-rice-pan-vessel')} style={eggCrackStyle}>
               {gathered('pan') ? <>
                 <img src={supplies.pan.image} className={ui('size-full object-contain fried-rice-item-highlight')} alt="Frying pan" />
-                {cooking?.action !== 'heat' && !sweepingCarrot && !holdingSpatula && <span aria-hidden="true" className={ui('fried-rice-item-label')}>Frying pan</span>}
+                {cooking?.action !== 'heat' && !sweepingCarrot && !holdingSpatula && !holdingEgg && !crackingEgg && <span aria-hidden="true" className={ui('fried-rice-item-label')}>Frying pan</span>}
               </> : placement('pan', 'absolute inset-0')}
               {(finished('oil') || pouringOil) && <span className={ui('fried-rice-oil')}
                 data-pouring={pouringOil || undefined} aria-hidden="true" style={{ '--fried-rice-pour-time': `${oilPourMs}ms` } as CSSProperties} />}
@@ -582,23 +612,29 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
                 }} />}
               {holdingSpatula && <button ref={spatulaPanTarget} type="button" className={ui('fried-rice-pan-target')}
                 data-next="true" aria-label="Put the spatula in the pan" onClick={event => place(event.detail === 0)} />}
+              {cooking?.action === 'egg' && <button type="button" className={ui('fried-rice-pan-target aria-busy:focus-visible:outline-none')}
+                data-next="true" aria-label="Crack the egg into the pan" aria-disabled={crackingEgg || undefined}
+                aria-busy={crackingEgg || undefined} onClick={event => crackEgg(event.detail === 0)} />}
               {pouringOil && <span className={ui('fried-rice-pouring')} aria-hidden="true"
                 style={{ '--fried-rice-pour-time': `${oilPourMs}ms` } as CSSProperties}>
                 <img src={supplies.oil.image} className={ui('fried-rice-pour-bottle')} alt="" />
                 <span className={ui('fried-rice-oil-stream')} />
               </span>}
-              {sweepingCarrot ? <CarrotSweep carrot={dicedCarrot} softenedCarrot={softenedCarrot} spatula={supplies.spatula.image}
+              {sweepingCarrot ? <CarrotSweep spatula={supplies.spatula.image} restingSpatula={restingSpatula}
                 count={taps} goal={tapGoal} onSweep={cook} /> :
-                finished('carrots') && !finished('mix') && <img src={finished('soften') ? softenedCarrot : dicedCarrot} className={ui('fried-rice-pan-carrot')}
-                data-arriving={previousAction === 'carrots' || undefined} alt="Carrot in the pan" />}
-              {finished('egg') && !finished('mix') && <img src={finished('scramble') ? scrambledEgg : crackedEgg}
-                className={ui('fried-rice-pan-egg')} alt={finished('scramble') ? 'Scrambled egg' : 'Cracked egg'} />}
+                finished('carrots') && !finished('mix') && <DicedCarrot className="fried-rice-pan-carrot" label="Carrot in the pan"
+                  doneness={finished('soften') ? 1 : 0} arriving={previousAction === 'carrots'} />}
+              {(crackingEgg || finished('egg')) && !finished('mix') && <img src={finished('scramble') ? scrambledEgg : crackedEgg}
+                className={ui('fried-rice-pan-egg')} data-dropping={crackingEgg || undefined}
+                alt={crackingEgg ? '' : finished('scramble') ? 'Scrambled egg' : 'Cracked egg'} />}
+              {crackingEgg && <EggArt variant="opening" className={ui('fried-rice-cracking-egg')} />}
               {finished('rice') && <img src={friedRice}
                 className={ui('fried-rice-pan-rice')} alt={finished('mix') ? 'Fried rice' : 'Rice in the pan'} />}
               </div>
             </div>}
             {counterItem && <div className={ui('fried-rice-work-items')}>{counterSupply(counterItem)}</div>}
-            {keepSpatula && <img src={supplies.spatula.image} className={ui('fried-rice-resting-spatula')} alt="Spatula set aside" />}
+            {(keepSpatula || sweepingCarrot) && <img ref={restingSpatula} src={supplies.spatula.image} className={ui('fried-rice-resting-spatula')}
+              alt="Spatula set aside" data-in-use={sweepingCarrot || undefined} />}
             {outgoing && <img key={stepIndex} src={supplies[outgoing].image} alt="" aria-hidden="true"
               className={ui('fried-rice-outgoing-item')} />}
           </div>
@@ -608,15 +644,19 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
             onPointerMove={event => {
               if (event.pointerType !== 'touch') setKnifeAim(aimAt(event, 'pointer'))
             }} />}
-          {held && <img ref={heldArt} src={holdingDicedCarrot ? dicedCarrot : supplies[held.item].image} alt="" aria-hidden="true" data-item={held.item}
-            className={ui('fried-rice-held-art')} style={{ '--fried-rice-held-x': `${held.x}%`, '--fried-rice-held-y': `${held.y}%` } as CSSProperties} />}
+          {held && (holdingDicedCarrot ? <DicedCarrot ref={node => { heldArt.current = node }} className="fried-rice-held-art" style={heldStyle} /> :
+            holdingEgg ? <span ref={heldArt} className={ui('fried-rice-held-art fried-rice-held-egg')} style={heldStyle}>
+              <EggArt variant="whole" className="block size-full" />
+            </span> :
+            <img src={supplies[held.item].image} alt="" aria-hidden="true" data-item={held.item}
+              className={ui('fried-rice-held-art')} style={heldStyle} ref={node => { heldArt.current = node }} />)}
         </section>
       </div>
       <aside aria-label="Cooking guide" className={ui('pantry-panel fried-rice-guide')} style={guideStyle}>
         <div aria-live="polite" className="grid gap-3.5">
           <header className={ui('pantry-note-heading')}>
-            <h2 className={ui('pantry-title ink-wiggle')}>{complete ? 'Fried rice is ready!' : step.title}</h2>
-            <p className={ui('pantry-step')}>{complete ? 'Meal ready' : `Step ${stepIndex + 1} of ${recipe.length}`}</p>
+            <h2 className={ui('pantry-title ink-wiggle')}>{practiceComplete ? 'Practice complete' : complete ? 'Fried rice is ready!' : step.title}</h2>
+            <p className={ui('pantry-step')}>{practiceComplete ? 'Practice' : complete ? 'Meal ready' : `Step ${stepIndex + 1} of ${recipe.length}`}</p>
           </header>
           <p>{instruction}</p>
           {tapGoal > 1 && <progress className={ui('fried-rice-taps')} value={taps} max={tapGoal} aria-label={`${step.title} progress`} />}
@@ -630,10 +670,9 @@ function FriedRice({ checkpoint, practice, announcement, onProgress, onPractice,
           <p>Practice · {practice.title}</p>
           <div className="flex flex-wrap gap-x-2">
             <button type="button" className={ui('fried-rice-start-over')} onClick={() => onPractice(practice)}>Try again</button>
-            <button type="button" className={ui('fried-rice-start-over')} onClick={() => onReturn()}>Back to recipe</button>
+            <button type="button" className={ui('fried-rice-start-over')} data-next={practiceComplete || undefined} onClick={onReturn}>Back to recipe</button>
           </div>
         </div> : <div className={ui('fried-rice-practice-controls')}>
-          {announcement && stepIndex === checkpoint.stepIndex && taps === checkpoint.taps && <p role="status">{announcement}</p>}
           <details className={ui('fried-rice-practice-menu')}>
             <summary className={ui('fried-rice-practice-summary')}>Try again</summary>
             <ul className="grid gap-1 pb-2">
@@ -664,26 +703,25 @@ const chopEntryArt = [...openingArt, ...carrotPrepArt]
 function FriedRiceGame() {
   const mainProgress = useRef(initialProgress)
   const game = useRef<HTMLDivElement>(null)
-  const [entry, setEntry] = useState({ checkpoint: initialProgress, practice: null as RecipeGroup | null, version: 0, announcement: '' })
+  const [entry, setEntry] = useState({ checkpoint: initialProgress, practice: null as RecipeGroup | null, version: 0 })
   const assets = stepKey(recipe[entry.checkpoint.stepIndex]) === 'cook:chop' ? chopEntryArt : openingArt
 
-  function returnToRecipe(finished = false) {
+  function returnToRecipe() {
     setEntry(current => ({
       checkpoint: mainProgress.current, practice: null, version: current.version + 1,
-      announcement: finished ? 'Practice complete. Back to your recipe.' : '',
     }))
   }
 
   return <div ref={game} className="contents">
     <ActivityEntry key={entry.version} assets={assets} label="Setting up the kitchen…" errorMessage="The kitchen couldn’t load. Please try again."
       onReady={entry.version ? () => game.current?.querySelector<HTMLButtonElement>('[data-next=true]')?.focus() : undefined}
-      cancel={entry.practice ? { label: 'Back to recipe', onClick: () => returnToRecipe() } : undefined}>
+      cancel={entry.practice ? { label: 'Back to recipe', onClick: returnToRecipe } : undefined}>
       <FriedRice checkpoint={entry.checkpoint} practice={entry.practice}
-        announcement={entry.announcement} onProgress={(stepIndex, taps) => {
+        onProgress={(stepIndex, taps) => {
           mainProgress.current = { stepIndex, taps }
           saveProgress(stepIndex, taps)
         }} onPractice={group => setEntry(current => ({
-          checkpoint: { stepIndex: group.start, taps: 0 }, practice: group, version: current.version + 1, announcement: '',
+          checkpoint: { stepIndex: group.start, taps: 0 }, practice: group, version: current.version + 1,
         }))} onReturn={returnToRecipe} />
     </ActivityEntry>
   </div>

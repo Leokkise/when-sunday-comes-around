@@ -1,35 +1,50 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent, type RefObject } from 'react'
 import { ui } from '../ui-classes'
+import { DicedCarrot } from './diced-carrot'
 
 const sweepStart = 0.14
 const sweepEnd = 0.86
 const edgeTolerance = 0.18
-const pieces = [
-  { clip: 'polygon(0 33%,20% 33%,20% 70%,0 70%)', travel: 46, turn: -16, lag: 155 },
-  { clip: 'polygon(0 0,100% 0,100% 71%,81% 71%,81% 100%,0 100%,0 70%,20% 70%,20% 33%,0 33%)', travel: 58, turn: 10, lag: 125 },
-  { clip: 'polygon(81% 71%,100% 71%,100% 100%,81% 100%)', travel: 30, turn: 17, lag: 205 },
-]
-
-export function CarrotSweep({ carrot, softenedCarrot, spatula, count, goal, onSweep }: {
-  carrot: string
-  softenedCarrot: string
+export function CarrotSweep({ spatula, restingSpatula, count, goal, onSweep }: {
   spatula: string
+  restingSpatula: RefObject<HTMLImageElement | null>
   count: number
   goal: number
   onSweep: (keyboard: boolean) => void
 }) {
   const [position, setPosition] = useState<number | null>(null)
+  const [settling, setSettling] = useState(false)
   const started = useRef(false)
   const lastPass = useRef(-1)
   const finishTimer = useRef<number | undefined>(undefined)
+  const tool = useRef<HTMLSpanElement>(null)
+  const sweptSpatula = useRef<HTMLImageElement>(null)
+  const parkAnimation = useRef<Animation | null>(null)
   const rightward = count % 2 === 0
   const start = rightward ? sweepStart : sweepEnd
   const end = rightward ? sweepEnd : sweepStart
   const direction = rightward ? 'right' : 'left'
   const stirOffset = (position ?? 0.5) - 0.5
-  const doneness = (count + Number(finishTimer.current !== undefined)) / goal
+  useEffect(() => () => {
+    window.clearTimeout(finishTimer.current)
+    parkAnimation.current?.cancel()
+  }, [])
 
-  useEffect(() => () => window.clearTimeout(finishTimer.current), [])
+  function putSpatulaDown(keyboard: boolean) {
+    const from = sweptSpatula.current?.getBoundingClientRect()
+    const to = restingSpatula.current?.getBoundingClientRect()
+    if (!from || !to || !tool.current) return onSweep(keyboard)
+
+    const x = to.left - from.left
+    const y = to.top - from.top
+    const lift = Math.min(30, from.height / 4)
+    parkAnimation.current = tool.current.animate([
+      { transform: 'translate(0, 0)' },
+      { transform: `translate(${x / 2}px, ${y / 2 - lift}px)` },
+      { transform: `translate(${x}px, ${y}px)` },
+    ], { duration: 360, easing: 'ease-in-out', fill: 'forwards' })
+    parkAnimation.current.onfinish = () => onSweep(keyboard)
+  }
 
   function finishSweep(keyboard: boolean) {
     if (lastPass.current === count) return
@@ -39,13 +54,14 @@ export function CarrotSweep({ carrot, softenedCarrot, spatula, count, goal, onSw
     if (count + 1 < goal || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       onSweep(keyboard)
     } else {
-      finishTimer.current = window.setTimeout(() => onSweep(keyboard), 180)
+      setSettling(true)
+      finishTimer.current = window.setTimeout(() => putSpatulaDown(keyboard), 220)
     }
   }
 
   function move(event: PointerEvent<HTMLButtonElement>) {
     if (finishTimer.current !== undefined || !event.isPrimary) return
-    if (event.pointerType !== 'mouse' && !event.currentTarget.hasPointerCapture(event.pointerId)) return
+    if (!event.currentTarget.hasPointerCapture(event.pointerId)) return
     const bounds = event.currentTarget.getBoundingClientRect()
     if (event.clientY < bounds.top || event.clientY > bounds.bottom) {
       started.current = false
@@ -58,23 +74,12 @@ export function CarrotSweep({ carrot, softenedCarrot, spatula, count, goal, onSw
   }
 
   return <>
-    <span className={ui('fried-rice-pan-carrot grid place-items-center')} role="img" aria-label="Carrot in the pan"
-      style={{ '--fried-rice-carrot-doneness': doneness } as CSSProperties}>
-      <span className="relative block aspect-[240/149] h-full max-w-full">
-        {pieces.map(piece => <span key={piece.clip} className={ui('fried-rice-sweep-piece')} style={{
-          clipPath: piece.clip,
-          '--fried-rice-sweep-food-x': `${stirOffset * piece.travel}%`,
-          '--fried-rice-sweep-turn': `${stirOffset * piece.turn}deg`,
-          '--fried-rice-sweep-lag': `${piece.lag}ms`,
-        } as CSSProperties}>
-          <img src={carrot} alt="" className="absolute inset-0 size-full" />
-          <img src={softenedCarrot} alt="" className={ui('fried-rice-sweep-texture')} />
-        </span>)}
-      </span>
-    </span>
+    <DicedCarrot className="fried-rice-pan-carrot" label="Carrot in the pan" stirring
+      doneness={settling ? 1 : count / goal} stirOffset={settling ? 0 : stirOffset} />
     <button type="button" className={ui('fried-rice-sweep-area')} data-next="true" aria-label="Sweep the spatula"
-      aria-description={`Sweep ${direction}. Pass ${count + 1} of ${goal}.`} aria-keyshortcuts="ArrowLeft ArrowRight"
-      style={{ '--fried-rice-sweep-x': `${(position ?? start) * 100}%`, '--fried-rice-sweep-tilt': `${stirOffset * 34}deg` } as CSSProperties}
+      aria-description={settling ? 'Carrot softened.' : `Sweep ${direction}. Pass ${count + 1} of ${goal}.`}
+      aria-disabled={settling || undefined} aria-keyshortcuts="ArrowLeft ArrowRight"
+      style={{ '--fried-rice-sweep-x': `${(position ?? start) * 100}%`, '--fried-rice-sweep-tilt': `${settling ? 0 : stirOffset * 34}deg` } as CSSProperties}
       onPointerDown={event => {
         if (!event.isPrimary || event.button !== 0) return
         event.currentTarget.setPointerCapture(event.pointerId)
@@ -90,9 +95,9 @@ export function CarrotSweep({ carrot, softenedCarrot, spatula, count, goal, onSw
         if (!event.repeat && event.key === (rightward ? 'ArrowRight' : 'ArrowLeft')) finishSweep(true)
       }}
       onClick={event => { if (event.detail === 0) finishSweep(true) }}>
-      <span className={ui('fried-rice-sweep-guide')} data-left={!rightward || undefined} aria-hidden="true" />
-      <span className={ui('fried-rice-sweep-tool')} aria-hidden="true">
-        <img src={spatula} className={ui('fried-rice-sweep-spatula')} alt="" />
+      <span className={ui('fried-rice-sweep-guide')} data-left={!rightward || undefined} data-settling={settling || undefined} aria-hidden="true" />
+      <span ref={tool} className={ui('fried-rice-sweep-tool')} aria-hidden="true">
+        <img ref={sweptSpatula} src={spatula} className={ui('fried-rice-sweep-spatula')} alt="" />
       </span>
     </button>
   </>
